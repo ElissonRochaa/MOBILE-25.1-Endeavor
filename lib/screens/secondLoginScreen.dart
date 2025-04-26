@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../config/themeApp.dart';
-import '../widgets/linhaWidget.dart';
+import '../widgets/loginRegistro/linhaWidget.dart';
 import 'homeScreen.dart';
 import 'loginScreen.dart';
 
