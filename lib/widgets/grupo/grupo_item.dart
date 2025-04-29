@@ -42,7 +42,7 @@ class GrupoItem extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onTertiary,
                 ),
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: 24),
               Text(
                 "Área de estudo: ",
                 style: TextStyle(

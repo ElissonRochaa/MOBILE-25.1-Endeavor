@@ -1,4 +1,5 @@
 import 'package:endeavor/models/grupo.dart';
+import 'package:endeavor/screens/criar_grupo_screen.dart';
 import 'package:endeavor/widgets/geral/endeavorBottomBar.dart';
 import 'package:endeavor/widgets/geral/endeavorTopBar.dart';
 import 'package:endeavor/widgets/grupo/grupo_list.dart';
@@ -33,6 +34,17 @@ class GrupoScreen extends StatelessWidget {
             areasEstudo: ["Matemática", "Português", "aaaaaa"],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        shape: CircleBorder(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CriarGrupoScreen()),
+          );
+        },
+        child: Icon(Icons.add, size: 36),
       ),
     );
   }
