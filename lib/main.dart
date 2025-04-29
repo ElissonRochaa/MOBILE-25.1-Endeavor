@@ -1,8 +1,5 @@
 import 'package:endeavor/screens/loginScreen.dart';
-import 'package:endeavor/screens/materiasScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-
 
 import 'config/themeApp.dart';
 
@@ -19,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Endeavor',
       theme: ThemeApp.theme,
       home: //const DismissKeyboard(child: MateriasScreen()),
-      const DismissKeyboard(child: LoginScreen())
+          const DismissKeyboard(child: LoginScreen()),
     );
   }
 }
@@ -40,5 +37,3 @@ class DismissKeyboard extends StatelessWidget {
     );
   }
 }
-
-
