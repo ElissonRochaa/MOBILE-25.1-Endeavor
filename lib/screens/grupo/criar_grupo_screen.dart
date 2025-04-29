@@ -38,6 +38,27 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
     });
   }
 
+  void retornarHandler() {
+    Navigator.pop(context, true);
+  }
+
+  void showError(Object e) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Erro'),
+            content: Text('Erro ao criar grupo: $e'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
   void submitHandler() async {
     bool isValido = _formKey.currentState!.validate();
     if (!isValido) return;
@@ -51,27 +72,15 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
         capacidade: capacidade!,
         privado: isPrivado,
         areasEstudo: [area!],
+        idCriador: "placeholder idCriador",
       );
 
       if (context.mounted) {
-        Navigator.pop(context, true); // <- Volta passando true (sucesso)
+        retornarHandler();
       }
     } catch (e) {
       if (context.mounted) {
-        showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: const Text('Erro'),
-                content: Text('Erro ao criar grupo: $e'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-        );
+        showError(e);
       }
     }
   }
