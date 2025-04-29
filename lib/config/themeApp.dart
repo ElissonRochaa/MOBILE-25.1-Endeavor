@@ -10,6 +10,7 @@ class ThemeApp {
       onSecondary: Colors.black,
       tertiary: Color(0xFF00B4D8),
       onTertiary: Colors.white,
+      tertiaryContainer: Color(0xFFCAF0F8),
       error: Colors.red,
       onError: Colors.white,
       surface: Colors.grey[200]!,
