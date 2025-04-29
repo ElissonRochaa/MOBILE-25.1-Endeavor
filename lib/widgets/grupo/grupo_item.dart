@@ -1,4 +1,5 @@
 import 'package:endeavor/models/grupo.dart';
+import 'package:endeavor/screens/grupo/detalhes_grupo_screen.dart';
 import 'package:flutter/material.dart';
 
 class GrupoItem extends StatelessWidget {
@@ -9,7 +10,13 @@ class GrupoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => DetalhesGrupoScreen(grupoId: grupoData.id),
+          ),
+        );
+      },
       child: Card(
         color: Theme.of(context).colorScheme.tertiary,
         child: Padding(

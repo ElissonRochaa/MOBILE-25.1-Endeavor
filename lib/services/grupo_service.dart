@@ -79,6 +79,10 @@ Future<List<Grupo>> getGrupos() async {
   return _gruposDummy;
 }
 
+Future<Grupo> getGrupoById(String id) async {
+  return _gruposDummy.where((grupo) => grupo.id == id).single;
+}
+
 Future<Grupo> createGrupo({
   required String titulo,
   required String descricao,
