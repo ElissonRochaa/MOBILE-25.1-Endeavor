@@ -12,19 +12,27 @@ class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        icon: Image(image: AssetImage("assets/flameLogo.png"),
-            height: 48,
-            width: 60,
-            alignment: Alignment.centerLeft),
+        icon: Image(
+          image: AssetImage("assets/flameLogo.png"),
+          height: 48,
+          width: 60,
+          alignment: Alignment.centerLeft,
+        ),
         onPressed: () {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
-        }),
-      title: Text(title,
-          style: TextStyle(fontSize: 28, fontFamily: 'BebasNeue', color: Colors.white),
-          textAlign: TextAlign.left,
+        },
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 28,
+          fontFamily: 'BebasNeue',
+          color: Colors.white,
+        ),
+        textAlign: TextAlign.left,
       ),
       centerTitle: false,
       backgroundColor: ThemeApp.theme.colorScheme.primary,

@@ -1,4 +1,4 @@
-import 'package:endeavor/widgets/geral/endeavorTopBar.dart';
+import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
 
 class Estatisticasscreen extends StatelessWidget {
@@ -10,9 +10,7 @@ class Estatisticasscreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: EndeavorTopBar(title: "Estatísticas"),
-      body: Center(
-        child: Text('Estatísticas', style: TextStyle(fontSize: 24)),
-      ),
+      body: Center(child: Text('Estatísticas', style: TextStyle(fontSize: 24))),
     );
   }
 }

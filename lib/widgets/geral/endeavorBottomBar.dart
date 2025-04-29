@@ -1,5 +1,5 @@
 import 'package:endeavor/config/themeApp.dart';
-import 'package:endeavor/screens/grupo_screen.dart';
+import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../screens/estatisticasScreen.dart';
