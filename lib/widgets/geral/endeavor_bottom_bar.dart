@@ -21,12 +21,6 @@ class EndeavorBottomBar extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back, color: Colors.white, size: 34),
-          ),
-          IconButton(
-            onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const GrupoScreen()),
