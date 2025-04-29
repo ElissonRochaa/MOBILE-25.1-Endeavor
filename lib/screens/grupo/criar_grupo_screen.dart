@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/grupo_service.dart' as grupo_service;
+
 final List<String> _areasEstudo = [
   'Matemática',
   'Português',
@@ -16,7 +18,7 @@ class CriarGrupoScreen extends StatefulWidget {
 }
 
 class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
-  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -36,11 +38,42 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
     });
   }
 
-  void submitHandler() {
+  void submitHandler() async {
     bool isValido = _formKey.currentState!.validate();
     if (!isValido) return;
 
     _formKey.currentState!.save();
+
+    try {
+      await grupo_service.createGrupo(
+        titulo: _tituloController.text,
+        descricao: _descricaoController.text,
+        capacidade: capacidade!,
+        privado: isPrivado,
+        areasEstudo: [area!],
+      );
+
+      if (context.mounted) {
+        Navigator.pop(context, true); // <- Volta passando true (sucesso)
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Erro'),
+                content: Text('Erro ao criar grupo: $e'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+        );
+      }
+    }
   }
 
   @override
@@ -60,9 +93,9 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
-                  controller: _nomeController,
+                  controller: _tituloController,
                   decoration: InputDecoration(
-                    labelText: "Nome do grupo",
+                    labelText: "Titulo do grupo",
                     suffixIcon: Icon(
                       Icons.note_alt,
                       color: Theme.of(context).colorScheme.primary,
@@ -71,7 +104,7 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty || value.length < 4) {
-                      return "O nome do grupo deve conter, ao menos, 4 caracteres.";
+                      return "O titulo do grupo deve conter, ao menos, 4 caracteres.";
                     }
                     return null;
                   },
