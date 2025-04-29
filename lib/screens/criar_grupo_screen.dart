@@ -8,8 +8,40 @@ final List<String> _areasEstudo = [
   'Geografia',
 ];
 
-class CriarGrupoScreen extends StatelessWidget {
+class CriarGrupoScreen extends StatefulWidget {
   const CriarGrupoScreen({super.key});
+
+  @override
+  State<CriarGrupoScreen> createState() => _CriarGrupoScreenState();
+}
+
+class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  String? area;
+  int? capacidade;
+  bool isPrivado = false;
+
+  void areaHandler(String novaArea) {
+    setState(() {
+      area = novaArea;
+    });
+  }
+
+  void capacidadeHandler(int novaCapacidade) {
+    setState(() {
+      capacidade = novaCapacidade;
+    });
+  }
+
+  void submitHandler() {
+    bool isValido = _formKey.currentState!.validate();
+    if (!isValido) return;
+
+    _formKey.currentState!.save();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,144 +54,177 @@ class CriarGrupoScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Form(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Nome do grupo",
-
-                  suffixIcon: Icon(
-                    Icons.note_alt,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 32,
-                  ),
-                ),
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Descrição",
-                  suffixIcon: Icon(
-                    Icons.note_alt,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 32,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: DropdownMenu<String>(
-                        width: 200,
-                        hintText: 'Área',
-                        textStyle: const TextStyle(
-                          overflow: TextOverflow.visible,
-                        ),
-                        inputDecorationTheme: InputDecorationTheme(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                        ),
-                        dropdownMenuEntries:
-                            _areasEstudo
-                                .map(
-                                  (area) => DropdownMenuEntry(
-                                    value: area,
-                                    label: area,
-                                  ),
-                                )
-                                .toList(),
-                        onSelected: (value) {},
-                      ),
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: _nomeController,
+                  decoration: InputDecoration(
+                    labelText: "Nome do grupo",
+                    suffixIcon: Icon(
+                      Icons.note_alt,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 32,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: DropdownMenu<int>(
-                        width: 200,
-                        hintText: 'Capacidade',
-                        textStyle: const TextStyle(
-                          overflow: TextOverflow.visible,
-                        ),
-                        inputDecorationTheme: InputDecorationTheme(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 10,
-                          ),
-                        ),
-                        dropdownMenuEntries: List.generate(
-                          50,
-                          (index) => DropdownMenuEntry(
-                            value: index + 1,
-                            label: "${index + 1} pessoa(s)",
-                          ),
-                        ),
-                        onSelected: (value) {},
-                      ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.length < 4) {
+                      return "O nome do grupo deve conter, ao menos, 4 caracteres.";
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _descricaoController,
+                  decoration: InputDecoration(
+                    labelText: "Descrição",
+                    suffixIcon: Icon(
+                      Icons.note_alt,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 32,
                     ),
                   ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Row(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "A descrição não pode ser nula.";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 32),
+                Row(
                   children: [
-                    Checkbox(value: false, onChanged: (value) {}),
-                    Text(
-                      "Grupo é privado?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: Theme.of(context).colorScheme.primary,
+                    Expanded(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: 'Área',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          items:
+                              _areasEstudo.map((area) {
+                                return DropdownMenuItem(
+                                  value: area,
+                                  child: Text(area),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              area = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Selecione uma área';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: DropdownButtonFormField<int>(
+                          decoration: InputDecoration(
+                            hintText: 'Capacidade',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          items: List.generate(
+                            49,
+                            (index) => DropdownMenuItem(
+                              value: index + 2,
+                              child: Text("${index + 2} pessoas"),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            capacidade = value;
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Selecione a capacidade';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 56,
-                  horizontal: 16,
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 72,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        Theme.of(context).colorScheme.tertiary,
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: isPrivado,
+                        onChanged: (value) {
+                          setState(() {
+                            isPrivado = !isPrivado;
+                          });
+                        },
                       ),
-                      shape: WidgetStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      Text(
+                        "Grupo é privado?",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      "Criar Grupo",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onTertiary,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 56,
+                    horizontal: 16,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 72,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                          Theme.of(context).colorScheme.tertiary,
+                        ),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        submitHandler();
+                      },
+                      child: Text(
+                        "Criar Grupo",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onTertiary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
