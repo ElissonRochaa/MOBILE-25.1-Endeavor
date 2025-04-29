@@ -1,6 +1,6 @@
 import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
 import 'package:endeavor/services/grupo_service.dart' as grupo_service;
-import 'package:endeavor/widgets/geral/endeavorBottomBar.dart';
+import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/grupo/grupo_list.dart';
 import 'package:flutter/material.dart';

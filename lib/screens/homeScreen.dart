@@ -1,4 +1,4 @@
-import 'package:endeavor/widgets/geral/endeavorBottomBar.dart';
+import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
 

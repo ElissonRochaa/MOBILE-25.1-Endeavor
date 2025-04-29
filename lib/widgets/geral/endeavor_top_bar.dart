@@ -5,26 +5,30 @@ import '../../config/themeApp.dart';
 
 class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final bool hideLogo;
 
-  const EndeavorTopBar({super.key, required this.title});
+  const EndeavorTopBar({super.key, required this.title, this.hideLogo = false});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      leading: IconButton(
-        icon: Image(
-          image: AssetImage("assets/flameLogo.png"),
-          height: 48,
-          width: 60,
-          alignment: Alignment.centerLeft,
-        ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        },
-      ),
+      leading:
+          hideLogo
+              ? BackButton(color: Theme.of(context).colorScheme.onPrimary)
+              : IconButton(
+                icon: Image(
+                  image: AssetImage("assets/flameLogo.png"),
+                  height: 48,
+                  width: 60,
+                  alignment: Alignment.centerLeft,
+                ),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                },
+              ),
       title: Text(
         title,
         style: TextStyle(
