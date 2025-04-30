@@ -1,4 +1,4 @@
-import 'package:endeavor/screens/homeScreen.dart';
+import 'package:endeavor/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/themeApp.dart';

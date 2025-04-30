@@ -1,11 +1,10 @@
-import 'dart:ui';
 
-import 'package:endeavor/screens/secondLoginScreen.dart';
-import 'package:endeavor/widgets/loginRegistro/linhaWidget.dart';
+import 'package:endeavor/screens/second_login_screen.dart';
+import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';
 import 'package:flutter/material.dart';
 
 import '../config/themeApp.dart';
-import '../widgets/loginRegistro/googleSignInButton.dart';
+import '../widgets/loginRegistro/google_sign_in_button.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

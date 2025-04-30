@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../config/themeApp.dart';
-import '../widgets/loginRegistro/linhaWidget.dart';
-import 'homeScreen.dart';
-import 'loginScreen.dart';
+import '../widgets/loginRegistro/linha_widget.dart';
+import 'home_screen.dart';
+import 'login_screen.dart';
 
 class SecondLoginScreen extends StatelessWidget {
   const SecondLoginScreen({super.key});
