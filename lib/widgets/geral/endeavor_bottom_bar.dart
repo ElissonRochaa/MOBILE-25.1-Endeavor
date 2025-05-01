@@ -2,8 +2,8 @@ import 'package:endeavor/config/themeApp.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../../screens/estatisticasScreen.dart';
-import '../../screens/homeScreen.dart';
+import '../../screens/estatisticas_screen.dart';
+import '../../screens/home_screen.dart';
 
 class EndeavorBottomBar extends StatelessWidget {
   const EndeavorBottomBar({super.key});
