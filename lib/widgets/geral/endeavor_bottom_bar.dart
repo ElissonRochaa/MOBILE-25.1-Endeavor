@@ -29,6 +29,10 @@ class EndeavorBottomBar extends StatelessWidget {
             icon: Icon(Icons.group, color: Colors.white, size: 34),
           ),
           IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 34),
+          ),
+          IconButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -37,6 +41,7 @@ class EndeavorBottomBar extends StatelessWidget {
             },
             icon: Icon(Icons.home, color: Colors.white, size: 34),
           ),
+
           IconButton(
             onPressed: () {
               Navigator.push(
