@@ -112,7 +112,10 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty || value.length < 4) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.length < 4 ||
+                        value.trim().isEmpty) {
                       return "O titulo do grupo deve conter, ao menos, 4 caracteres.";
                     }
                     return null;
@@ -129,7 +132,9 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().isEmpty) {
                       return "A descrição não pode ser nula.";
                     }
                     return null;
@@ -178,6 +183,7 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: DropdownButtonFormField<int>(
+                          menuMaxHeight: 384,
                           decoration: InputDecoration(
                             hintText: 'Capacidade',
                             border: OutlineInputBorder(
