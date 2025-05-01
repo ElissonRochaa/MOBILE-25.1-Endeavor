@@ -70,11 +70,14 @@ class _GrupoScreenState extends State<GrupoScreen> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        shape: const CircleBorder(),
-        onPressed: _navigateToCriarGrupo,
-        child: const Icon(Icons.add, size: 36),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 32.0),
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          shape: const CircleBorder(),
+          onPressed: _navigateToCriarGrupo,
+          child: const Icon(Icons.add, size: 36),
+        ),
       ),
     );
   }
