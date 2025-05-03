@@ -1,5 +1,6 @@
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
+import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'config/themeApp.dart';
@@ -16,8 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Endeavor',
       theme: ThemeApp.theme,
-      home: const DismissKeyboard(child: MateriasScreen()),
+      home: //const DismissKeyboard(child: MateriasScreen()),
           //const DismissKeyboard(child: LoginScreen()),
+          const DismissKeyboard(child: RegistroScreen())
     );
   }
 }
