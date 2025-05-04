@@ -44,7 +44,6 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
           }
 
           final grupo = grupoSnapshot.data!;
-
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
@@ -74,16 +73,46 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                 ),
                 Text(grupo.descricao),
                 const SizedBox(height: 64),
-                Text(
-                  "Estudando 04/10",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                    decoration: TextDecoration.underline,
-                    decorationThickness: 2,
-                    decorationColor: Theme.of(context).colorScheme.secondary,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    FutureBuilder<List<Membro>>(
+                      future: _membrosFuture,
+                      builder: (context, membroSnapshot) {
+                        if (membroSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Text("Estudando...");
+                        } else if (membroSnapshot.hasError) {
+                          return Text(
+                            "Erro ao carregar informações dos membros",
+                          );
+                        } else if (!membroSnapshot.hasData) {
+                          return const Text("Estudando 0");
+                        }
+
+                        final membrosAtivos =
+                            membroSnapshot.data!
+                                .where((membro) => membro.isAtivo)
+                                .length;
+
+                        return Text(
+                          "Estudando $membrosAtivos/${grupo.membros}",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        );
+                      },
+                    ),
+                    Text(
+                      "Capacidade: ${grupo.capacidade}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   width: double.infinity,
