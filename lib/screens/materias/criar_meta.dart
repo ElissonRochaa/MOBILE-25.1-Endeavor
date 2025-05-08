@@ -13,6 +13,27 @@ class CriarMetaScreen extends StatelessWidget {
         child: Column(
           children: [
 
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: "Nome da meta",
+                  hintStyle: TextStyle(color: Colors.black54),
+                )
+              ),
+            ),
+
+            Padding(
+              padding:
+            const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: "Descrição",
+                hintStyle: TextStyle(color: Colors.black54),
+              ),
+            ),
+            ),
           ],
         ),
       ),
