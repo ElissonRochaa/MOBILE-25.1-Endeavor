@@ -10,8 +10,8 @@ import 'package:endeavor/widgets/home/areas_estudo.dart';
 import 'package:endeavor/widgets/home/card_grupo.dart';
 import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/materias/materia_item.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class HomeScreen extends StatelessWidget {
   final String? nome;
