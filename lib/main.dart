@@ -1,4 +1,5 @@
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
 import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeApp.theme,
       home: //const DismissKeyboard(child: MateriasScreen()),
           //const DismissKeyboard(child: LoginScreen()),
-          const DismissKeyboard(child: RegistroScreen())
+          const DismissKeyboard(child: CriarMetaScreen())
     );
   }
 }
