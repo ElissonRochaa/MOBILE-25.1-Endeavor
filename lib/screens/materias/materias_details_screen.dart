@@ -1,10 +1,11 @@
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
-import 'package:endeavor/widgets/materias/metas/meta_list.dart';
+
 import 'package:flutter/material.dart';
 import '../../models/materia.dart';
 import '../../models/meta.dart';
 import '../../services/meta_service.dart' as meta_service;
+import '../../widgets/materias/metas/meta_list.dart';
 import 'criar_meta.dart';
 
 class MateriasDetailsScreen extends StatefulWidget {
