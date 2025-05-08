@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
       title: 'Endeavor',
       theme: ThemeApp.theme,
       home: const DismissKeyboard(child: MateriasScreen()),
-          //const DismissKeyboard(child: LoginScreen()),
     );
   }
 }

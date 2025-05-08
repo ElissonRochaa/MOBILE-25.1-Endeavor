@@ -15,7 +15,7 @@ List<Materia> _materiasDummy = [
     id: 3,
     nome: 'Outra matéria',
     descricao: 'É uma outra matéria',
-  )
+  ),
 ];
 
 Future<List<Materia>> getMaterias() async {
