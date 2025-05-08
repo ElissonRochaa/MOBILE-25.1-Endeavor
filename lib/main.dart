@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeApp.theme,
       home: //const DismissKeyboard(child: MateriasScreen()),
           //const DismissKeyboard(child: LoginScreen()),
-          const DismissKeyboard(child: CriarMetaScreen())
+          const DismissKeyboard(child: RegistroScreen())
     );
   }
 }
