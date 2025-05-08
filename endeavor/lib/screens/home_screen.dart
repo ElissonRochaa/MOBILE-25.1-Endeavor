@@ -1,11 +1,12 @@
-import 'package:endeavor/models/materia.dart';
 import 'package:endeavor/services/grupo_service.dart';
+import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/home/areas_estudo.dart';
 import 'package:endeavor/widgets/home/card_grupo.dart';
 import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/materias/materia_item.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -15,23 +16,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final materias = [
-      Materia(
-        id: 1,
-        nome: "Biologia",
-        descricao: "Matéria direcionada para estudos dde biologia",
-      ),
-      Materia(
-        id: 2,
-        nome: "Biologia",
-        descricao: "Matéria direcionada para estudos dde biologia",
-      ),
-      Materia(
-        id: 3,
-        nome: "Biologia",
-        descricao: "Matéria direcionada para estudos dde biologia",
-      ),
-    ];
 
     return Scaffold(
       appBar: EndeavorTopBar(title: "Endeavor"),
@@ -63,13 +47,32 @@ class HomeScreen extends StatelessWidget {
           ),
           Label(title: "Minhas matérias"),
           SizedBox(
-            height: 120,
-            child: ListView.builder(
-              itemCount: materias.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder:
-                  (ctx, index) => MateriaItem(materia: materias[index]),
-            ),
+            height: 200,
+            child: FutureBuilder(
+              future: getMaterias(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Erro: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('Nenhuma matéria encontrado'));
+                }
+
+                final materias = snapshot.data!; 
+
+              return CarouselSlider(
+                options: CarouselOptions(height: 400.0),
+                items: materias.map((materia) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return MateriaItem(materia: materia);
+                    },
+                  );
+                }).toList(),
+              );
+              } 
+            )
           ),
           SizedBox(height: 40),
           Label(title: "Meus grupos"),

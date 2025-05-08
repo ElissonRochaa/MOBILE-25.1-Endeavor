@@ -6,6 +6,16 @@ List<Materia> _materiasDummy = [
     nome: 'Flutterzinho',
     descricao: 'Estudar Flutter',
   ),
+  Materia(
+    id: 2,
+    nome: 'Flutterzinho',
+    descricao: 'Estudar Flutter',
+  ),
+  Materia(
+    id: 3,
+    nome: 'Flutterzinho',
+    descricao: 'Estudar Flutter',
+  ),
 ];
 
 Future<List<Materia>> getMaterias() async {
