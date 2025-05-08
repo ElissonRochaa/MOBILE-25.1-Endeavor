@@ -7,49 +7,62 @@ class PerfilBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                      'https://www.w3schools.com/howto/img_avatar.png'),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Rony Rangel',
-                  style: GoogleFonts.nunito(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+    return Container(
+      margin: const EdgeInsets.only(top: 24, bottom: 16),
+      child: Column(
+                spacing: 8,
+                mainAxisAlignment: MainAxisAlignment.start, 
+                children: [
+                  const CircleAvatar(
+                    radius: 60,
+                    backgroundImage: NetworkImage(
+                        'https://www.w3schools.com/howto/img_avatar.png'),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    '12 horas estudadas hoje',
+                  Text(
+                    'Rony Rangel',
                     style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    boxShadow: 
-                      [BoxShadow(color: Colors.grey, blurRadius: 5)]),
-                    color: Colors.white, 
-                  child: Text(
-                    "Escolaridade: graduação\nÁrea de estudo: TI",
-                    style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      color: Colors.black,
+                  Container(
+                    width: 200,
+      
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '12 horas estudadas hoje',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                )
-              ],
-            );
+                  Card(
+                    color: Colors.white,
+                    elevation: 4,
+                    margin: const EdgeInsets.only(top: 4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: Container(
+                      width: 200,
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        "Escolaridade: graduação\nÁrea de estudo: TI",
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+    );
   }
 }

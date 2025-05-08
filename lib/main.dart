@@ -1,4 +1,5 @@
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/screens/perfil_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'config/themeApp.dart';

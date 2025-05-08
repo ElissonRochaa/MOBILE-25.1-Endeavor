@@ -1,4 +1,5 @@
 import 'package:endeavor/screens/home_screen.dart';
+import 'package:endeavor/screens/perfil_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/themeApp.dart';
@@ -33,7 +34,13 @@ class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
         Container(
           margin: EdgeInsets.only(right: 10),
           child: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PerfilScreen(),
+                ),
+              );
+            },
             icon: Icon(Icons.account_circle, color: Colors.white),
             iconSize: 36,
           ),

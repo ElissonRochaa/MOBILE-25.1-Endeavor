@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Label extends StatelessWidget {
-  final String title; 
+  final String title;
+  final void Function() onAdd;
+  final void Function() onSeeAll; 
 
-  const Label({required this.title ,super.key});
+  const Label({required this.title , required this.onAdd, required this.onSeeAll ,super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,8 @@ class Label extends StatelessWidget {
             fontWeight: FontWeight.bold
             
           ),),
-          IconButton(onPressed: () {}, icon: Icon(Icons.add_rounded)),
-          TextButton(onPressed: () {}, child: Text(title == "Minhas matérias" ? "ver todas" : "ver todos",  style: GoogleFonts.nunito(
+          IconButton(onPressed: onAdd, icon: Icon(Icons.add_rounded)),
+          TextButton(onPressed: onSeeAll, child: Text(title == "Minhas matérias" ? "ver todas" : "ver todos",  style: GoogleFonts.nunito(
             fontSize: 15,
             color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w400

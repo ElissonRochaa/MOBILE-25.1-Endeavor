@@ -15,6 +15,8 @@ class NumberBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 128,
+      height: 114,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
@@ -24,6 +26,7 @@ class NumberBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
@@ -33,7 +36,6 @@ class NumberBox extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              const Spacer(),
               Icon(
                 Icons.arrow_forward_ios,
                 color: Colors.white,
