@@ -67,7 +67,7 @@ class _MateriaItemState extends State<MateriaItem> {
           color: Theme.of(context).colorScheme.tertiary,
           margin: const EdgeInsets.only(top: 10),
           child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 8),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
