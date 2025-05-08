@@ -1,5 +1,6 @@
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
+import 'package:endeavor/widgets/perfil/number_box.dart';
 import 'package:endeavor/widgets/perfil/perfil_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,9 +19,15 @@ class PerfilScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
           children: [
-            PerfilBanner(),
+            Expanded(child: PerfilBanner()),
             const SizedBox(height: 16),
-            
+            Row(
+              children: [
+                NumberBox(title: "Grupos", value: "12"),
+                const SizedBox(width: 24),
+                NumberBox(title: "Materias", value: "28"),
+              ],
+            )
           ],
         ),
       ),
