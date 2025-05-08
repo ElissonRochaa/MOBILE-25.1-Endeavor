@@ -25,10 +25,20 @@ class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 },
               ),
+      actions: [
+        Container(
+          margin: EdgeInsets.only(right: 10),
+          child: IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.account_circle, color: Colors.white),
+            iconSize: 36,
+          ),
+        ),
+      ],
       title: Text(
         title,
         style: TextStyle(
