@@ -13,7 +13,7 @@ class ThemeApp {
       tertiaryContainer: Color(0xFFCAF0F8),
       error: Colors.red,
       onError: Colors.white,
-      surface: Colors.grey[200]!,
+      surface: Colors.grey[300]!,
       onSurface: Colors.black,
     ),
   );

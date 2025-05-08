@@ -8,6 +8,7 @@ List<Materia> _materiasDummy = [
   ),
   Materia(
     id: 2,
+<<<<<<< HEAD:lib/services/materia_service.dart
     nome: 'Verificação e validação de testes',
     descricao: 'cadeira de testes',
     ),
@@ -15,6 +16,15 @@ List<Materia> _materiasDummy = [
     id: 3,
     nome: 'Outra matéria',
     descricao: 'É uma outra matéria',
+=======
+    nome: 'Flutterzinho',
+    descricao: 'Estudar Flutter',
+  ),
+  Materia(
+    id: 3,
+    nome: 'Flutterzinho',
+    descricao: 'Estudar Flutter',
+>>>>>>> rony-dev:endeavor/lib/services/materia_service.dart
   ),
 ];
 

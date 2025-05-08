@@ -50,7 +50,7 @@ class SecondLoginScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 }, child: Text('Entrar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20))
             ),
