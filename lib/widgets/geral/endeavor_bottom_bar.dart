@@ -36,7 +36,7 @@ class EndeavorBottomBar extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             },
             icon: Icon(Icons.home, color: Colors.white, size: 34),
