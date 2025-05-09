@@ -1,3 +1,4 @@
+import 'package:endeavor/screens/login_screen.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/perfil/materia_box.dart';
@@ -87,6 +88,23 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     const MateriaBox(materia: "Matemática", tempo: "2 horas e 16 minutos"),
                     const MateriaBox(materia: "Física", tempo: "1 hora e 30 minutos"),
                     const MateriaBox(materia: "Química", tempo: "30 minutos"),
+                    InkWell(
+                      onTap:  () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),)),
+                      child: Container(
+                        width: 330,
+                        height: 50,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF373737),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text("Desconectar",textAlign: TextAlign.center , style: TextStyle(
+                          color: Colors.white,
+                        ),),
+                      ),
+                    )
                   ],
                 ),
             ],

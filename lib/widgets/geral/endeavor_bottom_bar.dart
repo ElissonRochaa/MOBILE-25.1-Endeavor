@@ -2,7 +2,9 @@ import 'package:endeavor/config/themeApp.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../../screens/estatisticas_screen.dart';
 import '../../screens/home_screen.dart';
+import '../../screens/materias/materias_screen.dart';
 
 class EndeavorBottomBar extends StatelessWidget {
   const EndeavorBottomBar({super.key});
@@ -28,10 +30,6 @@ class EndeavorBottomBar extends StatelessWidget {
             icon: Icon(Icons.home, color: Colors.white, size: 34),
           ),
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 34),
-          ),
-          IconButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -40,17 +38,29 @@ class EndeavorBottomBar extends StatelessWidget {
             },
             icon: Icon(Icons.group, color: Colors.white, size: 34),
           ),
-          // IconButton(
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const Estatisticasscreen(),
-          //       ),
-          //     );
-          //   },
-          //   icon: Icon(Icons.bar_chart, color: Colors.white, size: 34),
-          // ),
+           IconButton(
+             onPressed: () {
+               Navigator.push(
+                 context,
+                 MaterialPageRoute(
+                   builder: (context) => const Estatisticasscreen(),
+                 ),
+               );
+             },
+            icon: Icon(Icons.bar_chart, color: Colors.white, size: 34),
+           ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MateriasScreen(),
+                ),
+              );
+            },
+            icon: Icon(Icons.book_rounded, color: Colors.white, size: 34),
+          ),
+
         ],
       ),
     );

@@ -37,7 +37,7 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Matéria"),
+      appBar: EndeavorTopBar(title: "Matéria", hideLogo: true,),
       body: FutureBuilder<List<Meta>>(
         future: _materiasFuture,
         builder: (context, snapshot) {

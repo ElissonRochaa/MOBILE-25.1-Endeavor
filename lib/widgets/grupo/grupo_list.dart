@@ -2,6 +2,8 @@ import 'package:endeavor/models/grupo.dart';
 import 'package:endeavor/widgets/grupo/grupo_item.dart';
 import 'package:flutter/material.dart';
 
+import '../geral/search_bar.dart';
+
 enum Ordenacao { nome, membros, privado }
 
 class GrupoList extends StatefulWidget {
@@ -44,50 +46,19 @@ class _GrupoListState extends State<GrupoList> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
             ),
-            child: SearchBar(
+            child: SearchFilterBar(
               controller: _searchController,
-              elevation: WidgetStatePropertyAll(8),
-              backgroundColor: WidgetStatePropertyAll(
-                Theme.of(context).colorScheme.onTertiary,
-              ),
-              onSubmitted: (value) {
-                String textoBusca = value.trim();
-                if (textoBusca.isNotEmpty) {
-                  setState(() {
-                    busca = textoBusca;
-                  });
-                } else {
-                  setState(() {
-                    busca = "";
-                  });
-                }
+              onSearch: (value) {
+                setState(() {
+                  busca = value.trim();
+                });
               },
-              trailing: [
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (ctx) => _buildFilterOptions(),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: () {
-                    final textoBusca = _searchController.text.trim();
-                    if (textoBusca.isNotEmpty) {
-                      setState(() {
-                        busca = textoBusca;
-                      });
-                    } else {
-                      setState(() {
-                        busca = "";
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.search),
-                ),
-              ],
+              onFilterTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) => _buildFilterOptions(),
+                );
+              },
             ),
           ),
         ),
@@ -100,7 +71,7 @@ class _GrupoListState extends State<GrupoList> {
                     ),
                   )
                   : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     itemCount: gruposFiltrados.length,
                     itemBuilder: (context, index) {
                       return GrupoItem(grupoData: gruposFiltrados[index]);

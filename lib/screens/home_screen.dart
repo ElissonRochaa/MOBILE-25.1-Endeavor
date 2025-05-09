@@ -73,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                   final materias = snapshot.data!;
 
                   return CarouselSlider(
-                    options: CarouselOptions(height: 400.0),
+                    options: CarouselOptions(height: 180.0),
                     items:
                         materias.map((materia) {
                           return Builder(
