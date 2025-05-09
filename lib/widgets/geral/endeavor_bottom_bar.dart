@@ -2,7 +2,6 @@ import 'package:endeavor/config/themeApp.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../../screens/estatisticas_screen.dart';
 import '../../screens/home_screen.dart';
 
 class EndeavorBottomBar extends StatelessWidget {
@@ -23,10 +22,10 @@ class EndeavorBottomBar extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const GrupoScreen()),
+                MaterialPageRoute(builder: (context) => HomeScreen()),
               );
             },
-            icon: Icon(Icons.group, color: Colors.white, size: 34),
+            icon: Icon(Icons.home, color: Colors.white, size: 34),
           ),
           IconButton(
             onPressed: () {},
@@ -36,23 +35,22 @@ class EndeavorBottomBar extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+                MaterialPageRoute(builder: (context) => const GrupoScreen()),
               );
             },
-            icon: Icon(Icons.home, color: Colors.white, size: 34),
+            icon: Icon(Icons.group, color: Colors.white, size: 34),
           ),
-
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Estatisticasscreen(),
-                ),
-              );
-            },
-            icon: Icon(Icons.bar_chart, color: Colors.white, size: 34),
-          ),
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const Estatisticasscreen(),
+          //       ),
+          //     );
+          //   },
+          //   icon: Icon(Icons.bar_chart, color: Colors.white, size: 34),
+          // ),
         ],
       ),
     );

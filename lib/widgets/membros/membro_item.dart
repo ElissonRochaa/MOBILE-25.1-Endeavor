@@ -56,6 +56,8 @@ class _MembroItemState extends State<MembroItem> {
             children: [
               const SizedBox(height: 8),
               Image.asset(
+                fit: BoxFit.contain,
+                height: 50,
                 widget.membroDetails.isAtivo
                     ? "assets/membro_estudando.png"
                     : "assets/membro_relaxando.png",

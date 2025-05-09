@@ -1,4 +1,3 @@
-
 import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';
 import 'package:flutter/material.dart';
@@ -12,16 +11,20 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-              Image(image: AssetImage("assets/flameLogo.png"),
-                  height: 160,
-                  width: 200,
-                  alignment: Alignment.center),
-              Text("Endeavor",
-                  style: TextStyle(fontSize: 48, fontFamily: 'BebasNeue')
+              Image(
+                image: AssetImage("assets/flameLogo.png"),
+                height: 160,
+                width: 200,
+                alignment: Alignment.center,
+              ),
+              Text(
+                "Endeavor",
+                style: TextStyle(fontSize: 48, fontFamily: 'BebasNeue'),
               ),
               SizedBox(
                 width: 300,
@@ -37,28 +40,44 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 40),
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: ThemeApp.theme.colorScheme.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)
-                      ),
-                    minimumSize: Size(332, 50)
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ThemeApp.theme.colorScheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SecondLoginScreen()),
-                );
-              }, child: Text('Continuar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20))
+                  minimumSize: Size(332, 50),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SecondLoginScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Continuar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
               ),
               Container(
-                margin: const EdgeInsets.only(left: 40, right: 40, top: 25, bottom: 25),
-                child: LinhaWidget("ou")
+                margin: const EdgeInsets.only(
+                  left: 40,
+                  right: 40,
+                  top: 25,
+                  bottom: 25,
+                ),
+                child: LinhaWidget("ou"),
               ),
-              GoogleSignInButton()
+              GoogleSignInButton(),
             ],
           ),
         ),
-      );
+      ),
+    );
   }
 }
