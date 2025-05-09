@@ -1,3 +1,4 @@
+import 'package:endeavor/screens/materias/materias_details_screen.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class _CriarMetaScreenState extends State<CriarMetaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Criar Meta"),
+      appBar: EndeavorTopBar(title: "Criar Meta", hideLogo: true,),
       body: Center(
         child: Column(
           children: [
@@ -86,7 +87,7 @@ class _CriarMetaScreenState extends State<CriarMetaScreen> {
               const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
               child: ElevatedButton(
                 onPressed: () {
-                  //Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
