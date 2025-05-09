@@ -24,6 +24,7 @@ class HomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            SizedBox(height: 20),
             SearchBarHome(),
             Label(
               title: "Minhas matérias",
@@ -31,10 +32,7 @@ class HomeScreen extends StatelessWidget {
                   () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => MateriasScreen()),
                   ),
-              onAdd:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CriarMetaScreen()),
-                  ),
+              onAdd: () {}
             ),
             MateriaList(),
             SizedBox(height: 40),
