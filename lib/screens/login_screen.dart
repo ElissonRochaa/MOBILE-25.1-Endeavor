@@ -1,3 +1,5 @@
+import 'package:endeavor/screens/quiz_screen.dart';
+import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +76,32 @@ class LoginScreen extends StatelessWidget {
                 child: LinhaWidget("ou"),
               ),
               GoogleSignInButton(),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ThemeApp.theme.colorScheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  minimumSize: Size(332, 50),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegistroScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Registrar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

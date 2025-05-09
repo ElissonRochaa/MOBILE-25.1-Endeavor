@@ -2,6 +2,8 @@ import 'package:endeavor/screens/home_screen.dart';
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../quiz_screen.dart';
+
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
 
@@ -90,7 +92,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                     const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => QuizScreen()));
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(

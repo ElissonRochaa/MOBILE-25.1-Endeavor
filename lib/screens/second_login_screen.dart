@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../config/themeApp.dart';
 import '../widgets/loginRegistro/linha_widget.dart';
+import 'home_screen.dart';
 import 'login_screen.dart';
 
 class SecondLoginScreen extends StatelessWidget {
@@ -54,7 +55,7 @@ class SecondLoginScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => QuizScreen()),
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 },
                 child: Text(

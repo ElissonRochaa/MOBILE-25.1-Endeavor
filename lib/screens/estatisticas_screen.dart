@@ -50,7 +50,14 @@ class Estatisticasscreen extends StatelessWidget {
                         ),)
                       ]
                     ),
-                    Image.asset("assets/flameLogo.png")
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Colors.white,
+                        
+                      ),
+                        child: Image.asset("assets/flameLogo.png")
+                    )
                   ],
                 ),
               ),
