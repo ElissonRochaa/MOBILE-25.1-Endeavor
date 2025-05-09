@@ -1,6 +1,8 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
 import 'package:endeavor/screens/grupo/detalhes_grupo_screen.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
+import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
 import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/services/materia_service.dart';
@@ -11,7 +13,6 @@ import 'package:endeavor/widgets/home/card_grupo.dart';
 import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/materias/materia_item.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 class HomeScreen extends StatelessWidget {
   final String? nome;
@@ -53,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                   ),
               onAdd:
                   () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => MateriasScreen()),
+                    MaterialPageRoute(builder: (context) => CriarMetaScreen()),
                   ),
             ),
             SizedBox(
