@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:flutter/material.dart';
-
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
 
@@ -35,7 +33,7 @@ class _MateriaItemState extends State<MateriaItem> {
     _timer?.cancel();
     setState(() {
       _isRunning = false;
-      // Here you would call your backend to save the time
+
     });
   }
 
@@ -45,7 +43,6 @@ class _MateriaItemState extends State<MateriaItem> {
     super.dispose();
   }
 
-  // Format seconds to HH:MM:SS
   String _formatTime(int seconds) {
     return '${(seconds ~/ 3600).toString().padLeft(2, '0')}:'
         '${(seconds ~/ 60 % 60).toString().padLeft(2, '0')}:'
@@ -65,7 +62,6 @@ class _MateriaItemState extends State<MateriaItem> {
         },
         child: Card(
           color: Theme.of(context).colorScheme.tertiary,
-          margin: const EdgeInsets.only(top: 10),
           child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

@@ -31,7 +31,7 @@ class _MateriasScreenState extends State<MateriasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Matérias"),
+      appBar: EndeavorTopBar(title: "Matérias",),
       bottomNavigationBar: EndeavorBottomBar(),
       body: FutureBuilder<List<Materia>>(
         future: _materiasFuture,
@@ -59,11 +59,7 @@ class _MateriasScreenState extends State<MateriasScreen> {
           }
         },
       ),
-      // Add floating action button if you need to create new subjects
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () => _navigateToCriarMateria(),
-      //   child: const Icon(Icons.add),
-      // ),
+
     );
   }
 }
