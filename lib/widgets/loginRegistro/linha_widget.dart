@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class LinhaWidget extends StatelessWidget {
 
-  String title;
-  LinhaWidget(this.title, {super.key});
+  final String title;
+  const LinhaWidget(this.title, {super.key});
 
   @override
   Widget build(BuildContext context) {

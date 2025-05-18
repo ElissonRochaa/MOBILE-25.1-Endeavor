@@ -1,6 +1,4 @@
-import 'package:endeavor/screens/quiz_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../config/themeApp.dart';
 import '../widgets/loginRegistro/linha_widget.dart';
 import 'home_screen.dart';

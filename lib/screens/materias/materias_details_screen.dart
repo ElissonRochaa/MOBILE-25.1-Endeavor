@@ -121,7 +121,7 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
                   color: Colors.black,
                 ),
                 SizedBox(height: 16),
-                Expanded(child: MetaList(lista: snapshot.data!)),
+                Expanded(child: MetaList(lista: metas)),
               ],
             );
           } else {

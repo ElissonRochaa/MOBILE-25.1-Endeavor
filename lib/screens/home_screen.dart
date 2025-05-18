@@ -1,6 +1,6 @@
 import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
-import 'package:endeavor/screens/materias/criar_meta.dart';
+import 'package:endeavor/screens/materias/criar_materia.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
@@ -32,7 +32,11 @@ class HomeScreen extends StatelessWidget {
                   () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => MateriasScreen()),
                   ),
-              onAdd: () {}
+              onAdd: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CriarMateriaScreen()),
+                );
+              }
             ),
             MateriaList(),
             SizedBox(height: 40),

@@ -1,4 +1,3 @@
-import 'package:endeavor/screens/materias/materias_details_screen.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';

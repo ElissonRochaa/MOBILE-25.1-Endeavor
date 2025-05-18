@@ -1,4 +1,3 @@
-import 'package:endeavor/screens/quiz_screen.dart';
 import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';

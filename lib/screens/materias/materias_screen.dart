@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/materia.dart';
 import '../../services/materia_service.dart' as materia_service;
+import 'criar_materia.dart';
 
 class MateriasScreen extends StatefulWidget {
   const MateriasScreen({super.key});
@@ -26,6 +27,27 @@ class _MateriasScreenState extends State<MateriasScreen> {
     setState(() {
       _materiasFuture = materia_service.getMaterias();
     });
+  }
+
+  void _navigateToCriarMateria() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CriarMateriaScreen()),
+    );
+
+    if (result == true) {
+      _reloadMaterias();
+      sucessoHandler();
+    }
+  }
+
+  void sucessoHandler() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Matéria criada com sucesso!'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -58,6 +80,16 @@ class _MateriasScreenState extends State<MateriasScreen> {
             return const Center(child: Text('Nenhuma matéria encontrada.'));
           }
         },
+      ),
+
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 32.0),
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          shape: const CircleBorder(),
+          onPressed: _navigateToCriarMateria,
+          child: const Icon(Icons.add, size: 36),
+        ),
       ),
 
     );
