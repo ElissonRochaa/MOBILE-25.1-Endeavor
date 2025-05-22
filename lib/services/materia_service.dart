@@ -1,4 +1,8 @@
 import 'package:endeavor/models/materia.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+const String baseUrl = 'http://10.0.2.2:8080/api/materias';
 
 List<Materia> _materiasDummy = [
   Materia(
@@ -20,46 +24,73 @@ List<Materia> _materiasDummy = [
 
 Future<List<Materia>> getMaterias() async {
 
-  return List<Materia>.from(_materiasDummy);
-}
+  final response = await http.get(Uri.parse(baseUrl));
 
-void updateDummyData(List<Materia> newData) {
-  _materiasDummy = List<Materia>.from(newData);
+  if (response.statusCode == 200) {
+    List<dynamic> data = json.decode(response.body);
+    return data.map((json) => Materia.fromJson(json)).toList();
+  } else {
+    throw Exception('Falha ao carregar matérias');
+  }
 }
 
 Future<Materia> getMateriaById(String id) async {
-  return _materiasDummy.where((materia) => materia.id.toString() == id).single;
+  final response = await http.get(Uri.parse('$baseUrl/$id'));
+
+  if (response.statusCode == 200) {
+    return Materia.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Matéria não encontrada');
+  }
 }
 
 Future<Materia> createMateria({
   required String nome,
   required String descricao,
 }) async {
-  final novaMateria = Materia(
-    id: DateTime.now().microsecond,
-    nome: nome,
-    descricao: descricao,
+  final response = await http.post(
+    Uri.parse('$baseUrl/create'),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'nome': nome,
+      'descricao': descricao,
+    }),
   );
-  _materiasDummy.insert(0, novaMateria);
-  return novaMateria;
+
+  if (response.statusCode == 200) {
+    return Materia.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Erro ao criar matéria');
+  }
 }
 
 Future<Materia?> updateMateria({
-  required String id,
   String? nome,
   String? descricao,
 }) async {
-  final materia = _materiasDummy.firstWhere(
-        (m) => m.id.toString() == id,
-    orElse: () => throw Exception('Matéria não encontrada'),
+  final response = await http.put(
+    Uri.parse('$baseUrl/update'),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'nome': nome,
+      'descricao': descricao,
+    }),
   );
 
-  if (nome != null) materia.nome = nome;
-  if (descricao != null) materia.descricao = descricao;
-
-  return materia;
+  if (response.statusCode == 200) {
+    return Materia.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Erro ao atualizar matéria');
+  }
 }
 
 Future<void> deleteMateria(String id) async {
-  _materiasDummy.removeWhere((m) => m.id.toString() == id);
+  final response = await http.delete(Uri.parse('$baseUrl/$id'));
+
+  if (response.statusCode != 204) {
+    throw Exception('Erro ao deletar matéria');
+  }
 }
+
+
+
