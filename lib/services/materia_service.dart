@@ -47,6 +47,7 @@ Future<Materia> getMateriaById(String id) async {
 Future<Materia> createMateria({
   required String nome,
   required String descricao,
+  int? usuarioId = 1,
 }) async {
   final response = await http.post(
     Uri.parse('$baseUrl/create'),
@@ -54,6 +55,7 @@ Future<Materia> createMateria({
     body: json.encode({
       'nome': nome,
       'descricao': descricao,
+      'usuarioId': usuarioId,
     }),
   );
 

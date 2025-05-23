@@ -137,13 +137,7 @@ class _MateriaItemState extends State<MateriaItem> {
                 IconButton(
                   onPressed: () {
                     print("Clicou no botão, isRunning=$_isRunning");
-                    if (_isRunning) {
-                      _stopTimer();
-                    } else {
-                      _startTimer();
-                    }
-
-                    //_handlePlayPause();
+                    _handlePlayPause();
                   },
                   icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow,
                       color: Theme.of(context).colorScheme.onTertiary,

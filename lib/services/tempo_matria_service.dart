@@ -36,3 +36,13 @@ Future<bool> finalizarSessao(int tempoMateriaId) async {
   final response = await http.put(Uri.parse('$_baseUrl/finalizar/$tempoMateriaId'));
   return response.statusCode == 200;
 }
+
+Future<int> getTempoMateriaAcumulado(int tempoMateriaId) async {
+  final response = await http.get(Uri.parse('$_baseUrl/tempo-acumulado/$tempoMateriaId'));
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['tempoAcumulado'];
+  } else {
+    throw Exception('Erro ao obter tempo acumulado');
+  }
+}

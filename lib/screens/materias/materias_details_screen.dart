@@ -73,7 +73,17 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 2),
+                  child: Text(
+                    'Tempo acumulado de estudo: ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 2),
                   child: Text(
