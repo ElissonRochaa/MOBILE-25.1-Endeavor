@@ -3,8 +3,6 @@ import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:flutter/material.dart';
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import '../../services/tempo_matria_service.dart' as tempo_materia_service;
 
@@ -26,8 +24,36 @@ class _MateriaItemState extends State<MateriaItem> {
   bool _isFinalizado = false;
   DateTime? _inicioSessao;
 
+  @override
+  void initState() {
+    super.initState();
+    print('initState do MateriaItem chamado para materia: ${widget.materia.nome}');
+    _loadSessionData();
+  }
+
+  Future<void> _loadSessionData() async {
+    final usuarioId = 1;
+    print("loadData");
+    final sessionData = await tempo_materia_service.buscarSessaoAtiva(usuarioId, widget.materia.id);
+
+    if (sessionData != null) {
+      setState(() {
+        _secondsElapsed = sessionData['tempoDecorrido'];
+        _isRunning = sessionData['isRunning'];
+        _tempoMateriaId = sessionData['tempoMateriaId'];
+        _inicioSessao = DateTime.parse(sessionData['inicioSessao']);
+      });
+
+      print(sessionData);
+      if (_isRunning) {
+        _startTimer();
+      }
+    }
+  }
 
   void _startTimer() {
+    _timer?.cancel();
+
     _inicioSessao ??= DateTime.now();
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
@@ -53,6 +79,7 @@ class _MateriaItemState extends State<MateriaItem> {
 
 
   void _stopTimer() {
+    print('Parando timer...');
     _timer?.cancel();
     setState(() {
       _isRunning = false;
@@ -86,10 +113,12 @@ class _MateriaItemState extends State<MateriaItem> {
         setState(() {
           _tempoMateriaId = id;
           _inicioSessao = DateTime.now();
+          print("começar sessao");
         });
 
       } else {
         await tempo_materia_service.continuarSessao(_tempoMateriaId!);
+        print("Continuar");
       }
       _startTimer();
     }

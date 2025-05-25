@@ -37,12 +37,30 @@ Future<bool> finalizarSessao(int tempoMateriaId) async {
   return response.statusCode == 200;
 }
 
-Future<int> getTempoMateriaAcumulado(int tempoMateriaId) async {
-  final response = await http.get(Uri.parse('$_baseUrl/tempo-acumulado/$tempoMateriaId'));
+Future<Map<String, dynamic>?> buscarSessaoAtiva(int usuarioId, int materiaId) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/buscaPorUsuarioMateria?usuarioId=$usuarioId&materiaId=$materiaId'),
+  );
+  print('Status code: ${response.statusCode}');
+  print('Response body: ${response.body}');
+
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
-    return data['tempoAcumulado'];
-  } else {
-    throw Exception('Erro ao obter tempo acumulado');
+    final status = data['status'];
+    final inicioStr = data['inicio'];
+    final id = data['id'];
+
+    if (status != 'FINALIZADO' && inicioStr != null) {
+      final tempoDecorrido = data['tempoTotalAcumulado'];
+
+      return {
+        'tempoMateriaId': id,
+        'tempoDecorrido': tempoDecorrido,
+        'isRunning': status == 'EM_ANDAMENTO' ? true : false,
+        'inicioSessao': inicioStr,
+      };
+    }
   }
+
+  return null;
 }
