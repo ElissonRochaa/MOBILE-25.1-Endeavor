@@ -4,7 +4,7 @@ import 'package:endeavor/widgets/materias/materia_list.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/materia.dart';
-import '../../services/materia_service.dart' as materia_service;
+import '../../services/materia_service.dart';
 import 'criar_materia.dart';
 
 class MateriasScreen extends StatefulWidget {
@@ -20,12 +20,12 @@ class _MateriasScreenState extends State<MateriasScreen> {
   @override
   void initState() {
     super.initState();
-    _materiasFuture = materia_service.getMaterias();
+    _materiasFuture = getMaterias();
   }
 
   void _reloadMaterias() {
     setState(() {
-      _materiasFuture = materia_service.getMaterias();
+      _materiasFuture = getMaterias();
     });
   }
 

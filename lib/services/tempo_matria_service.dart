@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 const String _baseUrl = 'http://10.0.2.2:8080/api/tempo-materias';
 
-Future<int?> iniciarSessao(materia) async {
+Future<String?> iniciarSessao(materia) async {
   final response = await http.post(Uri.parse('$_baseUrl/criar'),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
@@ -22,22 +22,22 @@ Future<int?> iniciarSessao(materia) async {
   }
 }
 
-Future<bool> pausarSessao(int tempoMateriaId) async {
+Future<bool> pausarSessao(String tempoMateriaId) async {
 final response = await http.put(Uri.parse('$_baseUrl/pausar/$tempoMateriaId'));
 return response.statusCode == 200;
 }
 
-Future<bool> continuarSessao(int tempoMateriaId) async {
+Future<bool> continuarSessao(String tempoMateriaId) async {
 final response = await http.put(Uri.parse('$_baseUrl/continuar/$tempoMateriaId'));
 return response.statusCode == 200;
 }
 
-Future<bool> finalizarSessao(int tempoMateriaId) async {
+Future<bool> finalizarSessao(String tempoMateriaId) async {
   final response = await http.put(Uri.parse('$_baseUrl/finalizar/$tempoMateriaId'));
   return response.statusCode == 200;
 }
 
-Future<Map<String, dynamic>?> buscarSessaoAtiva(int usuarioId, int materiaId) async {
+Future<Map<String, dynamic>?> buscarSessaoAtiva(String usuarioId, String materiaId) async {
   final response = await http.get(
     Uri.parse('$_baseUrl/buscaPorUsuarioMateria?usuarioId=$usuarioId&materiaId=$materiaId'),
   );

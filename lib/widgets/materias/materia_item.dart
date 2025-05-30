@@ -20,7 +20,7 @@ class _MateriaItemState extends State<MateriaItem> {
   Timer? _timer;
   int _secondsElapsed = 0;
   bool _isRunning = false;
-  int? _tempoMateriaId;
+  String? _tempoMateriaId;
   bool _isFinalizado = false;
   DateTime? _inicioSessao;
 
@@ -32,7 +32,7 @@ class _MateriaItemState extends State<MateriaItem> {
   }
 
   Future<void> _loadSessionData() async {
-    final usuarioId = 1;
+    final usuarioId = "e1e78a67-7ba6-4ebb-9330-084da088037f";
     print("loadData");
     final sessionData = await tempo_materia_service.buscarSessaoAtiva(usuarioId, widget.materia.id);
 

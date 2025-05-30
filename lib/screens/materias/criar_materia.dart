@@ -2,7 +2,7 @@ import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/materia_service.dart' as materia_service;
+import '../../services/materia_service.dart';
 
 class CriarMateriaScreen extends StatefulWidget {
   const CriarMateriaScreen({super.key});
@@ -44,7 +44,7 @@ class _CriarMateriaScreenState extends State<CriarMateriaScreen> {
     _formKey.currentState!.save();
 
     try {
-      await materia_service.createMateria(
+      await createMateria(
         nome: nomeMateriaController.text,
         descricao: descricaoController.text,
       );

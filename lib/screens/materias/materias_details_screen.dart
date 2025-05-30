@@ -4,7 +4,7 @@ import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
 import '../../models/materia.dart';
 import '../../models/meta.dart';
-import '../../services/meta_service.dart' as meta_service;
+import '../../services/meta_service.dart';
 import '../../widgets/materias/metas/meta_list.dart';
 import 'criar_meta.dart';
 
@@ -23,12 +23,12 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _materiasFuture = meta_service.getMetas();
+    _materiasFuture = getMetas();
   }
 
   void _reloadMaterias() {
     setState(() {
-      _materiasFuture = meta_service.getMetas();
+      _materiasFuture = getMetas();
     });
   }
 

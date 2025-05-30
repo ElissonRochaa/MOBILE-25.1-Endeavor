@@ -7,7 +7,8 @@ enum Periodo {
 }
 
 class PeriodoDropdown extends StatefulWidget {
-  const PeriodoDropdown({super.key});
+  final Function(Periodo) onChanged;
+  const PeriodoDropdown({super.key, required this.onChanged});
 
   @override
   State<PeriodoDropdown> createState() => _PeriodoDropdownState();
@@ -33,6 +34,7 @@ class _PeriodoDropdownState extends State<PeriodoDropdown> {
               setState(() {
                 _selecionado = novoValor;
               });
+              widget.onChanged(novoValor);
             }
           },
           items: Periodo.values.map((Periodo periodo) {
