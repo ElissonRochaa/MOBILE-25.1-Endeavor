@@ -1,10 +1,11 @@
 import 'package:endeavor/widgets/estatisticas/dropdown_button_periodo.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../services/estatistica_service.dart';
+import '../widgets/estatisticas/bar_chart.dart' as bar_chart;
+import '../models/evolucao_model.dart';
 
 class Estatisticasscreen extends StatefulWidget {
   final String? nome;
@@ -15,8 +16,8 @@ class Estatisticasscreen extends StatefulWidget {
   State<Estatisticasscreen> createState() => _EstatisticasscreenState();
 }
 
-  class _EstatisticasscreenState extends State<Estatisticasscreen> {
-  List<int> evolucaoSemanal = [];
+class _EstatisticasscreenState extends State<Estatisticasscreen> {
+  List<EvolucaoModel> evolucao = [];
   int diasConsecutivos = 0;
   Periodo periodoSelecionado = Periodo.dia;
 
@@ -25,49 +26,62 @@ class Estatisticasscreen extends StatefulWidget {
       case Periodo.dia:
         return Duration(days: 6);
       case Periodo.semana:
-        return Duration(days: 6);
+        return Duration(days: 0);
       case Periodo.mes:
-        return Duration(days: 365);
+        return DateTime.now().difference(DateTime.parse('${DateTime.now().year}-01-01'));
     }
   }
 
   @override
   void initState() {
-  super.initState();
-  carregarEstatisticas();
+    super.initState();
+    carregarEstatisticas();
   }
 
   Future<void> carregarEstatisticas() async {
-  try {
-    String periodoToString(Periodo p) {
-      switch (p) {
-        case Periodo.dia:
-          return "DAYS";
-        case Periodo.semana:
-          return "WEEKS";
-        case Periodo.mes:
-          return "MONTHS";
+    try {
+      String periodoToString(Periodo p) {
+        switch (p) {
+          case Periodo.dia:
+            return "DAYS";
+          case Periodo.semana:
+            return "WEEKS";
+          case Periodo.mes:
+            return "MONTHS";
+        }
       }
+
+      final List<EvolucaoModel> evolucaoPeriodo = await getEvolucao(
+        usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f",
+        inicio: periodoSelecionado == Periodo.mes? DateTime.parse("${DateTime.now().year}-01-01") : DateTime.now().subtract(definirIntervalo(periodoSelecionado)),
+        fim: periodoSelecionado == Periodo.mes? DateTime.parse("${DateTime.now().year}-12-31") : DateTime.now(),
+        unidade: periodoToString(periodoSelecionado),
+        intervalo: 1,
+      );
+
+
+      final strike = await getDiasConsecutivosDeEstudo(usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f");
+
+      setState(() {
+        evolucao = evolucaoPeriodo;
+        diasConsecutivos = strike;
+      });
+    } catch (e) {
+      print('Erro ao carregar estatísticas: $e');
     }
+  }
 
-    final evolucao = await getEvolucao(
-    usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f",
-    inicio: DateTime.now().subtract(definirIntervalo(periodoSelecionado)),
-    fim: DateTime.now(),
-    unidade: periodoToString(periodoSelecionado),
-    intervalo: 1,
-
-  );
-
-  final strike = await getDiasConsecutivosDeEstudo(usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f");
-
-  setState(() {
-    evolucaoSemanal = evolucao;
-    diasConsecutivos = strike;
-    });
-  } catch (e) {
-    print('Erro ao carregar estatísticas: $e');
-    }
+  List<String> gerarLabels(List<EvolucaoModel> evolucao) {
+    return evolucao.map((e) {
+      switch (periodoSelecionado) {
+        case Periodo.dia:
+          return '${e.data.day}';
+        case Periodo.semana:
+          return semana[e.data.weekday-1];
+        case Periodo.mes:
+          return meses[e.data.month-1];
+      }
+    }).toList();
   }
 
   @override
@@ -76,12 +90,12 @@ class Estatisticasscreen extends StatefulWidget {
       appBar: EndeavorTopBar(title: "Estatísticas"),
       bottomNavigationBar: EndeavorBottomBar(),
       body: Padding(
-        padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 12),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            Text("Seu Strike", textAlign: TextAlign.left, style: TextStyle(fontSize: 20,)),
+            Text("Seu Strike", style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             Container(
               height: 140,
@@ -96,29 +110,25 @@ class Estatisticasscreen extends StatefulWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 24.0,
-                      children: [
-                        Text("Continue Assim!", style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),),
-                        Text("$diasConsecutivos dias conssecutivos!", style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),)
-                      ]
-                    ),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Continue Assim!",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onPrimary)),
+                          Text("$diasConsecutivos dias consecutivos!",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Theme.of(context).colorScheme.onPrimary))
+                        ]),
                     Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.white,
-                        
-                      ),
-                        child: Image.asset("assets/flameLogo.png")
-                    )
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: Colors.white,
+                        ),
+                        child: Image.asset("assets/flameLogo.png"))
                   ],
                 ),
               ),
@@ -126,86 +136,37 @@ class Estatisticasscreen extends StatefulWidget {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Estatísticas", textAlign: TextAlign.left, style: TextStyle(fontSize: 20,)),
-                  PeriodoDropdown(
-                    onChanged: (Periodo novoPeriodo) {
-                      setState(() {
-                        periodoSelecionado = novoPeriodo;
-                      });
-                      carregarEstatisticas();
-                    },
-                  ),
-                ]
-              ),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Estatísticas", style: TextStyle(fontSize: 20)),
+                    PeriodoDropdown(
+                      onChanged: (Periodo novoPeriodo) {
+                        setState(() {
+                          periodoSelecionado = novoPeriodo;
+                        });
+                        carregarEstatisticas();
+                      },
+                    ),
+                  ]),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 height: 200,
                 width: 340,
-                child: BarChart(
-                    BarChartData(
-                      gridData: FlGridData(show: false),
-                      borderData: FlBorderData(show: false),
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              int index = value.toInt();
-                              DateTime dataInicio = DateTime.now().subtract(definirIntervalo(periodoSelecionado));
-                              DateTime dia = dataInicio.add(Duration(days: index));
-
-                              if (value.toInt() < evolucaoSemanal.length) {
-                                switch (periodoSelecionado) {
-                                  case Periodo.dia:
-                                    DateTime dataAtual = dataInicio.add(Duration(days: value.toInt()));
-                                    String dia = '${dataAtual.day}';
-                                    return Text(dia, style: const TextStyle(color: Colors.black));
-
-                                  case Periodo.semana:
-                                    DateTime dia = DateTime.now().subtract(Duration(days: evolucaoSemanal.length - index - 1));
-                                    const diasSemana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-                                    return Text(diasSemana[dia.weekday - 1], style: TextStyle(color: Colors.black));
-
-                                  case Periodo.mes:
-                                    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-                                    return Text(meses[index % 12], style: TextStyle(color: Colors.black));
-                                }
-                              }
-                              return const SizedBox.shrink();
-                            },
-                            interval: 1,
-                          ),
-                        ),
-                      ),
-                      barGroups: evolucaoSemanal.asMap().entries.map((entry) {
-                        int idx = entry.key;
-                        int valor = entry.value;
-                        return BarChartGroupData(
-                          x: idx,
-                          barRods: [
-                            BarChartRodData(
-                              toY: valor.toDouble(),
-                              color: Colors.black,
-                              width: 12,
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    )
+                child: bar_chart.SimpleBarChart(
+                  evolucao: evolucao,
+                  animate: true,
+                  labels: gerarLabels(evolucao),
                 ),
               ),
             ),
-          ]
+          ],
         ),
       ),
     );
   }
-
 }
+
+const List<String> meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const List<String> semana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];

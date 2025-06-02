@@ -1,3 +1,4 @@
+import 'package:endeavor/models/evolucao_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -98,7 +99,7 @@ Future<int> getTempoNaSemanaPorMateria({
   }
 }
 
-Future<List<int>> getEvolucao({
+Future<List<EvolucaoModel>> getEvolucao({
   required String usuarioId,
   required DateTime inicio,
   required DateTime fim,
@@ -116,7 +117,10 @@ Future<List<int>> getEvolucao({
 
   if (response.statusCode == 200) {
     List<dynamic> data = json.decode(response.body);
-    return data.map((e) => e as int).toList();
+    List<EvolucaoModel> evolucao = data.map((item) => EvolucaoModel.fromJson(item)).toList();
+    print(evolucao);
+    print(DateTime.now());
+    return evolucao;
   } else {
     throw Exception('Erro ao carregar evolução');
   }
