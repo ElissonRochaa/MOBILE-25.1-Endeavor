@@ -41,6 +41,10 @@ class SimpleBarChart extends StatelessWidget {
               ),
             ),
 
+            topTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: false)
+            ),
+
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -49,7 +53,7 @@ class SimpleBarChart extends StatelessWidget {
                   if (idx < 0 || idx >= labels.length) return const SizedBox.shrink();
                   return Text(
                     labels[idx],
-                    style: const TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                   );
                 },
                 reservedSize: 30,
