@@ -26,7 +26,7 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
       case Periodo.dia:
         return Duration(days: 6);
       case Periodo.semana:
-        return Duration(days: 0);
+        return Duration(days: 6);
       case Periodo.mes:
         return DateTime.now().difference(DateTime.parse('${DateTime.now().year}-01-01'));
     }

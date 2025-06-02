@@ -106,7 +106,7 @@ Future<List<EvolucaoModel>> getEvolucao({
   required String unidade, // "DAYS", "WEEKS", "MONTHS" - unidades de tempo
   int intervalo = 1,
 }) async {
-  final String url = '$baseEstatisticasUrl/semana/evolucao'
+  final String url = '$baseEstatisticasUrl/evolucao'
       '?usuarioId=$usuarioId'
       '&inicio=${inicio.toIso8601String().split('T')[0]}'
       '&fim=${fim.toIso8601String().split('T')[0]}'

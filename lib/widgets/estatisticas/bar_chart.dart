@@ -26,8 +26,21 @@ class SimpleBarChart extends StatelessWidget {
           barTouchData: BarTouchData(enabled: true),
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: true),
+              sideTitles: SideTitles(showTitles: false),
             ),
+            rightTitles: AxisTitles(
+              sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 24,
+                  getTitlesWidget: (value, meta) {
+                    return Text(
+                      value.toInt().toString(),
+                      style: const TextStyle(fontSize: 12),
+                    );
+                  }
+              ),
+            ),
+
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
