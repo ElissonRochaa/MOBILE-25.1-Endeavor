@@ -11,6 +11,7 @@ class RegistroScreen extends StatefulWidget {
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
+  final TextEditingController nomeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   bool esconderSenha = true;
@@ -40,6 +41,28 @@ class _RegistroScreenState extends State<RegistroScreen> {
                 "Cadastre-se",
                 style: TextStyle(fontSize: 24),
               ),
+
+              //nome completo
+              Padding(
+                padding:
+                      const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
+                child: TextField(
+                  controller: nomeController,
+                  decoration: InputDecoration(
+                    labelText: "Nome Completo",
+                    hintStyle: TextStyle(color: Colors.black54),
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            nomeController.text = "";
+                          });
+                        },
+                        icon: Icon(Icons.clear)
+                        )
+                  ),
+                ),
+              ),
+
               //email
               Padding(
                 padding:
@@ -63,6 +86,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                   style: TextStyle(fontSize: 20),
                 ),
               ),
+
               //senha
               Padding(
                 padding:
