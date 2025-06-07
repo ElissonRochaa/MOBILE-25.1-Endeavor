@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 final String _baseUrl = '${dotenv.env['API_URL']}/tempo-materias';
 
-Future<int?> iniciarSessao(materia) async {
+Future<String?> iniciarSessao(materia) async {
   final response = await http.post(
     Uri.parse('$_baseUrl/criar'),
     headers: {'Content-Type': 'application/json'},
@@ -21,30 +21,60 @@ Future<int?> iniciarSessao(materia) async {
   }
 }
 
-Future<bool> pausarSessao(int tempoMateriaId) async {
-  final response = await http.put(
-    Uri.parse('$_baseUrl/pausar/$tempoMateriaId'),
-  );
-  return response.statusCode == 200;
+Future<String?> pausarSessao(String tempoMateriaId) async {
+  try {
+    final response = await http.put(
+      Uri.parse('$_baseUrl/pausar/$tempoMateriaId'),
+    );
+
+    if (response.statusCode == 200) {
+      if (response.body.isEmpty) {
+        return tempoMateriaId;
+      }
+      final data = jsonDecode(response.body);
+      return data['id'] ?? tempoMateriaId;
+    } else {
+      print(
+        'Erro ao pausar sessão. Status: ${response.statusCode}, Body: ${response.body}',
+      );
+      return null;
+    }
+  } catch (e) {
+    print('Exception ao pausar sessão: $e');
+    return null;
+  }
 }
 
-Future<bool> continuarSessao(int tempoMateriaId) async {
+Future<String?> continuarSessao(String tempoMateriaId) async {
   final response = await http.put(
     Uri.parse('$_baseUrl/continuar/$tempoMateriaId'),
   );
-  return response.statusCode == 200;
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['id'];
+  } else {
+    print('Erro ao continuar sessão: ${response.body}');
+    throw Exception('Erro ao continuar sessão');
+  }
 }
 
-Future<bool> finalizarSessao(int tempoMateriaId) async {
+Future<String?> finalizarSessao(String tempoMateriaId) async {
   final response = await http.put(
     Uri.parse('$_baseUrl/finalizar/$tempoMateriaId'),
   );
-  return response.statusCode == 200;
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['id'];
+  } else {
+    print('Erro ao finalizar sessão: ${response.body}');
+    throw Exception('Erro ao finalizar sessão');
+  }
 }
 
 Future<Map<String, dynamic>?> buscarSessaoAtiva(
-  int usuarioId,
-  int materiaId,
+  String usuarioId,
+  String materiaId,
 ) async {
   final response = await http.get(
     Uri.parse(

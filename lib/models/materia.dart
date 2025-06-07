@@ -1,9 +1,9 @@
 
 class Materia {
-  final int id;
+  final String id;
   String nome;
   String descricao;
-  int? usuarioId;
+  String? usuarioId;
 
 
   Materia({
