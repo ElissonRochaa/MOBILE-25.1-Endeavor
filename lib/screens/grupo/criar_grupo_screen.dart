@@ -1,14 +1,17 @@
+import 'package:endeavor/services/area_estudo.dart';
+import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/area_estudo.dart';
 import '../../services/grupo_service.dart' as grupo_service;
 
-final List<String> _areasEstudo = [
-  'Matemática',
-  'Português',
-  'História',
-  'Ciências',
-  'Geografia',
-];
+// final List<String> _areasEstudo = [
+//   'Matemática',
+//   'Português',
+//   'História',
+//   'Ciências',
+//   'Geografia',
+// ];
 
 class CriarGrupoScreen extends StatefulWidget {
   const CriarGrupoScreen({super.key});
@@ -21,10 +24,27 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  List<AreaEstudo> _areasEstudo = [];
 
   String? area;
   int? capacidade;
   bool isPrivado = false;
+
+  void loadAreasEstudo() async {
+    final areas = await getAreasEstudo();
+    setState(() {
+      _areasEstudo = areas;
+      if (_areasEstudo.isNotEmpty) {
+        area = _areasEstudo.first.id;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadAreasEstudo();
+  }
 
   void areaHandler(String novaArea) {
     setState(() {
@@ -42,51 +62,86 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
     Navigator.pop(context, true);
   }
 
-  void showError(Object e) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Erro'),
-            content: Text('Erro ao criar grupo: $e'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-    );
-  }
-
   void submitHandler() async {
-    bool isValido = _formKey.currentState!.validate();
-    if (!isValido) return;
-
-    _formKey.currentState!.save();
-
     try {
-      await grupo_service.createGrupo(
+      final isValido = _formKey.currentState!.validate();
+      if (!isValido) return;
+
+      _formKey.currentState!.save();
+
+      final grupoCriado = await grupo_service.createGrupo(
         titulo: _tituloController.text,
         descricao: _descricaoController.text,
         capacidade: capacidade!,
         privado: isPrivado,
-        areasEstudo: [area!],
-        idCriador: "placeholder idCriador",
+        areaEstudo: area!,
+        idCriador: "277cda16-1e67-453e-94f0-2de7d5fa3124",
       );
 
-      if (context.mounted) {
-        retornarHandler();
-      }
-    } catch (e) {
-      if (context.mounted) {
-        showError(e);
-      }
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        builder:
+            (ctx) => AlertDialog(
+              title: const Text('Sucesso'),
+              content: const Text('Grupo criado com sucesso!'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(grupoCriado),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+    } catch (error) {
+      ErrorHandler.handleError(error);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    var dropdown = Expanded(
+      child: DropdownButtonFormField<String>(
+        isExpanded: true,
+        value: area,
+        decoration: InputDecoration(
+          labelText: 'Área',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+        ),
+        hint:
+            _areasEstudo.isEmpty
+                ? const Text("Carregando...")
+                : const Text("Selecione uma área"),
+        items:
+            _areasEstudo.map((area) {
+              return DropdownMenuItem(value: area.id, child: Text(area.nome));
+            }).toList(),
+        onChanged:
+            _areasEstudo.isEmpty
+                ? null
+                : (value) {
+                  setState(() {
+                    area = value;
+                  });
+                },
+        validator: (value) {
+          if (value == null) {
+            return 'Selecione uma área';
+          }
+          return null;
+        },
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Criar Grupo'),
@@ -142,75 +197,40 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
                 ),
                 const SizedBox(height: 32),
                 Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    Expanded(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
-                            labelText: 'Área',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
-                          ),
-                          items:
-                              _areasEstudo.map((area) {
-                                return DropdownMenuItem(
-                                  value: area,
-                                  child: Text(area),
-                                );
-                              }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              area = value;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Selecione uma área';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
+                    dropdown,
                     const SizedBox(width: 12),
                     Expanded(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: DropdownButtonFormField<int>(
-                          menuMaxHeight: 384,
-                          decoration: InputDecoration(
-                            hintText: 'Capacidade',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 10,
-                            ),
+                      child: DropdownButtonFormField<int>(
+                        isExpanded: true,
+                        menuMaxHeight: 384,
+                        decoration: InputDecoration(
+                          hintText: 'Capacidade',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          items: List.generate(
-                            49,
-                            (index) => DropdownMenuItem(
-                              value: index + 2,
-                              child: Text("${index + 2} pessoas"),
-                            ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
                           ),
-                          onChanged: (value) {
-                            capacidade = value;
-                          },
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Selecione a capacidade';
-                            }
-                            return null;
-                          },
                         ),
+                        items: List.generate(
+                          49,
+                          (index) => DropdownMenuItem(
+                            value: index + 2,
+                            child: Text("${index + 2} pessoas"),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          capacidade = value;
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Selecione a capacidade';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                   ],

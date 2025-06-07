@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
 
-import '../../services/tempo_matria_service.dart' as tempo_materia_service;
+import '../../services/tempo_materia_service.dart' as tempo_materia_service;
 
 
 class MateriaItem extends StatefulWidget {

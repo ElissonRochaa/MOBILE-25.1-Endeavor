@@ -1,5 +1,5 @@
 import 'package:endeavor/models/grupo.dart';
-import 'package:endeavor/models/membro.dart';
+import 'package:endeavor/models/membro_com_tempo.dart';
 import 'package:endeavor/services/grupo_service.dart' as grupo_service;
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
@@ -16,7 +16,7 @@ class DetalhesGrupoScreen extends StatefulWidget {
 
 class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
   late Future<Grupo?> _grupoFuture;
-  late Future<List<Membro>> _membrosFuture;
+  late Future<List<MembroComTempo>> _membrosFuture;
 
   @override
   void initState() {
@@ -76,34 +76,37 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    FutureBuilder<List<Membro>>(
-                      future: _membrosFuture,
-                      builder: (context, membroSnapshot) {
-                        if (membroSnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Text("Estudando...");
-                        } else if (membroSnapshot.hasError) {
+                    Expanded(
+                      child: FutureBuilder<List<MembroComTempo>>(
+                        future: _membrosFuture,
+                        builder: (context, membroSnapshot) {
+                          if (membroSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Text("Estudando...");
+                          } else if (membroSnapshot.hasError) {
+                            print(membroSnapshot.error);
+                            return Text(
+                              "Erro ao carregar informações dos membros",
+                            );
+                          } else if (!membroSnapshot.hasData) {
+                            return const Text("Estudando 0");
+                          }
+
+                          final membrosAtivos =
+                              membroSnapshot.data!
+                                  .where((membro) => membro.isAtivo)
+                                  .length;
+
                           return Text(
-                            "Erro ao carregar informações dos membros",
+                            "Estudando $membrosAtivos/${grupo.membros}",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           );
-                        } else if (!membroSnapshot.hasData) {
-                          return const Text("Estudando 0");
-                        }
-
-                        final membrosAtivos =
-                            membroSnapshot.data!
-                                .where((membro) => membro.isAtivo)
-                                .length;
-
-                        return Text(
-                          "Estudando $membrosAtivos/${grupo.membros}",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                        );
-                      },
+                        },
+                      ),
                     ),
                     Text(
                       "Capacidade: ${grupo.capacidade}",
@@ -126,7 +129,7 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                 ),
                 const SizedBox(height: 16),
                 Expanded(
-                  child: FutureBuilder<List<Membro>>(
+                  child: FutureBuilder<List<MembroComTempo>>(
                     future: _membrosFuture,
                     builder: (context, membroSnapshot) {
                       if (membroSnapshot.connectionState ==

@@ -48,12 +48,13 @@ class _GrupoScreenState extends State<GrupoScreen> {
         backgroundColor: Colors.green,
       ),
     );
+    _reloadGrupos();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Meus Grupos"),
+      appBar: EndeavorTopBar(title: "Grupos"),
       bottomNavigationBar: EndeavorBottomBar(),
       body: FutureBuilder<List<Grupo>>(
         future: _gruposFuture,

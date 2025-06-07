@@ -2,20 +2,26 @@ import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:endeavor/screens/materias/criar_materia.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
+import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
-import 'package:endeavor/widgets/home/grupo_list.dart';
 import 'package:endeavor/widgets/home/areas_estudo.dart';
+import 'package:endeavor/widgets/home/grupo_list.dart';
 import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/home/materia_list.dart';
 import 'package:endeavor/widgets/home/search_bar_home.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String? nome;
 
   const HomeScreen({super.key, this.nome});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,22 +42,32 @@ class HomeScreen extends StatelessWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => CriarMateriaScreen()),
                 );
-              }
+              },
             ),
             MateriaList(),
             SizedBox(height: 40),
             Label(
               title: "Meus grupos",
-              onAdd:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CriarGrupoScreen()),
-                  ),
+              onAdd: () async {
+                final grupoCriado = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CriarGrupoScreen()),
+                );
+
+                if (grupoCriado != null) {
+                  setState(() {});
+                }
+              },
               onSeeAll:
                   () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => GrupoScreen()),
                   ),
             ),
-            GrupoList(),
+            GrupoList(
+              getFn:
+                  () => getGruposFromUsuario(
+                    '277cda16-1e67-453e-94f0-2de7d5fa3124',
+                  ),
+            ),
             SizedBox(height: 40),
             Label(title: "Áreas de estudo", onAdd: () {}, onSeeAll: () {}),
             Container(
