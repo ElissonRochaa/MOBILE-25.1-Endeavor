@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:endeavor/screens/initial_screen.dart';
+import 'package:app_links/app_links.dart';
+import 'package:endeavor/config/app_route.dart';
 import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'config/themeApp.dart';
+import 'config/theme_app.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -14,16 +15,16 @@ void loadDotEnv() async {
 }
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  loadDotEnv();
   runZonedGuarded(
     () {
+      WidgetsFlutterBinding.ensureInitialized();
+      loadDotEnv();
       FlutterError.onError = (FlutterErrorDetails details) {
         FlutterError.presentError(details);
         ErrorHandler.handleFlutterError(details.exception);
       };
 
-      runApp(MyApp());
+      runApp(const MyApp());
     },
     (error, stackTrace) {
       ErrorHandler.handleError(error);
@@ -31,8 +32,73 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final AppLinks _appLinks;
+
+  @override
+  void initState() {
+    super.initState();
+    _appLinks = AppLinks();
+    _handleIncomingLinks();
+  }
+
+  void _handleIncomingLinks() {
+    _appLinks.uriLinkStream.listen((Uri? uri) {
+      debugPrint("Stream: ${uri.toString()}");
+
+      if (uri != null) {
+        _handleDeeplink(uri);
+      }
+    });
+
+    _appLinks.getInitialAppLink().then((Uri? uri) {
+      debugPrint("InitialLink: ${uri.toString()}");
+      if (uri != null) {
+        _handleDeeplink(uri);
+      }
+    });
+  }
+
+  void _handleDeeplink(Uri uri) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (uri.host.isNotEmpty) {
+        final entidade = uri.host;
+        final id = _extrairUri(uri);
+        final rota = id != null ? '/$entidade/$id' : '/$entidade';
+        print("ROTA: $rota");
+        final currentRoute =
+            ModalRoute.of(
+              navigatorKey.currentContext ?? context,
+            )?.settings.name;
+
+        if (currentRoute != rota) {
+          debugPrint("Navegando para: $rota");
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            rota,
+            (route) => false,
+          );
+        } else {
+          debugPrint("Já estamos na rota: $rota");
+        }
+      } else {
+        debugPrint('Entidade não suportada: ${uri.host}');
+      }
+    });
+  }
+
+  String? _extrairUri(Uri uri) {
+    if (uri.pathSegments.isNotEmpty) {
+      return uri.pathSegments[0];
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +106,8 @@ class MyApp extends StatelessWidget {
       title: 'Endeavor',
       navigatorKey: navigatorKey,
       theme: ThemeApp.theme,
-      home: const DismissKeyboard(child: InitialScreen()),
+      initialRoute: "/",
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }
