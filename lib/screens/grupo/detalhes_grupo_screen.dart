@@ -5,6 +5,10 @@ import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/membros/membro_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:share_plus/share_plus.dart';
+
+final apiUrl = dotenv.env['API_URL'];
 
 class DetalhesGrupoScreen extends StatefulWidget {
   final String grupoId;
@@ -25,10 +29,30 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
     _membrosFuture = grupo_service.getMembrosDoGrupo(widget.grupoId);
   }
 
+  void _abrirCompartilhamento(BuildContext context) async {
+    final link = "$apiUrl/abrir-grupo/${widget.grupoId}";
+    final mensagem =
+        "Olá! Junte-se a mim no meu grupo de estudos no Endeavor! $link";
+
+    await SharePlus.instance.share(
+      ShareParams(text: mensagem, subject: 'Convite para grupo de estudos'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("AQUI EM DETALHES");
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Endeavor", hideLogo: true),
+      appBar: EndeavorTopBar(
+        title: "Endeavor",
+        hideLogo: true,
+        icone: IconButton(
+          onPressed: () {
+            _abrirCompartilhamento(context);
+          },
+          icon: Icon(Icons.share, color: Colors.white),
+        ),
+      ),
       bottomNavigationBar: EndeavorBottomBar(),
       body: FutureBuilder<Grupo?>(
         future: _grupoFuture,
@@ -84,7 +108,6 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                               ConnectionState.waiting) {
                             return const Text("Estudando...");
                           } else if (membroSnapshot.hasError) {
-                            print(membroSnapshot.error);
                             return Text(
                               "Erro ao carregar informações dos membros",
                             );
