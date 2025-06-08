@@ -1,7 +1,3 @@
-import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
-import 'package:endeavor/screens/grupo/grupo_screen.dart';
-import 'package:endeavor/screens/materias/criar_materia.dart';
-import 'package:endeavor/screens/materias/materias_screen.dart';
 import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
@@ -34,14 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
             SearchBarHome(),
             Label(
               title: "Minhas matérias",
-              onSeeAll:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => MateriasScreen()),
-                  ),
+              onSeeAll: () => Navigator.of(context).pushNamed('/materias'),
+
               onAdd: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => CriarMateriaScreen()),
-                );
+                Navigator.of(context).pushNamed('/materias/criar');
               },
             ),
             MateriaList(),
@@ -49,18 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
             Label(
               title: "Meus grupos",
               onAdd: () async {
-                final grupoCriado = await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => CriarGrupoScreen()),
-                );
+                final grupoCriado = await Navigator.of(
+                  context,
+                ).pushNamed('/grupos/criar');
 
                 if (grupoCriado != null) {
                   setState(() {});
                 }
               },
-              onSeeAll:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => GrupoScreen()),
-                  ),
+              onSeeAll: () => Navigator.of(context).pushNamed('/grupos'),
             ),
             GrupoList(
               getFn:

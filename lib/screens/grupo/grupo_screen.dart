@@ -1,4 +1,3 @@
-import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
 import 'package:endeavor/services/grupo_service.dart' as grupo_service;
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
@@ -30,10 +29,7 @@ class _GrupoScreenState extends State<GrupoScreen> {
   }
 
   void _navigateToCriarGrupo() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CriarGrupoScreen()),
-    );
+    final result = await Navigator.pushNamed(context, "/grupos/criar");
 
     if (result == true) {
       _reloadGrupos();

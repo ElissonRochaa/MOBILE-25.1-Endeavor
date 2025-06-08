@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../config/themeApp.dart';
+
+import '../config/theme_app.dart';
 import '../widgets/loginRegistro/linha_widget.dart';
-import 'home_screen.dart';
-import 'login_screen.dart';
 
 class SecondLoginScreen extends StatelessWidget {
   const SecondLoginScreen({super.key});
@@ -51,10 +50,7 @@ class SecondLoginScreen extends StatelessWidget {
                   minimumSize: Size(332, 50),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
+                  Navigator.pushNamed(context, "/home");
                 },
                 child: Text(
                   'Entrar',
@@ -83,12 +79,7 @@ class SecondLoginScreen extends StatelessWidget {
                   minimumSize: Size(332, 50),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, "/login");
                 },
                 child: Text(
                   'Voltar',

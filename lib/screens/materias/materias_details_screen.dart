@@ -1,34 +1,36 @@
+import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
-
 import 'package:flutter/material.dart';
+
 import '../../models/materia.dart';
 import '../../models/meta.dart';
 import '../../services/meta_service.dart';
 import '../../widgets/materias/metas/meta_list.dart';
-import 'criar_meta.dart';
 
 class MateriasDetailsScreen extends StatefulWidget {
-  final Materia materia;
+  final String materiaId;
 
-  const MateriasDetailsScreen({super.key, required this.materia});
+  const MateriasDetailsScreen({super.key, required this.materiaId});
 
   @override
   State<MateriasDetailsScreen> createState() => _MateriasDetailsScreenState();
-  }
+}
 
 class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
-  late Future<List<Meta>> _materiasFuture;
+  late Materia _materia;
+  late Future<List<Meta>> _metasFuture;
 
   @override
   void initState() {
     super.initState();
-    _materiasFuture = getMetas();
+    getMateriaById(widget.materiaId).then((value) => _materia = value);
+    _metasFuture = getMetas();
   }
 
   void _reloadMaterias() {
     setState(() {
-      _materiasFuture = getMetas();
+      _metasFuture = getMetas();
     });
   }
 
@@ -37,9 +39,9 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Matéria", hideLogo: true,),
+      appBar: EndeavorTopBar(title: "Matéria", hideLogo: true),
       body: FutureBuilder<List<Meta>>(
-        future: _materiasFuture,
+        future: _metasFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -59,50 +61,56 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
             );
           } else if (snapshot.hasData) {
             final metas = snapshot.data!;
-            final materia = widget.materia;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 24,
+                  ),
                   child: Text(
-                    materia.nome,
+                    _materia.nome,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 2,
+                  ),
                   child: Text(
                     'Tempo acumulado de estudo: ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 32),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 2,
+                  ),
                   child: Text(
-                    materia.descricao,
+                    _materia.descricao,
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
                 const SizedBox(height: 32),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 2,
+                  ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const CriarMetaScreen(),
-                          ),
+                          "/materias/criar",
                         ).then((_) => _reloadMaterias()); // atualiza ao voltar
                       },
                       borderRadius: BorderRadius.circular(8),
@@ -111,7 +119,11 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.add, color: Colors.black, size: 28),
+                            const Icon(
+                              Icons.add,
+                              color: Colors.black,
+                              size: 28,
+                            ),
                             const SizedBox(width: 8),
                             Text(
                               'Adicionar Meta',

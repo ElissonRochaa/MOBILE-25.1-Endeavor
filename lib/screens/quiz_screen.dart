@@ -1,4 +1,3 @@
-import 'package:endeavor/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 const escolaridade = [
@@ -30,10 +29,7 @@ class _QuizScreenState extends State<QuizScreen> {
         _opcaoSelecionada = null;
       });
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+      Navigator.pushReplacementNamed(context, "/home");
     }
   }
 

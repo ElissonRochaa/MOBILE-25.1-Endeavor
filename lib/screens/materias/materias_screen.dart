@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../../models/materia.dart';
 import '../../services/materia_service.dart';
-import 'criar_materia.dart';
 
 class MateriasScreen extends StatefulWidget {
   const MateriasScreen({super.key});
@@ -30,10 +29,7 @@ class _MateriasScreenState extends State<MateriasScreen> {
   }
 
   void _navigateToCriarMateria() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CriarMateriaScreen()),
-    );
+    final result = await Navigator.pushNamed(context, "/materias/criar");
 
     if (result == true) {
       _reloadMaterias();
@@ -53,7 +49,7 @@ class _MateriasScreenState extends State<MateriasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Matérias",),
+      appBar: EndeavorTopBar(title: "Matérias"),
       bottomNavigationBar: EndeavorBottomBar(),
       body: FutureBuilder<List<Materia>>(
         future: _materiasFuture,
@@ -91,7 +87,6 @@ class _MateriasScreenState extends State<MateriasScreen> {
           child: const Icon(Icons.add, size: 36),
         ),
       ),
-
     );
   }
 }

@@ -1,9 +1,7 @@
-import 'package:endeavor/screens/registro/registro_screen.dart';
-import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';
 import 'package:flutter/material.dart';
 
-import '../config/themeApp.dart';
+import '../config/theme_app.dart';
 import '../widgets/loginRegistro/google_sign_in_button.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -49,12 +47,7 @@ class LoginScreen extends StatelessWidget {
                   minimumSize: Size(332, 50),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SecondLoginScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, "/login-2");
                 },
                 child: Text(
                   'Continuar',
@@ -85,12 +78,7 @@ class LoginScreen extends StatelessWidget {
                   minimumSize: Size(332, 50),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RegistroScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, "/registro");
                 },
                 child: Text(
                   'Registrar',

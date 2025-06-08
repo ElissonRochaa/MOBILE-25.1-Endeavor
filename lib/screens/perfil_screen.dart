@@ -19,9 +19,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: const EndeavorTopBar(title: "Perfil"),
+      appBar: EndeavorTopBar(title: "Perfil"),
       bottomNavigationBar: const EndeavorBottomBar(),
       body: Container(
         color: Colors.white,
@@ -47,7 +46,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
               Text(
                 "Matéria mais estudada: Matemática",
-                style: GoogleFonts.nunito(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600),
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Divider(
@@ -59,20 +62,34 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Tempo de estudo por matéria", style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600
-                    ),),
+                    Text(
+                      "Tempo de estudo por matéria",
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     DropdownButton(
                       style: GoogleFonts.nunito(
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       value: dropdownValue,
-                      items: [DropdownMenuItem(value: "diario", child: Text("Diário")),
-                      DropdownMenuItem(value: "semanal" ,child: Text("Semanal")),
-                      DropdownMenuItem(value: "mensal" , child: Text("Mensal")),],
+                      items: [
+                        DropdownMenuItem(
+                          value: "diario",
+                          child: Text("Diário"),
+                        ),
+                        DropdownMenuItem(
+                          value: "semanal",
+                          child: Text("Semanal"),
+                        ),
+                        DropdownMenuItem(
+                          value: "mensal",
+                          child: Text("Mensal"),
+                        ),
+                      ],
                       onChanged: (value) {
                         setState(() {
                           dropdownValue = value!;
@@ -83,30 +100,47 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-                  Column(
-                  children: [
-                    const MateriaBox(materia: "Matemática", tempo: "2 horas e 16 minutos"),
-                    const MateriaBox(materia: "Física", tempo: "1 hora e 30 minutos"),
-                    const MateriaBox(materia: "Química", tempo: "30 minutos"),
-                    InkWell(
-                      onTap:  () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),)),
-                      child: Container(
-                        width: 330,
-                        height: 50,
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                        decoration: BoxDecoration(
-                          color: Color(0xFF373737),
-                          borderRadius: BorderRadius.circular(10),
+              Column(
+                children: [
+                  const MateriaBox(
+                    materia: "Matemática",
+                    tempo: "2 horas e 16 minutos",
+                  ),
+                  const MateriaBox(
+                    materia: "Física",
+                    tempo: "1 hora e 30 minutos",
+                  ),
+                  const MateriaBox(materia: "Química", tempo: "30 minutos"),
+                  InkWell(
+                    onTap:
+                        () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
                         ),
-                        child: Text("Desconectar",textAlign: TextAlign.center , style: TextStyle(
-                          color: Colors.white,
-                        ),),
+                    child: Container(
+                      width: 330,
+                      height: 50,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 16,
                       ),
-                    )
-                  ],
-                ),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF373737),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        "Desconectar",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

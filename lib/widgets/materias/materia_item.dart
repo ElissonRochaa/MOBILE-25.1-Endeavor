@@ -171,7 +171,8 @@ class _MateriaItemState extends State<MateriaItem> {
           context,
           MaterialPageRoute(
             builder:
-                (context) => MateriasDetailsScreen(materia: widget.materia),
+                (context) =>
+                    MateriasDetailsScreen(materiaId: widget.materia.id),
           ),
         );
       },

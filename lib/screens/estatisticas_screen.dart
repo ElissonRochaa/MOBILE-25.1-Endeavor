@@ -3,20 +3,20 @@ import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
 
+import '../models/evolucao_model.dart';
 import '../services/estatistica_service.dart';
 import '../widgets/estatisticas/bar_chart.dart' as bar_chart;
-import '../models/evolucao_model.dart';
 
-class Estatisticasscreen extends StatefulWidget {
+class EstatisticasScreen extends StatefulWidget {
   final String? nome;
 
-  const Estatisticasscreen({super.key, this.nome});
+  const EstatisticasScreen({super.key, this.nome});
 
   @override
-  State<Estatisticasscreen> createState() => _EstatisticasscreenState();
+  State<EstatisticasScreen> createState() => _EstatisticasScreenState();
 }
 
-class _EstatisticasscreenState extends State<Estatisticasscreen> {
+class _EstatisticasScreenState extends State<EstatisticasScreen> {
   List<EvolucaoModel> evolucao = [];
   int diasConsecutivos = 0;
   Periodo periodoSelecionado = Periodo.dia;
@@ -28,7 +28,9 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
       case Periodo.semana:
         return Duration(days: 6);
       case Periodo.mes:
-        return DateTime.now().difference(DateTime.parse('${DateTime.now().year}-01-01'));
+        return DateTime.now().difference(
+          DateTime.parse('${DateTime.now().year}-01-01'),
+        );
     }
   }
 
@@ -53,14 +55,21 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
 
       final List<EvolucaoModel> evolucaoPeriodo = await getEvolucao(
         usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f",
-        inicio: periodoSelecionado == Periodo.mes? DateTime.parse("${DateTime.now().year}-01-01") : DateTime.now().subtract(definirIntervalo(periodoSelecionado)),
-        fim: periodoSelecionado == Periodo.mes? DateTime.parse("${DateTime.now().year}-12-31") : DateTime.now(),
+        inicio:
+            periodoSelecionado == Periodo.mes
+                ? DateTime.parse("${DateTime.now().year}-01-01")
+                : DateTime.now().subtract(definirIntervalo(periodoSelecionado)),
+        fim:
+            periodoSelecionado == Periodo.mes
+                ? DateTime.parse("${DateTime.now().year}-12-31")
+                : DateTime.now(),
         unidade: periodoToString(periodoSelecionado),
         intervalo: 1,
       );
 
-
-      final strike = await getDiasConsecutivosDeEstudo(usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f");
+      final strike = await getDiasConsecutivosDeEstudo(
+        usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f",
+      );
 
       setState(() {
         evolucao = evolucaoPeriodo;
@@ -77,9 +86,9 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
         case Periodo.dia:
           return '${e.data.day}';
         case Periodo.semana:
-          return semana[e.data.weekday-1];
+          return semana[e.data.weekday - 1];
         case Periodo.mes:
-          return meses[e.data.month-1];
+          return meses[e.data.month - 1];
       }
     }).toList();
   }
@@ -110,25 +119,33 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Continue Assim!",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onPrimary)),
-                          Text("$diasConsecutivos dias consecutivos!",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Theme.of(context).colorScheme.onPrimary))
-                        ]),
-                    Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: Colors.white,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Continue Assim!",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                         ),
-                        child: Image.asset("assets/flameLogo.png"))
+                        Text(
+                          "$diasConsecutivos dias consecutivos!",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Colors.white,
+                      ),
+                      child: Image.asset("assets/flameLogo.png"),
+                    ),
                   ],
                 ),
               ),
@@ -136,18 +153,19 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Estatísticas", style: TextStyle(fontSize: 20)),
-                    PeriodoDropdown(
-                      onChanged: (Periodo novoPeriodo) {
-                        setState(() {
-                          periodoSelecionado = novoPeriodo;
-                        });
-                        carregarEstatisticas();
-                      },
-                    ),
-                  ]),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Estatísticas", style: TextStyle(fontSize: 20)),
+                  PeriodoDropdown(
+                    onChanged: (Periodo novoPeriodo) {
+                      setState(() {
+                        periodoSelecionado = novoPeriodo;
+                      });
+                      carregarEstatisticas();
+                    },
+                  ),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -168,5 +186,18 @@ class _EstatisticasscreenState extends State<Estatisticasscreen> {
   }
 }
 
-const List<String> meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const List<String> meses = [
+  'Jan',
+  'Fev',
+  'Mar',
+  'Abr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Set',
+  'Out',
+  'Nov',
+  'Dez',
+];
 const List<String> semana = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];

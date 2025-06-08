@@ -143,11 +143,8 @@ Future<void> removerMembroDoGrupo(String grupoId, String membroId) async {
 
 Future<List<MembroComTempo>> getMembrosDoGrupo(String grupoId) async {
   final response = await http.get(Uri.parse('$apiUrl/$grupoId/membros'));
-  print('$apiUrl/$grupoId/membros');
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);
-    print(jsonList);
-    print("-------------");
     return jsonList.map((json) => MembroComTempo.fromJson(json)).toList();
   } else {
     handleHttpError(response);
