@@ -72,14 +72,12 @@ class _MyAppState extends State<MyApp> {
         final entidade = uri.host;
         final id = _extrairUri(uri);
         final rota = id != null ? '/$entidade/$id' : '/$entidade';
-        print("ROTA: $rota");
         final currentRoute =
             ModalRoute.of(
               navigatorKey.currentContext ?? context,
             )?.settings.name;
 
         if (currentRoute != rota) {
-          debugPrint("Navegando para: $rota");
           navigatorKey.currentState?.pushNamedAndRemoveUntil(
             rota,
             (route) => false,

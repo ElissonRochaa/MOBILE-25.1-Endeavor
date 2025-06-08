@@ -7,7 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 final apiUrl = '${dotenv.env['API_URL']}/grupos-estudo';
-final String usuarioIdMock = dotenv.env["USUARIO_ID"]!;
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 Future<List<Grupo>> getGrupos() async {
   final response = await http.get(Uri.parse(apiUrl));
@@ -62,7 +62,7 @@ Future<Grupo> createGrupo({
       'capacidade': capacidade,
       'privado': privado,
       'areaEstudoId': areaEstudo,
-      'usuarioCriadorId': usuarioIdMock,
+      'usuarioCriadorId': usuarioId,
     }),
   );
   if (response.statusCode == 201) {

@@ -1,11 +1,18 @@
+import 'package:endeavor/models/grupo.dart';
+import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/services/grupo_service.dart';
+import 'package:endeavor/services/usuario_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/perfil/materia_box.dart';
 import 'package:endeavor/widgets/perfil/number_box.dart';
 import 'package:endeavor/widgets/perfil/perfil_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -16,6 +23,23 @@ class PerfilScreen extends StatefulWidget {
 
 class _PerfilScreenState extends State<PerfilScreen> {
   String dropdownValue = "diario";
+  Usuario? _usuario;
+  List<Grupo> _gruposUsuario = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getGruposFromUsuario(usuarioId).then((value) {
+      setState(() {
+        _gruposUsuario = value;
+      });
+    });
+    buscarUsuarioPorId(usuarioId).then((value) {
+      setState(() {
+        _usuario = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +52,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              PerfilBanner(),
+              PerfilBanner(usuario: _usuario),
               Divider(
                 color: Theme.of(context).colorScheme.surface,
                 thickness: 1,
@@ -38,7 +62,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    NumberBox(title: "Grupos", value: "12"),
+                    NumberBox(
+                      title: "Grupos",
+                      value: _gruposUsuario.length.toString(),
+                    ),
                     const SizedBox(width: 24),
                     NumberBox(title: "Materias", value: "28"),
                   ],
