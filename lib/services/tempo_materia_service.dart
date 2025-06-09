@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/utils/error_handler.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -101,4 +102,19 @@ Future<Map<String, dynamic>?> buscarSessaoAtiva(
   }
 
   return null;
+}
+
+Future<List<TempoMateria>> buscarSessoesDeHojePorUsuario(
+  String usuarioId,
+) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/sessoes-hoje?usuarioId=$usuarioId'),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => TempoMateria.fromJson(json)).toList();
+  } else {
+    handleHttpError(response);
+  }
 }

@@ -5,14 +5,6 @@ import 'package:flutter/material.dart';
 import '../../models/area_estudo.dart';
 import '../../services/grupo_service.dart' as grupo_service;
 
-// final List<String> _areasEstudo = [
-//   'Matemática',
-//   'Português',
-//   'História',
-//   'Ciências',
-//   'Geografia',
-// ];
-
 class CriarGrupoScreen extends StatefulWidget {
   const CriarGrupoScreen({super.key});
 

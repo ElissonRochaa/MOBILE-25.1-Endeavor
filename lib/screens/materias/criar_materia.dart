@@ -1,4 +1,3 @@
-import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -19,70 +18,90 @@ class _CriarMateriaScreenState extends State<CriarMateriaScreen> {
   void retornarHandler() {
     Navigator.pop(context, true);
   }
+
   void showError(Object e) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-        title: const Text('Erro'),
-        content: Text('Erro ao criar matéria: $e'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            title: const Text('Erro'),
+            content: Text('Erro ao criar matéria: $e'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
-
   void criarMateriaHandler() async {
-    bool isValido = _formKey.currentState!.validate();
+    final isValido = _formKey.currentState!.validate();
     if (!isValido) return;
 
     _formKey.currentState!.save();
 
     try {
-      await createMateria(
+      final materiaCriada = await createMateria(
         nome: nomeMateriaController.text,
         descricao: descricaoController.text,
+        usuarioId: '',
       );
 
-      if (context.mounted) {
-        retornarHandler();
-      }
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        builder:
+            (ctx) => AlertDialog(
+              title: const Text('Sucesso'),
+              content: const Text('Matéria criada com sucesso!'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(materiaCriada),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context, materiaCriada);
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         showError(e);
       }
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Criar Matéria", hideLogo: true,),
+      appBar: EndeavorTopBar(title: "Criar Matéria", hideLogo: true),
       body: Form(
         key: _formKey,
         child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-                child: TextFormField(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                    vertical: 15.0,
+                  ),
+                  child: TextFormField(
                     controller: nomeMateriaController,
                     decoration: InputDecoration(
-                        labelText: "Nome da matéria",
-                        hintStyle: TextStyle(color: Colors.black54),
-                        suffixIcon: Icon(
-                          Icons.edit,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
+                      labelText: "Nome da matéria",
+                      hintStyle: const TextStyle(color: Colors.black54),
+                      suffixIcon: Icon(
+                        Icons.edit,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                  validator: (value) {
+                    validator: (value) {
                       if (value == null ||
                           value.isEmpty ||
                           value.length < 4 ||
@@ -90,62 +109,71 @@ class _CriarMateriaScreenState extends State<CriarMateriaScreen> {
                         return "O nome da matéria deve conter, ao menos, 4 caracteres.";
                       }
                       return null;
-                  },
+                    },
+                  ),
                 ),
-              ),
-
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-                child: TextFormField(
-                  controller: descricaoController,
-                  decoration: InputDecoration(
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                    vertical: 15.0,
+                  ),
+                  child: TextFormField(
+                    controller: descricaoController,
+                    decoration: InputDecoration(
                       labelText: "Descrição",
-                      hintStyle: TextStyle(color: Colors.black54),
+                      hintStyle: const TextStyle(color: Colors.black54),
                       suffixIcon: Icon(
                         Icons.edit,
                         color: Theme.of(context).colorScheme.primary,
-                      )
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        value.trim().isEmpty) {
-                      return "A descrição não pode ser nula.";
-                      }
-                    return null;
-                  },
-                ),
-              ),
-
-              SizedBox(height: 40,),
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    criarMateriaHandler();
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)
                       ),
-                      fixedSize: Size(
-                          MediaQuery.sizeOf(context).width,
-                          50),
-                      backgroundColor: Theme.of(context).colorScheme.tertiary
-                  ),
-                  child: Text(
-                    "Criar matéria",
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          value.trim().isEmpty) {
+                        return "A descrição não pode ser nula.";
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 40),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                    vertical: 15.0,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 72,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                          Theme.of(context).colorScheme.tertiary,
+                        ),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      onPressed: criarMateriaHandler,
+                      child: Text(
+                        "Criar Matéria",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onTertiary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: EndeavorBottomBar(),
     );
   }
 }

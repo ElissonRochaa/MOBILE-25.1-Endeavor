@@ -40,6 +40,13 @@ class AppRouter {
         case 'materias':
           if (uri.pathSegments.length == 2) {
             final materiaId = uri.pathSegments[1];
+            if (materiaId.length < 30) {
+              return _authGuard(
+                builder: (_) => CriarMateriaScreen(),
+                fallbackRoute: '/login',
+              );
+            }
+
             return _authGuard(
               builder: (_) => MateriasDetailsScreen(materiaId: materiaId),
               fallbackRoute: '/login',
@@ -78,11 +85,6 @@ class AppRouter {
       case '/grupos/criar':
         return _authGuard(
           builder: (_) => const CriarGrupoScreen(),
-          fallbackRoute: '/login',
-        );
-      case '/materias/criar':
-        return _authGuard(
-          builder: (_) => const CriarMateriaScreen(),
           fallbackRoute: '/login',
         );
       case '/materias/meta':

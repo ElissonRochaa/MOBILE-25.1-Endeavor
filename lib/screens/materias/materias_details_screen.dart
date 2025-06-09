@@ -18,13 +18,13 @@ class MateriasDetailsScreen extends StatefulWidget {
 }
 
 class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
-  late Materia _materia;
+  late Future<Materia> _materiaFuture;
   late Future<List<Meta>> _metasFuture;
 
   @override
   void initState() {
     super.initState();
-    getMateriaById(widget.materiaId).then((value) => _materia = value);
+    _materiaFuture = getMateriaById(widget.materiaId);
     _metasFuture = getMetas();
   }
 
@@ -40,114 +40,135 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
 
     return Scaffold(
       appBar: EndeavorTopBar(title: "Matéria", hideLogo: true),
-      body: FutureBuilder<List<Meta>>(
-        future: _metasFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: FutureBuilder<Materia>(
+        future: _materiaFuture,
+        builder: (context, materiaSnapshot) {
+          if (materiaSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
+          } else if (materiaSnapshot.hasError) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Erro ao carregar matéria: ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _reloadMaterias,
-                    child: const Text('Tentar novamente'),
-                  ),
-                ],
-              ),
+              child: Text('Erro ao carregar matéria: ${materiaSnapshot.error}'),
             );
-          } else if (snapshot.hasData) {
-            final metas = snapshot.data!;
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 24,
-                  ),
-                  child: Text(
-                    _materia.nome,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+          } else if (materiaSnapshot.hasData) {
+            final materia = materiaSnapshot.data!;
+            return FutureBuilder<List<Meta>>(
+              future: _metasFuture,
+              builder: (context, metasSnapshot) {
+                if (metasSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (metasSnapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Erro ao carregar metas: ${metasSnapshot.error}'),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _reloadMaterias,
+                          child: const Text('Tentar novamente'),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 2,
-                  ),
-                  child: Text(
-                    'Tempo acumulado de estudo: ',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 2,
-                  ),
-                  child: Text(
-                    _materia.descricao,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 2,
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          "/materias/criar",
-                        ).then((_) => _reloadMaterias()); // atualiza ao voltar
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.add,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Adicionar Meta',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
+                  );
+                } else if (metasSnapshot.hasData) {
+                  final metas = metasSnapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 24,
+                        ),
+                        child: Text(
+                          materia.nome,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  height: 1,
-                  color: Colors.black,
-                ),
-                SizedBox(height: 16),
-                Expanded(child: MetaList(lista: metas)),
-              ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          'Tempo acumulado de estudo: ',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          materia.descricao,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 2,
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                "/materias/criar",
+                              ).then((_) => _reloadMaterias());
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.add,
+                                    color: Colors.black,
+                                    size: 28,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Adicionar Meta',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        height: 1,
+                        color: Colors.black,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(child: MetaList(lista: metas)),
+                    ],
+                  );
+                } else {
+                  return const Center(child: Text('Nenhuma meta encontrada.'));
+                }
+              },
             );
           } else {
-            return const Center(child: Text('Nenhuma meta encontrada.'));
+            return const Center(child: Text('Erro inesperado.'));
           }
         },
       ),

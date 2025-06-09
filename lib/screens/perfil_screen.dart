@@ -1,7 +1,11 @@
 import 'package:endeavor/models/grupo.dart';
+import 'package:endeavor/models/materia.dart';
+import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:endeavor/services/grupo_service.dart';
+import 'package:endeavor/services/materia_service.dart';
+import 'package:endeavor/services/tempo_materia_service.dart';
 import 'package:endeavor/services/usuario_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
@@ -25,6 +29,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
   String dropdownValue = "diario";
   Usuario? _usuario;
   List<Grupo> _gruposUsuario = [];
+  List<Materia> _materias = [];
+  List<TempoMateria> _tempoMaterias = [];
 
   @override
   void initState() {
@@ -37,6 +43,16 @@ class _PerfilScreenState extends State<PerfilScreen> {
     buscarUsuarioPorId(usuarioId).then((value) {
       setState(() {
         _usuario = value;
+      });
+    });
+    buscarMateriasPorUsuario(usuarioId).then((value) {
+      setState(() {
+        _materias = value;
+      });
+    });
+    buscarSessoesDeHojePorUsuario(usuarioId).then((value) {
+      setState(() {
+        _tempoMaterias = value;
       });
     });
   }
@@ -67,12 +83,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       value: _gruposUsuario.length.toString(),
                     ),
                     const SizedBox(width: 24),
-                    NumberBox(title: "Materias", value: "28"),
+                    NumberBox(
+                      title: "Materias",
+                      value: _materias.length.toString(),
+                    ),
                   ],
                 ),
               ),
               Text(
-                "Matéria mais estudada: Matemática",
+                _tempoMaterias.isNotEmpty
+                    ? "Matéria mais estudada: ${_tempoMaterias[0].materia}"
+                    : "Nenhuma matéria registrada hoje",
                 style: GoogleFonts.nunito(
                   fontSize: 16,
                   color: Colors.black,
@@ -129,15 +150,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
               const SizedBox(height: 16),
               Column(
                 children: [
-                  const MateriaBox(
-                    materia: "Matemática",
-                    tempo: "2 horas e 16 minutos",
-                  ),
-                  const MateriaBox(
-                    materia: "Física",
-                    tempo: "1 hora e 30 minutos",
-                  ),
-                  const MateriaBox(materia: "Química", tempo: "30 minutos"),
+                  ..._tempoMaterias.map((tMateria) {
+                    return MateriaBox(
+                      materia: tMateria.materia,
+                      tempo: tMateria.tempoTotalAcumulado.toString(),
+                    );
+                  }),
+
                   InkWell(
                     onTap:
                         () => Navigator.pushReplacement(
@@ -150,7 +169,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       width: 330,
                       height: 50,
                       alignment: Alignment.center,
-                      margin: const EdgeInsets.only(bottom: 8),
+                      margin: const EdgeInsets.symmetric(vertical: 24),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 16,
