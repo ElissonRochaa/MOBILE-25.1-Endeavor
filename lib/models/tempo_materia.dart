@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 enum StatusCronometro { emAndamento, pausado, finalizado }
 
 StatusCronometro statusCronometroFromString(String status) {
@@ -16,7 +18,7 @@ StatusCronometro statusCronometroFromString(String status) {
 class TempoMateria {
   final String id;
   final String usuarioId;
-  final String materia;
+  final String materiaId;
   final DateTime? inicio;
   final DateTime? fim;
   final StatusCronometro status;
@@ -25,7 +27,7 @@ class TempoMateria {
   TempoMateria({
     required this.id,
     required this.usuarioId,
-    required this.materia,
+    required this.materiaId,
     this.inicio,
     this.fim,
     required this.status,
@@ -33,25 +35,48 @@ class TempoMateria {
   });
 
   factory TempoMateria.fromJson(Map<String, dynamic> json) {
-    return TempoMateria(
-      id: json['id'] as String,
-      usuarioId: json['usuarioId'] as String,
-      materia: json['materia'] as String,
-      inicio:
-          json['inicio'] != null
-              ? DateTime.parse(json['inicio'] as String).toUtc()
-              : null,
-      fim: json['fim'] != null ? DateTime.parse(json['fim'] as String) : null,
-      status: statusCronometroFromString(json['status'] as String),
-      tempoTotalAcumulado: (json['tempoTotalAcumulado'] as num).toInt(),
-    );
+    try {
+      final statusString = json['status'] as String? ?? '';
+      final statusEnum = statusCronometroFromString(statusString);
+
+      DateTime? inicioDate = json['inicio'] != null
+          ? DateTime.tryParse(json['inicio'] as String)?.toUtc()
+          : null;
+
+      int tempoAcumulado = (json['tempoTotalAcumulado'] as num?)?.toInt() ?? 0;
+
+      if (statusEnum == StatusCronometro.emAndamento && inicioDate != null) {
+        final agora = DateTime.now().toUtc();
+        if (agora.isAfter(inicioDate)) {
+          final diff = agora.difference(inicioDate);
+          tempoAcumulado += diff.inSeconds;
+          inicioDate = agora;
+        }
+      }
+
+      return TempoMateria(
+        id: json['id'] as String? ?? '',
+        usuarioId: json['usuarioId'] as String? ?? '',
+        materiaId: json['materiaId'] as String? ?? '',
+        inicio: inicioDate,
+        fim: json['fim'] != null
+            ? DateTime.tryParse(json['fim'] as String)
+            : null,
+        status: statusEnum,
+        tempoTotalAcumulado: tempoAcumulado,
+      );
+    } catch (e) {
+      debugPrint('Erro ao desserializar TempoMateria: $e');
+      debugPrint('JSON recebido: $json');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'usuarioId': usuarioId,
-      'materia': materia,
+      'materiaId': materiaId,
       'inicio': inicio?.toIso8601String(),
       'fim': fim?.toIso8601String(),
       'status': status.name,

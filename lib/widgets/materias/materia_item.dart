@@ -1,9 +1,7 @@
 import 'dart:async';
-
+import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
 import '../../services/tempo_materia_service.dart' as tempo_materia_service;
@@ -19,75 +17,92 @@ class MateriaItem extends StatefulWidget {
 
 class _MateriaItemState extends State<MateriaItem> {
   Timer? _timer;
-  int _secondsElapsed = 0;
-  bool? _isRunning;
+  int _totalSeconds = 0;
+  StatusCronometro? _status;
   String? _tempoMateriaId;
-  bool _isFinalizado = false;
   DateTime? _inicioSessao;
-  bool _sessionLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    print(
-      'initState do MateriaItem chamado para materia: ${widget.materia.nome}',
-    );
-    _loadSessionData();
+    _initSessionData();
   }
 
-  Future<void> _loadSessionData() async {
-    final usuarioId =
-        dotenv.env['USUARIO_ID'] ?? "e1e78a67-7ba6-4ebb-9330-084da088037f";
-
-    final sessionData = await tempo_materia_service.buscarSessaoAtiva(
-      usuarioId,
+  Future<void> _initSessionData() async {
+    final tempoMateria = widget.materia.tempoMateria;
+    final tempoTotalAcumulado = await tempo_materia_service.buscarSessaoAtiva(
+      widget.materia.usuarioId,
       widget.materia.id,
     );
 
-    if (sessionData != null) {
-      final status = sessionData['status']?.toString().toUpperCase().trim();
-      final isRunning = status == 'EM_ANDAMENTO';
+    if (tempoMateria != null) {
+      _tempoMateriaId = tempoMateria.id;
+      _status = tempoMateria.status;
+      _totalSeconds = tempoTotalAcumulado?['tempoDecorrido'] ?? 0;
 
-      setState(() {
-        _secondsElapsed = sessionData['tempoTotalAcumulado'] ?? 0;
-        _isRunning = isRunning;
-        _tempoMateriaId = sessionData['id'];
-
-        _inicioSessao =
-            sessionData['inicio'] != null
-                ? DateTime.tryParse(sessionData['inicio'].toString())
-                : null;
-
-        _sessionLoaded = true;
-        print('Loaded session data. Status: $status, isRunning: $_isRunning');
-      });
-
-      if (_isRunning == true) {
+      if (_status == StatusCronometro.emAndamento) {
+        _inicioSessao = tempoMateria.inicio;
+        _totalSeconds += DateTime.now().difference(_inicioSessao!).inSeconds;
         _startTimer();
       }
-    } else {
-      setState(() {
-        _sessionLoaded = true;
-      });
     }
   }
 
   void _startTimer() {
     _timer?.cancel();
-    _inicioSessao ??= DateTime.now();
+    _inicioSessao = DateTime.now();
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      final now = DateTime.now();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || _inicioSessao == null) return;
 
       setState(() {
-        _secondsElapsed++;
+        _totalSeconds += 1;
       });
     });
   }
 
+
   void _stopTimer() {
-    print('Parando timer...');
     _timer?.cancel();
+
+    _totalSeconds += DateTime.now().difference(_inicioSessao!).inSeconds;
+  }
+
+  Future<void> _handlePlayPause() async {
+    try {
+      if (_status == StatusCronometro.emAndamento) {
+        // Pausar
+        await tempo_materia_service.pausarSessao(_tempoMateriaId!);
+        _stopTimer();
+        setState(() => _status = StatusCronometro.pausado);
+      } else {
+        // Iniciar/Continuar
+        if (_tempoMateriaId == null) {
+          _tempoMateriaId = await tempo_materia_service.iniciarSessao(widget.materia);
+        } else {
+          await tempo_materia_service.continuarSessao(_tempoMateriaId!);
+        }
+
+        setState(() {
+          _status = StatusCronometro.emAndamento;
+          _startTimer();
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro: ${e.toString()}')),
+      );
+    }
+  }
+
+  String _formatTime(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final remainingSeconds = seconds % 60;
+
+    return '${hours.toString().padLeft(2, '0')}:'
+        '${minutes.toString().padLeft(2, '0')}:'
+        '${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -96,86 +111,15 @@ class _MateriaItemState extends State<MateriaItem> {
     super.dispose();
   }
 
-  String _formatTime(int seconds) {
-    return '${(seconds ~/ 3600).toString().padLeft(2, '0')}:'
-        '${(seconds ~/ 60 % 60).toString().padLeft(2, '0')}:'
-        '${(seconds % 60).toString().padLeft(2, '0')}';
-  }
-
-  Future<void> _handlePlayPause() async {
-    if (_isFinalizado) return;
-    print(_secondsElapsed);
-    print(_isRunning);
-    print(_tempoMateriaId);
-    print(_inicioSessao);
-
-    try {
-      if (_isRunning == true) {
-        print(_tempoMateriaId);
-        final success = await tempo_materia_service.pausarSessao(
-          _tempoMateriaId!,
-        );
-        if (success != null) {
-          setState(() {
-            _isRunning = false;
-          });
-          _stopTimer();
-        }
-      } else if (_tempoMateriaId == null) {
-        final id = await tempo_materia_service.iniciarSessao(widget.materia);
-        if (id != null) {
-          setState(() {
-            _tempoMateriaId = id;
-            _inicioSessao = DateTime.now();
-            _isRunning = true;
-            print("começar sessao");
-          });
-          _startTimer();
-        }
-      } else {
-        final success = await tempo_materia_service.continuarSessao(
-          _tempoMateriaId!,
-        );
-        if (success != null) {
-          setState(() {
-            _isRunning = true;
-          });
-          print("Continuar");
-          _startTimer();
-        }
-      }
-    } catch (e) {
-      print('Error in _handlePlayPause: $e');
-    }
-  }
-
-  Future<void> _handleFinalizar() async {
-    if (_tempoMateriaId == null || _isFinalizado) return;
-    final success = await tempo_materia_service.finalizarSessao(
-      _tempoMateriaId!,
-    );
-    if (success != null) {
-      _stopTimer();
-      setState(() {
-        _isFinalizado = true;
-        _inicioSessao = null;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) =>
-                    MateriasDetailsScreen(materiaId: widget.materia.id),
-          ),
-        );
-      },
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MateriasDetailsScreen(materiaId: widget.materia.id),
+        ),
+      ),
       child: Card(
         color: Theme.of(context).colorScheme.tertiary,
         child: Padding(
@@ -196,13 +140,9 @@ class _MateriaItemState extends State<MateriaItem> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {
-                      print("Clicou no botão");
-                      print(_isRunning);
-                      _handlePlayPause();
-                    },
+                    onPressed: _handlePlayPause,
                     icon: Icon(
-                      _isRunning == true ? Icons.pause : Icons.play_arrow,
+                      _status == StatusCronometro.emAndamento ? Icons.pause : Icons.play_arrow,
                       color: Theme.of(context).colorScheme.onTertiary,
                       size: 32,
                     ),
@@ -220,38 +160,28 @@ class _MateriaItemState extends State<MateriaItem> {
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => CriarMetaScreen(),
-                          ),
-                        );
-                      },
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => CriarMetaScreen()),
+                      ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.add,
-                            color: Theme.of(context).colorScheme.onTertiary,
-                            size: 32,
-                          ),
+                          Icon(Icons.add, color: Theme.of(context).colorScheme.onTertiary, size: 32),
+                          const SizedBox(width: 4),
                           Text(
                             'Adicionar Meta',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onTertiary,
-                            ),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onTertiary),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  if (_secondsElapsed > 0)
-                    Text(
-                      _formatTime(_secondsElapsed),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onTertiary,
-                        fontSize: 16,
-                      ),
+                  Text(
+                    _formatTime(_totalSeconds),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onTertiary,
+                      fontSize: 16,
                     ),
+                  ),
                 ],
               ),
             ],

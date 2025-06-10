@@ -56,7 +56,7 @@ Future<String?> continuarSessao(String tempoMateriaId) async {
     return data['id'];
   } else {
     print('Erro ao continuar sessão: ${response.body}');
-    throw Exception('Erro ao continuar sessão');
+    throw Exception('Erro ao continuar sessão: ${response.body}');
   }
 }
 
@@ -79,7 +79,7 @@ Future<Map<String, dynamic>?> buscarSessaoAtiva(
 ) async {
   final response = await http.get(
     Uri.parse(
-      '$_baseUrl/buscaPorUsuarioMateria?usuarioId=$usuarioId&materiaId=$materiaId',
+      '$_baseUrl/buscaPorUsuarioMateriaAtiva?usuarioId=$usuarioId&materiaId=$materiaId',
     ),
   );
 
@@ -95,7 +95,7 @@ Future<Map<String, dynamic>?> buscarSessaoAtiva(
       return {
         'tempoMateriaId': id,
         'tempoDecorrido': tempoDecorrido,
-        'isRunning': status == 'EM_ANDAMENTO' ? true : false,
+        'status': status,
         'inicioSessao': inicioStr,
       };
     }

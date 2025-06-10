@@ -92,7 +92,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
               Text(
                 _tempoMaterias.isNotEmpty
-                    ? "Matéria mais estudada: ${_tempoMaterias[0].materia}"
+                    ? "Matéria mais estudada: ${getMateriaById(_tempoMaterias[0].materiaId)}"
                     : "Nenhuma matéria registrada hoje",
                 style: GoogleFonts.nunito(
                   fontSize: 16,
@@ -150,12 +150,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
               const SizedBox(height: 16),
               Column(
                 children: [
-                  ..._tempoMaterias.map((tMateria) {
+                  ..._tempoMaterias.map((tMateria) async {
                     return MateriaBox(
-                      materia: tMateria.materia,
+                      materia: await getMateriaById(tMateria.materiaId).then((value) => value.nome),
                       tempo: tMateria.tempoTotalAcumulado.toString(),
                     );
-                  }),
+                  } as Widget Function(TempoMateria e)),
 
                   InkWell(
                     onTap:

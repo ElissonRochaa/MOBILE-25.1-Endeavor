@@ -1,9 +1,10 @@
 import 'dart:async';
-
 import 'package:endeavor/models/membro_com_tempo.dart';
 import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/widgets/membros/info_box.dart';
 import 'package:flutter/material.dart';
+
+import '../../services/materia_service.dart';
 
 class MembroItem extends StatefulWidget {
   final MembroComTempo membroDetails;
@@ -16,6 +17,8 @@ class MembroItem extends StatefulWidget {
 
 class _MembroItemState extends State<MembroItem> {
   late Timer _timer;
+  String? _materiaNome;
+  bool _loadingMateria = false;
 
   Duration get tempoTotal {
     final tempoMateria = widget.membroDetails.tempoMateria;
@@ -37,6 +40,7 @@ class _MembroItemState extends State<MembroItem> {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {});
     });
+    _carregarNomeMateria();
   }
 
   @override
@@ -45,19 +49,30 @@ class _MembroItemState extends State<MembroItem> {
     super.dispose();
   }
 
+  Future<void> _carregarNomeMateria() async {
+    if (_materiaNome != null || _loadingMateria) return;
+
+    setState(() => _loadingMateria = true);
+    try {
+      final materia = await getMateriaById(widget.membroDetails.tempoMateria.materiaId);
+      setState(() => _materiaNome = materia.nome);
+    } catch (e) {
+      setState(() => _materiaNome = 'Erro ao carregar');
+    } finally {
+      setState(() => _loadingMateria = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isAtivo = widget.membroDetails.isAtivo;
-    final corCard =
-        isAtivo
-            ? Theme.of(context).colorScheme.tertiaryContainer
-            : Theme.of(context).colorScheme.tertiary;
-    final corInterna =
-        isAtivo
-            ? Theme.of(context).colorScheme.tertiary
-            : Theme.of(context).colorScheme.tertiaryContainer;
+    final corCard = isAtivo
+        ? Theme.of(context).colorScheme.tertiaryContainer
+        : Theme.of(context).colorScheme.tertiary;
+    final corInterna = isAtivo
+        ? Theme.of(context).colorScheme.tertiary
+        : Theme.of(context).colorScheme.tertiaryContainer;
 
-    // Formatando o tempo total como HH:mm:ss
     final tempoFormatado = _formatarTempo(tempoTotal);
 
     return Card(
@@ -89,7 +104,9 @@ class _MembroItemState extends State<MembroItem> {
                     corBackground: corInterna,
                     isAtivo: isAtivo,
                     titulo: "Matéria",
-                    data: widget.membroDetails.tempoMateria.materia,
+                    data: _loadingMateria
+                        ? 'Carregando...'
+                        : _materiaNome ?? 'Não informado',
                   ),
                   const SizedBox(width: 8),
                   InfoBox(
