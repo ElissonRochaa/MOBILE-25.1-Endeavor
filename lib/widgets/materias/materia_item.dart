@@ -62,21 +62,22 @@ class _MateriaItemState extends State<MateriaItem> {
   }
 
 
-  void _stopTimer() {
+  Future<void> _stopTimer() async {
     _timer?.cancel();
-
-    _totalSeconds += DateTime.now().difference(_inicioSessao!).inSeconds;
+    final atualizado = await tempo_materia_service.buscarSessaoAtiva(widget.materia.usuarioId, widget.materia.id);
+    _totalSeconds = atualizado?['tempoDecorrido'] ?? 0;
   }
 
   Future<void> _handlePlayPause() async {
     try {
       if (_status == StatusCronometro.emAndamento) {
-        // Pausar
+
         await tempo_materia_service.pausarSessao(_tempoMateriaId!);
         _stopTimer();
+        print(_totalSeconds);
         setState(() => _status = StatusCronometro.pausado);
       } else {
-        // Iniciar/Continuar
+
         if (_tempoMateriaId == null) {
           _tempoMateriaId = await tempo_materia_service.iniciarSessao(widget.materia);
         } else {
@@ -86,6 +87,7 @@ class _MateriaItemState extends State<MateriaItem> {
         setState(() {
           _status = StatusCronometro.emAndamento;
           _startTimer();
+          print(_totalSeconds);
         });
       }
     } catch (e) {
@@ -161,7 +163,7 @@ class _MateriaItemState extends State<MateriaItem> {
                   Expanded(
                     child: InkWell(
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => CriarMetaScreen()),
+                        MaterialPageRoute(builder: (context) => CriarMetaScreen(materiaId: widget.materia.id,)),
                       ),
                       child: Row(
                         children: [

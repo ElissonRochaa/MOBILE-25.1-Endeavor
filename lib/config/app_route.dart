@@ -89,7 +89,7 @@ class AppRouter {
         );
       case '/materias/meta':
         return _authGuard(
-          builder: (_) => const CriarMetaScreen(),
+          builder: (_) => const CriarMetaScreen(materiaId: '',),
           fallbackRoute: '/login',
         );
       case '/estatisticas':

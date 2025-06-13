@@ -1,21 +1,32 @@
 import 'package:endeavor/models/meta.dart';
 import 'package:flutter/material.dart';
 
-class MetaItem extends StatefulWidget {
+import '../../../services/meta_service.dart';
 
-  const MetaItem({super.key, required Meta meta});
+class MetaItem extends StatefulWidget {
+  final Meta meta;
+
+  const MetaItem({super.key, required  this.meta});
 
   @override
   State<MetaItem> createState() => _MetaItemState();
 }
 
 class _MetaItemState extends State<MetaItem> {
-  bool done = false;
+  late bool done;
 
-  void _toggleDone(bool? value) {
+  @override
+  void initState() {
+    super.initState();
+    done = widget.meta.concluida;
+  }
+
+  Future<void> _toggleDone(bool? value) async {
     setState(() {
       done = value ?? false;
     });
+
+    await updateMeta(id: widget.meta.id, concluida: done);
   }
 
   @override
@@ -31,7 +42,7 @@ class _MetaItemState extends State<MetaItem> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Meta",
+              widget.meta.nome,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -44,7 +55,7 @@ class _MetaItemState extends State<MetaItem> {
                   child: Row(
                     children: [
                       Text(
-                        "Descrição",
+                        widget.meta.descricao,
                         style: TextStyle(
                           color: Color(0xFF474747),
                           fontSize: 16,
@@ -54,7 +65,7 @@ class _MetaItemState extends State<MetaItem> {
                       const Icon(Icons.calendar_month),
                       const SizedBox(width: 4),
                       Text(
-                        "Data",
+                        widget.meta.data.toIso8601String().substring(0, 10),
                         style: TextStyle(
                           fontSize: 16,
                         ),

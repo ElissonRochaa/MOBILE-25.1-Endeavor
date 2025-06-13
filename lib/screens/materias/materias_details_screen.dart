@@ -7,6 +7,7 @@ import '../../models/materia.dart';
 import '../../models/meta.dart';
 import '../../services/meta_service.dart';
 import '../../widgets/materias/metas/meta_list.dart';
+import 'criar_meta.dart';
 
 class MateriasDetailsScreen extends StatefulWidget {
   final String materiaId;
@@ -25,12 +26,12 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
   void initState() {
     super.initState();
     _materiaFuture = getMateriaById(widget.materiaId);
-    _metasFuture = getMetas();
+    _metasFuture = getMetaByMateria(widget.materiaId);
   }
 
   void _reloadMaterias() {
     setState(() {
-      _metasFuture = getMetas();
+      _metasFuture = getMetaByMateria(widget.materiaId);
     });
   }
 
@@ -121,10 +122,9 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                "/materias/criar",
-                              ).then((_) => _reloadMaterias());
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (context) => CriarMetaScreen(materiaId: materia.id)))
+                                  .then((_) => _reloadMaterias());
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: Padding(
