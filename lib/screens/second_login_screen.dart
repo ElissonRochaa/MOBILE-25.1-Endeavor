@@ -1,14 +1,45 @@
+import 'package:endeavor/models/auth_response.dart';
+import 'package:endeavor/providers/auth_provider.dart';
+import 'package:endeavor/providers/login_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/themeApp.dart';
 import '../widgets/loginRegistro/linha_widget.dart';
+import 'package:endeavor/services/auth_service.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
-class SecondLoginScreen extends StatelessWidget {
-  const SecondLoginScreen({super.key});
+class SecondLoginScreen extends ConsumerWidget {
+  final TextEditingController _senhaController = TextEditingController();
+  SecondLoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    void fazerLogin() {
+      ref.read(loginProvider.notifier).setSenha(_senhaController.text);
+        login(
+          ref.read(loginProvider).email!,
+          ref.read(loginProvider).senha!,
+        ).then((value) {
+          if (value.id != null && value.token != null) {
+            ref.read(authProvider.notifier).setAuth(AuthResponse(
+              id: value.id,
+              token: value.token,));
+            AuthStorageService().saveAuthData(value.id!, value.token!);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Login falhou. Tente novamente.")),
+            );
+          }
+        });
+    }
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -27,18 +58,32 @@ class SecondLoginScreen extends StatelessWidget {
               ),
               SizedBox(
                 width: 300,
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Senha',
-                    hintText: 'Digite sua senha',
-                  ),
+                child: TextFormField(
+                  controller: _senhaController,
                   keyboardType: TextInputType.text,
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
                   obscuringCharacter: '*',
                   style: TextStyle(fontSize: 20),
-                  controller: TextEditingController(),
+                  decoration: InputDecoration(
+                    labelText: "Senha",
+                    hintText: "Digite sua senha",
+                    suffixIcon: Icon(
+                      Icons.note_alt,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 32,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.length < 4 ||
+                        value.trim().isEmpty) {
+                      return "A senha deve conter, ao menos, 4 caracteres.";
+                    }
+                    return null;
+                  },      
                 ),
               ),
               SizedBox(height: 40),
@@ -50,12 +95,7 @@ class SecondLoginScreen extends StatelessWidget {
                   ),
                   minimumSize: Size(332, 50),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()),
-                  );
-                },
+                onPressed: fazerLogin,
                 child: Text(
                   'Entrar',
                   style: TextStyle(
@@ -86,7 +126,7 @@ class SecondLoginScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
+                      builder: (context) => LoginScreen(),
                     ),
                   );
                 },

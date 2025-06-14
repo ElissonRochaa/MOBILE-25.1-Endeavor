@@ -4,24 +4,6 @@ import 'dart:convert';
 
 const String baseUrl = 'http://10.0.2.2:8080/api/materias';
 
-List<Materia> _materiasDummy = [
-  Materia(
-    id: 1,
-    nome: 'Flutterzinho',
-    descricao: 'Estudar Flutter',
-  ),
-  Materia(
-    id: 2,
-    nome: 'Verificação e validação de testes',
-    descricao: 'cadeira de testes',
-    ),
-  Materia(
-    id: 3,
-    nome: 'Outra matéria',
-    descricao: 'É uma outra matéria',
-  ),
-];
-
 Future<List<Materia>> getMaterias() async {
 
   final response = await http.get(Uri.parse(baseUrl));
@@ -47,6 +29,7 @@ Future<Materia> getMateriaById(String id) async {
 Future<Materia> createMateria({
   required String nome,
   required String descricao,
+  String? usuarioId = "e1e78a67-7ba6-4ebb-9330-084da088037f",
 }) async {
   final response = await http.post(
     Uri.parse('$baseUrl/create'),
@@ -54,6 +37,7 @@ Future<Materia> createMateria({
     body: json.encode({
       'nome': nome,
       'descricao': descricao,
+      'usuarioId': usuarioId,
     }),
   );
 

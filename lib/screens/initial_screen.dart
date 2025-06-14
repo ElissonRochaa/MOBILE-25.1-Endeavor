@@ -1,22 +1,47 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:endeavor/models/auth_response.dart';
+import 'package:endeavor/screens/home_screen.dart';
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:endeavor/providers/auth_provider.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 
-class InitialScreen extends StatefulWidget {
+class InitialScreen extends ConsumerStatefulWidget {
   const InitialScreen({super.key});
 
   @override
-  State<InitialScreen> createState() => _InitialScreenState();
+  ConsumerState<InitialScreen> createState() => _InitialScreenState();
 }
 
-class _InitialScreenState extends State<InitialScreen> {
+class _InitialScreenState extends ConsumerState<InitialScreen> {
   double _opacity = 1.0;
-
+  bool estaLogado = false;
+  
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
+  _checarAutenticacao();
+}
+
+Future<void> _checarAutenticacao() async {
+  bool value = await AuthStorageService().isAuthenticated();
+
+  if (value) {
+    String? id = await AuthStorageService().getId();
+    String? token = await AuthStorageService().getToken();
+
+    ref.watch(authProvider.notifier).setAuth(
+      AuthResponse(id: id, token: token),
+    );
+  }
+
+  setState(() {
+    estaLogado = value;
+  });
+
 
     Future.delayed(const Duration(seconds: 4), () {
       setState(() {
@@ -48,7 +73,7 @@ class _InitialScreenState extends State<InitialScreen> {
             ],
           ),
         ),
-        nextScreen: LoginScreen(),
+        nextScreen: estaLogado ? LoginScreen() : HomeScreen(),
         animationDuration: const Duration(milliseconds: 2200),
         splashIconSize: 400,
         pageTransitionType: PageTransitionType.rightToLeftWithFade,

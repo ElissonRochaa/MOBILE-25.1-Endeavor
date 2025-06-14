@@ -2,15 +2,18 @@ import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:endeavor/providers/login_provider.dart';
 
 import '../config/themeApp.dart';
 import '../widgets/loginRegistro/google_sign_in_button.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends ConsumerWidget{
+  final TextEditingController _emailController = TextEditingController();
+  LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -29,14 +32,27 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(
                 width: 300,
-                child: TextField(
+                child: TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Digite seu email',
+                    labelText: "Email",
+                    hintText: "Digite seu email",
+                    suffixIcon: Icon(
+                      Icons.note_alt,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 32,
+                    ),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(fontSize: 20),
-                  controller: TextEditingController(),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.length < 4 ||
+                        value.trim().isEmpty) {
+                      return "O email deve conter, ao menos, 4 caracteres.";
+                    }
+                    return null;
+                  },      
                 ),
               ),
               SizedBox(height: 40),
@@ -49,10 +65,11 @@ class LoginScreen extends StatelessWidget {
                   minimumSize: Size(332, 50),
                 ),
                 onPressed: () {
+                  ref.read(loginProvider.notifier).setEmail(_emailController.text);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SecondLoginScreen(),
+                      builder: (context) => SecondLoginScreen(),
                     ),
                   );
                 },
