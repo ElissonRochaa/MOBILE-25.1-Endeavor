@@ -49,19 +49,23 @@ class _MyAppState extends State<MyApp> {
     _handleIncomingLinks();
   }
 
+  bool _handledInitialUri = false;
+
   void _handleIncomingLinks() {
     _appLinks.uriLinkStream.listen((Uri? uri) {
       debugPrint("Stream: ${uri.toString()}");
-
       if (uri != null) {
         _handleDeeplink(uri);
       }
     });
 
     _appLinks.getInitialAppLink().then((Uri? uri) {
-      debugPrint("InitialLink: ${uri.toString()}");
-      if (uri != null) {
-        _handleDeeplink(uri);
+      if (!_handledInitialUri) {
+        debugPrint("InitialLink: ${uri.toString()}");
+        if (uri != null) {
+          _handleDeeplink(uri);
+        }
+        _handledInitialUri = true;
       }
     });
   }
@@ -70,12 +74,15 @@ class _MyAppState extends State<MyApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (uri.host.isNotEmpty) {
         final entidade = uri.host;
-        final id = _extrairUri(uri);
-        final rota = id != null ? '/$entidade/$id' : '/$entidade';
+        final fullPath = uri.pathSegments.join('/');
+        final rota = '/$entidade/${fullPath.isNotEmpty ? fullPath : ''}';
+
         final currentRoute =
             ModalRoute.of(
               navigatorKey.currentContext ?? context,
             )?.settings.name;
+
+        debugPrint('Navegando para rota: $rota');
 
         if (currentRoute != rota) {
           navigatorKey.currentState?.pushNamedAndRemoveUntil(

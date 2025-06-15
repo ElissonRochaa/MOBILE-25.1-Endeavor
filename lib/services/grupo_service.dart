@@ -120,23 +120,20 @@ Future<List<Grupo>> getGruposByMembroNome(String nome) async {
 }
 
 Future<void> adicionarMembroAoGrupo(String grupoId, String membroId) async {
-  final response = await http.post(
-    Uri.parse('$apiUrl/$grupoId/membros'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({'membroId': membroId}),
+  final response = await http.patch(
+    Uri.parse('$apiUrl/$grupoId/adicionar-usuario/$usuarioId'),
   );
-
-  if (response.statusCode != 204) {
+  if (response.statusCode != 200) {
     handleHttpError(response);
   }
 }
 
 Future<void> removerMembroDoGrupo(String grupoId, String membroId) async {
-  final response = await http.delete(
-    Uri.parse('$apiUrl/$grupoId/membros/$membroId'),
+  final response = await http.patch(
+    Uri.parse('$apiUrl/$grupoId/remover-usuario/$membroId'),
   );
 
-  if (response.statusCode != 204) {
+  if (response.statusCode != 200) {
     handleHttpError(response);
   }
 }

@@ -19,27 +19,46 @@ class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final name = settings.name ?? '/';
     final uri = Uri.parse(name);
-    print(uri);
 
     if (uri.pathSegments.isNotEmpty) {
       final entity = uri.pathSegments[0];
       switch (entity) {
         case 'grupos':
           if (uri.pathSegments.length >= 2) {
-            final grupoId = uri.pathSegments[1];
-            return _authGuard(
-              builder: (_) => DetalhesGrupoScreen(grupoId: grupoId),
-              fallbackRoute: '/login',
-            );
+            final secondSegment = uri.pathSegments[1];
+
+            if (secondSegment == "criar") {
+              return _authGuard(
+                builder: (_) => const CriarGrupoScreen(),
+                fallbackRoute: '/login',
+              );
+            } else if (secondSegment != "convite") {
+              return _authGuard(
+                builder: (_) => DetalhesGrupoScreen(grupoId: secondSegment),
+                fallbackRoute: '/login',
+              );
+            }
+            if (secondSegment == "convite" && uri.pathSegments.length == 3) {
+              return _authGuard(
+                builder:
+                    (_) => DetalhesGrupoScreen(
+                      grupoId: uri.pathSegments[2],
+                      isConvite: true,
+                    ),
+                fallbackRoute: '/login',
+              );
+            }
           } else {
             return _authGuard(
               builder: (_) => const GrupoScreen(),
               fallbackRoute: '/login',
             );
           }
+
         case 'materias':
           if (uri.pathSegments.length == 2) {
             final materiaId = uri.pathSegments[1];
+
             if (materiaId.length < 30) {
               return _authGuard(
                 builder: (_) => CriarMateriaScreen(),
@@ -70,8 +89,6 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SecondLoginScreen());
       case '/registro':
         return MaterialPageRoute(builder: (_) => const RegistroScreen());
-
-      // Rotas protegidas
       case '/home':
         return _authGuard(
           builder: (_) => const HomeScreen(),
@@ -82,14 +99,9 @@ class AppRouter {
           builder: (_) => const QuizScreen(),
           fallbackRoute: '/login',
         );
-      case '/grupos/criar':
-        return _authGuard(
-          builder: (_) => const CriarGrupoScreen(),
-          fallbackRoute: '/login',
-        );
       case '/materias/meta':
         return _authGuard(
-          builder: (_) => const CriarMetaScreen(materiaId: '',),
+          builder: (_) => const CriarMetaScreen(materiaId: ''),
           fallbackRoute: '/login',
         );
       case '/estatisticas':
