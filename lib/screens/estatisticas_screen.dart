@@ -2,10 +2,13 @@ import 'package:endeavor/widgets/estatisticas/dropdown_button_periodo.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../models/evolucao_model.dart';
 import '../services/estatistica_service.dart';
 import '../widgets/estatisticas/bar_chart.dart' as bar_chart;
+
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 class EstatisticasScreen extends StatefulWidget {
   final String? nome;
@@ -67,9 +70,7 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
         intervalo: 1,
       );
 
-      final strike = await getDiasConsecutivosDeEstudo(
-        usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f",
-      );
+      final strike = await getDiasConsecutivosDeEstudo(usuarioId: usuarioId);
 
       setState(() {
         evolucao = evolucaoPeriodo;

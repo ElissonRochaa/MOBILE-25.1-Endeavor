@@ -123,7 +123,14 @@ class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
                           child: InkWell(
                             onTap: () {
                               Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) => CriarMetaScreen(materiaId: materia.id)))
+                                  .push(
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => CriarMetaScreen(
+                                            materiaId: materia.id,
+                                          ),
+                                    ),
+                                  )
                                   .then((_) => _reloadMaterias());
                             },
                             borderRadius: BorderRadius.circular(8),

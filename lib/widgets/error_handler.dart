@@ -58,6 +58,9 @@ class ErrorHandler {
   static void _showGenericErrorDialog(String message) {
     final context = navigatorKey.currentContext;
     if (context != null && !_isDialogShowing) {
+      if (message.contains("is not a subtype of type")) {
+        return;
+      }
       _isDialogShowing = true;
       showDialog(
         context: context,

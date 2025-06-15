@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:endeavor/models/materia.dart';
 import 'package:endeavor/models/membro_com_tempo.dart';
 import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/widgets/membros/info_box.dart';
@@ -22,6 +24,8 @@ class _MembroItemState extends State<MembroItem> {
 
   Duration get tempoTotal {
     final tempoMateria = widget.membroDetails.tempoMateria;
+    if (tempoMateria == null) return Duration.zero;
+
     Duration acumulado = Duration(seconds: tempoMateria.tempoTotalAcumulado);
 
     if (tempoMateria.status == StatusCronometro.emAndamento &&
@@ -54,8 +58,16 @@ class _MembroItemState extends State<MembroItem> {
 
     setState(() => _loadingMateria = true);
     try {
-      final materia = await getMateriaById(widget.membroDetails.tempoMateria.materiaId);
-      setState(() => _materiaNome = materia.nome);
+      Materia? materia;
+
+      if (widget.membroDetails.tempoMateria != null) {
+        materia = await getMateriaById(
+          widget.membroDetails.tempoMateria!.materiaId,
+        );
+      }
+      setState(
+        () => _materiaNome = materia != null ? materia.nome : "Nenhuma matéria",
+      );
     } catch (e) {
       setState(() => _materiaNome = 'Erro ao carregar');
     } finally {
@@ -66,12 +78,14 @@ class _MembroItemState extends State<MembroItem> {
   @override
   Widget build(BuildContext context) {
     final isAtivo = widget.membroDetails.isAtivo;
-    final corCard = isAtivo
-        ? Theme.of(context).colorScheme.tertiaryContainer
-        : Theme.of(context).colorScheme.tertiary;
-    final corInterna = isAtivo
-        ? Theme.of(context).colorScheme.tertiary
-        : Theme.of(context).colorScheme.tertiaryContainer;
+    final corCard =
+        isAtivo
+            ? Theme.of(context).colorScheme.tertiaryContainer
+            : Theme.of(context).colorScheme.tertiary;
+    final corInterna =
+        isAtivo
+            ? Theme.of(context).colorScheme.tertiary
+            : Theme.of(context).colorScheme.tertiaryContainer;
 
     final tempoFormatado = _formatarTempo(tempoTotal);
 
@@ -104,9 +118,10 @@ class _MembroItemState extends State<MembroItem> {
                     corBackground: corInterna,
                     isAtivo: isAtivo,
                     titulo: "Matéria",
-                    data: _loadingMateria
-                        ? 'Carregando...'
-                        : _materiaNome ?? 'Não informado',
+                    data:
+                        _loadingMateria
+                            ? 'Carregando...'
+                            : _materiaNome ?? 'Não informado',
                   ),
                   const SizedBox(width: 8),
                   InfoBox(

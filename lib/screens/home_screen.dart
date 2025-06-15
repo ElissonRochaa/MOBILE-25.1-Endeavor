@@ -7,6 +7,9 @@ import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/home/materia_list.dart';
 import 'package:endeavor/widgets/home/search_bar_home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 class HomeScreen extends StatefulWidget {
   final String? nome;
@@ -51,12 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               onSeeAll: () => Navigator.of(context).pushNamed('/grupos'),
             ),
-            GrupoList(
-              getFn:
-                  () => getGruposFromUsuario(
-                    '277cda16-1e67-453e-94f0-2de7d5fa3124',
-                  ),
-            ),
+            GrupoList(getFn: () => getGruposFromUsuario(usuarioId)),
             SizedBox(height: 40),
             Label(title: "Áreas de estudo", onAdd: () {}, onSeeAll: () {}),
             Container(

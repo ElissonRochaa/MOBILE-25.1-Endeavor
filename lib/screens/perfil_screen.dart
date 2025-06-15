@@ -1,6 +1,5 @@
 import 'package:endeavor/models/grupo.dart';
 import 'package:endeavor/models/materia.dart';
-import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:endeavor/services/grupo_service.dart';
@@ -30,31 +29,86 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Usuario? _usuario;
   List<Grupo> _gruposUsuario = [];
   List<Materia> _materias = [];
-  List<TempoMateria> _tempoMaterias = [];
+  List<Map<String, dynamic>> _tempoMateriaComNome = [];
+  String? _materiaMaisEstudada;
 
   @override
   void initState() {
     super.initState();
-    getGruposFromUsuario(usuarioId).then((value) {
-      setState(() {
-        _gruposUsuario = value;
-      });
+    _carregarDados();
+  }
+
+  Future<void> _carregarDados() async {
+    await Future.wait([
+      _carregarUsuario(),
+      _carregarGrupos(),
+      _carregarMaterias(),
+      _carregarTempoMaterias(),
+    ]);
+  }
+
+  Future<void> _carregarUsuario() async {
+    final usuario = await buscarUsuarioPorId(usuarioId);
+    setState(() {
+      _usuario = usuario;
     });
-    buscarUsuarioPorId(usuarioId).then((value) {
-      setState(() {
-        _usuario = value;
-      });
+  }
+
+  Future<void> _carregarGrupos() async {
+    final grupos = await getGruposFromUsuario(usuarioId);
+    setState(() {
+      _gruposUsuario = grupos;
     });
-    buscarMateriasPorUsuario(usuarioId).then((value) {
-      setState(() {
-        _materias = value;
-      });
+  }
+
+  Future<void> _carregarMaterias() async {
+    final materias = await buscarMateriasPorUsuario(usuarioId);
+    setState(() {
+      _materias = materias;
     });
-    buscarSessoesDeHojePorUsuario(usuarioId).then((value) {
-      setState(() {
-        _tempoMaterias = value;
-      });
+  }
+
+  Future<void> _carregarTempoMaterias() async {
+    final sessoes = await buscarSessoesDeHojePorUsuario(usuarioId);
+
+    Map<String, int> tempoPorMateria = {};
+
+    for (var sessao in sessoes) {
+      final materia = await getMateriaById(sessao.materiaId);
+
+      final nomeMateria = materia.nome ?? 'Sem matéria';
+
+      tempoPorMateria.update(
+        nomeMateria,
+        (valorAtual) => valorAtual + sessao.tempoTotalAcumulado,
+        ifAbsent: () => sessao.tempoTotalAcumulado,
+      );
+    }
+
+    final listaOrdenada =
+        tempoPorMateria.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+    setState(() {
+      _tempoMateriaComNome =
+          listaOrdenada
+              .map((e) => {'materiaNome': e.key, 'tempo': e.value})
+              .toList();
+
+      _materiaMaisEstudada =
+          listaOrdenada.isNotEmpty ? listaOrdenada.first.key : 'Nenhuma';
     });
+  }
+
+  String _formatarTempo(int segundos) {
+    final duracao = Duration(seconds: segundos);
+    final horas = duracao.inHours.toString().padLeft(2, '0');
+    final minutos = (duracao.inMinutes % 60).toString().padLeft(2, '0');
+    final segundosRestantes = (duracao.inSeconds % 60).toString().padLeft(
+      2,
+      '0',
+    );
+    return '$horas:$minutos:$segundosRestantes';
   }
 
   @override
@@ -81,18 +135,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     NumberBox(
                       title: "Grupos",
                       value: _gruposUsuario.length.toString(),
+                      onTap: () => Navigator.pushNamed(context, "/grupos"),
                     ),
                     const SizedBox(width: 24),
                     NumberBox(
-                      title: "Materias",
+                      title: "Matérias",
                       value: _materias.length.toString(),
+                      onTap: () => Navigator.pushNamed(context, "/materias"),
                     ),
                   ],
                 ),
               ),
               Text(
-                _tempoMaterias.isNotEmpty
-                    ? "Matéria mais estudada: ${getMateriaById(_tempoMaterias[0].materiaId)}"
+                _tempoMateriaComNome.isNotEmpty
+                    ? "Matéria mais estudada: $_materiaMaisEstudada"
                     : "Nenhuma matéria registrada hoje",
                 style: GoogleFonts.nunito(
                   fontSize: 16,
@@ -124,7 +180,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       value: dropdownValue,
-                      items: [
+                      items: const [
                         DropdownMenuItem(
                           value: "diario",
                           child: Text("Diário"),
@@ -150,19 +206,25 @@ class _PerfilScreenState extends State<PerfilScreen> {
               const SizedBox(height: 16),
               Column(
                 children: [
-                  ..._tempoMaterias.map((tMateria) async {
-                    return MateriaBox(
-                      materia: await getMateriaById(tMateria.materiaId).then((value) => value.nome),
-                      tempo: tMateria.tempoTotalAcumulado.toString(),
-                    );
-                  } as Widget Function(TempoMateria e)),
-
+                  ...(_tempoMateriaComNome.isNotEmpty
+                      ? _tempoMateriaComNome.map((item) {
+                        return MateriaBox(
+                          materia: item['materiaNome'],
+                          tempo: _formatarTempo(item['tempo']),
+                        );
+                      }).toList()
+                      : [
+                        const Text(
+                          "Nenhuma matéria estudada",
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                      ]),
                   InkWell(
                     onTap:
                         () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
+                            builder: (context) => const LoginScreen(),
                           ),
                         ),
                     child: Container(
@@ -175,10 +237,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         vertical: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: Color(0xFF373737),
+                        color: const Color(0xFF373737),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Desconectar",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white),
