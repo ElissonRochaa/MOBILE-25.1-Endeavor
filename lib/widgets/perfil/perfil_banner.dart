@@ -4,7 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class PerfilBanner extends StatelessWidget {
   final Usuario? usuario;
-  const PerfilBanner({super.key, required this.usuario});
+  final String tempoTotal;
+
+  const PerfilBanner({
+    super.key,
+    required this.usuario,
+    required this.tempoTotal,
+  });
 
   String get nome => usuario?.nome ?? "Carregando...";
 
@@ -38,7 +44,8 @@ class PerfilBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              '12 horas estudadas hoje',
+              '$tempoTotal estudados hoje',
+              textAlign: TextAlign.center,
               style: GoogleFonts.nunito(fontSize: 16, color: Colors.white),
             ),
           ),

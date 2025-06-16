@@ -31,6 +31,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   List<Materia> _materias = [];
   List<Map<String, dynamic>> _tempoMateriaComNome = [];
   String? _materiaMaisEstudada;
+  int _tempoTotalHoje = 0;
 
   @override
   void initState() {
@@ -98,6 +99,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
       _materiaMaisEstudada =
           listaOrdenada.isNotEmpty ? listaOrdenada.first.key : 'Nenhuma';
     });
+    _tempoTotalHoje = tempoPorMateria.values.fold(
+      0,
+      (sum, value) => sum + value,
+    );
   }
 
   String _formatarTempo(int segundos) {
@@ -113,6 +118,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: EndeavorTopBar(title: "Perfil"),
       bottomNavigationBar: const EndeavorBottomBar(),
@@ -122,7 +128,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              PerfilBanner(usuario: _usuario),
+              PerfilBanner(
+                usuario: _usuario,
+                tempoTotal: _formatarTempo(_tempoTotalHoje),
+              ),
               Divider(
                 color: Theme.of(context).colorScheme.surface,
                 thickness: 1,
