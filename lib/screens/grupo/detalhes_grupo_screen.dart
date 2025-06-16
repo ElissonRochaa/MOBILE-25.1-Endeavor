@@ -29,6 +29,8 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
   late Future<Grupo?> _grupoFuture;
   late Future<List<MembroComTempo>> _membrosFuture;
 
+  bool _navegarParaHome = false;
+
   @override
   void initState() {
     super.initState();
@@ -98,6 +100,13 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_navegarParaHome) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      });
+      return const Scaffold();
+    }
+
     return FutureBuilder<Grupo?>(
       future: _grupoFuture,
       builder: (context, grupoSnapshot) {
@@ -301,6 +310,12 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                                                 usuarioId,
                                               );
                                           grupo.membrosIds.remove(usuarioId);
+
+                                          if (!mounted) return;
+                                          setState(() {
+                                            _navegarParaHome = true;
+                                          });
+                                          return;
                                         } else {
                                           await grupo_service
                                               .adicionarMembroAoGrupo(

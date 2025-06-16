@@ -19,12 +19,12 @@ class _MateriasScreenState extends State<MateriasScreen> {
   @override
   void initState() {
     super.initState();
-    _materiasFuture = buscarMateriasPorUsuario(usuarioId);
+    _materiasFuture = buscarMateriasPorUsuario(usuarioIdMock);
   }
 
   void _reloadMaterias() {
     setState(() {
-      _materiasFuture = buscarMateriasPorUsuario(usuarioId);
+      _materiasFuture = buscarMateriasPorUsuario(usuarioIdMock);
     });
   }
 
