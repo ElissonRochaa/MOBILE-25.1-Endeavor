@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:endeavor/models/auth_response.dart';
 import 'package:http/http.dart' as http;
 
-const String baseUrl = 'http://10.0.2.2:8080/api/auth';
+const String baseUrl = 'http://192.168.0.102:8080/api/auth';
 
 Future<AuthResponse> login(String email, String senha) async {
 
@@ -26,4 +26,34 @@ Future<AuthResponse> login(String email, String senha) async {
   } else {
     throw Exception('Erro ao autenticar usuário');
   } 
+}
+
+Future<String> registrar(
+  String nome,
+  String email,
+  String senha,
+  int idade,
+  String escolaridade,
+) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/registro'),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'nome': nome,
+      'email': email,
+      'senha': senha,
+      'idade': idade,
+      'escolaridade': escolaridade,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return 'Usuário registrado com sucesso';
+  } else if (response.statusCode == 400) {
+    final data = json.decode(response.body);
+    throw Exception(data['message'] ?? 'Erro ao registrar usuário');
+    
+  } else {
+    throw Exception('Erro ao registrar usuário');
+  }
 }

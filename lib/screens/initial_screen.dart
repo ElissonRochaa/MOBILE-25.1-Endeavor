@@ -1,7 +1,10 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:endeavor/models/auth_response.dart';
+import 'package:endeavor/models/usuario.dart';
+import 'package:endeavor/providers/usuario_provider.dart';
 import 'package:endeavor/screens/home_screen.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/services/usuario_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
@@ -27,12 +30,15 @@ void initState() {
 }
 
 Future<void> _checarAutenticacao() async {
+  ref.watch(authProvider.notifier).clearAuth();
+  AuthStorageService().clearAuthData();
   bool value = await AuthStorageService().isAuthenticated();
 
   if (value) {
     String? id = await AuthStorageService().getId();
     String? token = await AuthStorageService().getToken();
-
+    Usuario usuario = await buscarUsuarioPorId(id!, token!);
+    ref.read(usuarioProvider.notifier).setUsuario(usuario);
     ref.watch(authProvider.notifier).setAuth(
       AuthResponse(id: id, token: token),
     );
@@ -73,7 +79,7 @@ Future<void> _checarAutenticacao() async {
             ],
           ),
         ),
-        nextScreen: estaLogado ? LoginScreen() : HomeScreen(),
+        nextScreen: estaLogado ? HomeScreen() : LoginScreen(),
         animationDuration: const Duration(milliseconds: 2200),
         splashIconSize: 400,
         pageTransitionType: PageTransitionType.rightToLeftWithFade,

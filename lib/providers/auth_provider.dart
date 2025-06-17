@@ -6,6 +6,11 @@ class AuthProvider extends StateNotifier<AuthResponse> {
 
   void setAuth(AuthResponse authResponse) {
     state = authResponse;
+    
+ }
+
+  void clearAuth() {
+    state = AuthResponse(id: null, token: null);
   }
   
 }

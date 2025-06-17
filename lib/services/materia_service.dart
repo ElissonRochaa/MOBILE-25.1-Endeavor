@@ -2,22 +2,32 @@ import 'package:endeavor/models/materia.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String baseUrl = 'http://10.0.2.2:8080/api/materias';
+const String baseUrl = 'http://192.168.56.1:8080/api/materias';
 
-Future<List<Materia>> getMaterias() async {
-
-  final response = await http.get(Uri.parse(baseUrl));
+Future<List<Materia>> getMaterias(String token) async {
+  final response = await http.get(
+    Uri.parse(baseUrl),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     List<dynamic> data = json.decode(response.body);
     return data.map((json) => Materia.fromJson(json)).toList();
   } else {
-    throw Exception('Falha ao carregar matérias');
+    throw Exception('Falha ao carregar matérias: ${response.body}');
   }
 }
 
-Future<Materia> getMateriaById(String id) async {
-  final response = await http.get(Uri.parse('$baseUrl/$id'));
+Future<Materia> getMateriaById(String id, String token) async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
 
   if (response.statusCode == 200) {
     return Materia.fromJson(json.decode(response.body));
@@ -48,17 +58,11 @@ Future<Materia> createMateria({
   }
 }
 
-Future<Materia?> updateMateria({
-  String? nome,
-  String? descricao,
-}) async {
+Future<Materia?> updateMateria({String? nome, String? descricao}) async {
   final response = await http.put(
     Uri.parse('$baseUrl/update'),
     headers: {'Content-Type': 'application/json'},
-    body: json.encode({
-      'nome': nome,
-      'descricao': descricao,
-    }),
+    body: json.encode({'nome': nome, 'descricao': descricao}),
   );
 
   if (response.statusCode == 200) {
@@ -75,6 +79,3 @@ Future<void> deleteMateria(String id) async {
     throw Exception('Erro ao deletar matéria');
   }
 }
-
-
-

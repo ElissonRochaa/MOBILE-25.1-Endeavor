@@ -1,21 +1,32 @@
+import 'package:endeavor/models/usuario.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/perfil/materia_box.dart';
 import 'package:endeavor/widgets/perfil/number_box.dart';
 import 'package:endeavor/widgets/perfil/perfil_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PerfilScreen extends StatefulWidget {
+class PerfilScreen extends ConsumerStatefulWidget {
   const PerfilScreen({super.key});
 
   @override
-  State<PerfilScreen> createState() => _PerfilScreenState();
+  ConsumerState<PerfilScreen> createState() => _PerfilScreenState();
 }
 
-class _PerfilScreenState extends State<PerfilScreen> {
+class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   String dropdownValue = "diario";
+  late final usuario;
+  late final Usuario usuarioInfo;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +100,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     const MateriaBox(materia: "Física", tempo: "1 hora e 30 minutos"),
                     const MateriaBox(materia: "Química", tempo: "30 minutos"),
                     InkWell(
-                      onTap:  () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),)),
+                      onTap:  () { 
+                        ref.read(authProvider.notifier).clearAuth();
+                        AuthStorageService().clearAuthData();
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
+                        },
                       child: Container(
                         width: 330,
                         height: 50,

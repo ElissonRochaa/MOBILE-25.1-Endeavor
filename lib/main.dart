@@ -1,10 +1,10 @@
 import 'package:endeavor/screens/initial_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/themeApp.dart';
 
 void main() async {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

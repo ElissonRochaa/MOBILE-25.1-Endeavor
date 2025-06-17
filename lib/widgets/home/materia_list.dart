@@ -1,21 +1,26 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/widgets/materias/materia_item.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MateriaList extends StatelessWidget {
+class MateriaList extends ConsumerWidget {
 
   const MateriaList({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final usuario = ref.watch(authProvider);
+    final token = usuario.token;
+    final id = usuario.id;
     return SizedBox(
               height: 200,
               child: FutureBuilder(
-                future: getMaterias(),
+                future: getMaterias(token.toString()),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());

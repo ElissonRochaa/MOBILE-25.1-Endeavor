@@ -1,10 +1,25 @@
+import 'package:endeavor/models/usuario.dart';
+import 'package:endeavor/providers/usuario_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PerfilBanner extends StatelessWidget {
+class PerfilBanner extends ConsumerStatefulWidget {
 
   const PerfilBanner({super.key});
 
+  @override
+  ConsumerState<PerfilBanner> createState() => _PerfilBannerState();
+}
+
+class _PerfilBannerState extends ConsumerState<PerfilBanner> {
+  late final Usuario usuario;
+
+  @override
+  void initState() {
+    usuario = ref.read(usuarioProvider);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,7 +34,7 @@ class PerfilBanner extends StatelessWidget {
                         'https://www.w3schools.com/howto/img_avatar.png'),
                   ),
                   Text(
-                    'Rony Rangel',
+                    usuario.nome!,
                     style: GoogleFonts.nunito(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -52,7 +67,7 @@ class PerfilBanner extends StatelessWidget {
                       width: 200,
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        "Escolaridade: graduação\nÁrea de estudo: TI",
+                        "Escolaridade: ${usuario.escolaridade}\nIdade: ${usuario.idade}",
                         style: GoogleFonts.nunito(
                           fontSize: 16,
                           color: Colors.black,
