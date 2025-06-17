@@ -1,11 +1,11 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=E:\DEV\flutter"
-export "FLUTTER_APPLICATION_PATH=E:\DEV\endeavor"
+export "FLUTTER_ROOT=D:\Programacao\desenvolvimento\ferramentas\flutter"
+export "FLUTTER_APPLICATION_PATH=D:\Programacao\repositorios\MOBILE-25.1-Endeavor"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=1.0.0"
-export "FLUTTER_BUILD_NUMBER=1"
+export "FLUTTER_BUILD_NAME=0.1.0"
+export "FLUTTER_BUILD_NUMBER=0.1.0"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"

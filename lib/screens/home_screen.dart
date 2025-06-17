@@ -1,21 +1,26 @@
-import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
-import 'package:endeavor/screens/grupo/grupo_screen.dart';
-import 'package:endeavor/screens/materias/criar_materia.dart';
-import 'package:endeavor/screens/materias/materias_screen.dart';
+import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
-import 'package:endeavor/widgets/home/grupo_list.dart';
 import 'package:endeavor/widgets/home/areas_estudo.dart';
+import 'package:endeavor/widgets/home/grupo_list.dart';
 import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/home/materia_list.dart';
 import 'package:endeavor/widgets/home/search_bar_home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class HomeScreen extends StatelessWidget {
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
+
+class HomeScreen extends StatefulWidget {
   final String? nome;
 
   const HomeScreen({super.key, this.nome});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,30 +33,28 @@ class HomeScreen extends StatelessWidget {
             SearchBarHome(),
             Label(
               title: "Minhas matérias",
-              onSeeAll:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => MateriasScreen()),
-                  ),
+              onSeeAll: () => Navigator.of(context).pushNamed('/materias'),
+
               onAdd: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => CriarMateriaScreen()),
-                );
-              }
+                Navigator.of(context).pushNamed('/materias/criar');
+              },
             ),
             MateriaList(),
             SizedBox(height: 40),
             Label(
               title: "Meus grupos",
-              onAdd:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => CriarGrupoScreen()),
-                  ),
-              onSeeAll:
-                  () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => GrupoScreen()),
-                  ),
+              onAdd: () async {
+                final grupoCriado = await Navigator.of(
+                  context,
+                ).pushNamed('/grupos/criar');
+
+                if (grupoCriado != null) {
+                  setState(() {});
+                }
+              },
+              onSeeAll: () => Navigator.of(context).pushNamed('/grupos'),
             ),
-            GrupoList(),
+            GrupoList(getFn: () => getGruposFromUsuario(usuarioId)),
             SizedBox(height: 40),
             Label(title: "Áreas de estudo", onAdd: () {}, onSeeAll: () {}),
             Container(

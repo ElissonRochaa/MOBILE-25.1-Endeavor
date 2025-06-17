@@ -4,8 +4,7 @@ import 'package:endeavor/widgets/materias/materia_list.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/materia.dart';
-import '../../services/materia_service.dart' as materia_service;
-import 'criar_materia.dart';
+import '../../services/materia_service.dart';
 
 class MateriasScreen extends StatefulWidget {
   const MateriasScreen({super.key});
@@ -20,20 +19,17 @@ class _MateriasScreenState extends State<MateriasScreen> {
   @override
   void initState() {
     super.initState();
-    _materiasFuture = materia_service.getMaterias();
+    _materiasFuture = buscarMateriasPorUsuario(usuarioIdMock);
   }
 
   void _reloadMaterias() {
     setState(() {
-      _materiasFuture = materia_service.getMaterias();
+      _materiasFuture = buscarMateriasPorUsuario(usuarioIdMock);
     });
   }
 
   void _navigateToCriarMateria() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const CriarMateriaScreen()),
-    );
+    final result = await Navigator.pushNamed(context, "/materias/criar");
 
     if (result == true) {
       _reloadMaterias();
@@ -53,7 +49,7 @@ class _MateriasScreenState extends State<MateriasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EndeavorTopBar(title: "Matérias",),
+      appBar: EndeavorTopBar(title: "Matérias"),
       bottomNavigationBar: EndeavorBottomBar(),
       body: FutureBuilder<List<Materia>>(
         future: _materiasFuture,
@@ -91,7 +87,6 @@ class _MateriasScreenState extends State<MateriasScreen> {
           child: const Icon(Icons.add, size: 36),
         ),
       ),
-
     );
   }
 }

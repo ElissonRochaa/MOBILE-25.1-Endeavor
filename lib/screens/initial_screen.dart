@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:endeavor/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
@@ -19,10 +20,30 @@ class _InitialScreenState extends State<InitialScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 4), () {
+      if (!mounted) return;
       setState(() {
         _opacity = 0.0;
       });
     });
+
+    _checkAuthentication();
+  }
+
+  Future<void> _checkAuthentication() async {
+    bool isAuthenticated = await _mockAuthenticationCheck();
+
+    if (!mounted) return;
+
+    if (isAuthenticated) {
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      Navigator.of(context).pushReplacementNamed('/login');
+    }
+  }
+
+  Future<bool> _mockAuthenticationCheck() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return true;
   }
 
   @override
@@ -41,14 +62,17 @@ class _InitialScreenState extends State<InitialScreen> {
                   opacity: _opacity,
                   child: Text(
                     "Endeavor",
-                    style: TextStyle(fontSize: 48, fontFamily: 'BebasNeue'),
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontFamily: 'BebasNeue',
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        nextScreen: LoginScreen(),
+        nextScreen: Container(),
         animationDuration: const Duration(milliseconds: 2200),
         splashIconSize: 400,
         pageTransitionType: PageTransitionType.rightToLeftWithFade,

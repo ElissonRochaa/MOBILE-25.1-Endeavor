@@ -1,4 +1,4 @@
-import 'package:endeavor/config/themeApp.dart';
+import 'package:endeavor/config/theme_app.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -38,29 +38,26 @@ class EndeavorBottomBar extends StatelessWidget {
             },
             icon: Icon(Icons.group, color: Colors.white, size: 34),
           ),
-           IconButton(
-             onPressed: () {
-               Navigator.push(
-                 context,
-                 MaterialPageRoute(
-                   builder: (context) => const Estatisticasscreen(),
-                 ),
-               );
-             },
-            icon: Icon(Icons.bar_chart, color: Colors.white, size: 34),
-           ),
           IconButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const MateriasScreen(),
+                  builder: (context) => const EstatisticasScreen(),
                 ),
+              );
+            },
+            icon: Icon(Icons.bar_chart, color: Colors.white, size: 34),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MateriasScreen()),
               );
             },
             icon: Icon(Icons.book_rounded, color: Colors.white, size: 34),
           ),
-
         ],
       ),
     );

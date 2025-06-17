@@ -1,89 +1,48 @@
+import 'dart:convert';
+
 import 'package:endeavor/models/grupo.dart';
-import 'package:endeavor/services/membro_service.dart';
+import 'package:endeavor/models/membro_com_tempo.dart';
+import 'package:endeavor/utils/error_handler.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
-import '../models/membro.dart';
-
-final List<Grupo> _gruposDummy = [
-  Grupo(
-    id: '1',
-    titulo: 'Matemática Básica',
-    descricao: 'Grupo para revisar conceitos básicos de matemática.',
-    capacidade: 10,
-    privado: false,
-    areasEstudo: ['Matemática'],
-    membrosIds: ['m1', 'm7', 'm4', 'm3'],
-  ),
-  Grupo(
-    id: '2',
-    titulo: 'Programação em Dart',
-    descricao: 'Vamos aprender Dart do zero ao avançado.',
-    capacidade: 15,
-    privado: false,
-    areasEstudo: ['Programação', 'Dart'],
-    membrosIds: ['m5', 'm6'],
-  ),
-  Grupo(
-    id: '3',
-    titulo: 'História Geral',
-    descricao: 'Discussões sobre eventos históricos importantes.',
-    capacidade: 12,
-    privado: true,
-    areasEstudo: ['História'],
-    membrosIds: ['m2'],
-  ),
-  Grupo(
-    id: '4',
-    titulo: 'Física para Engenharia',
-    descricao: 'Fórmulas, conceitos e exercícios de física aplicada.',
-    capacidade: 20,
-    privado: false,
-    areasEstudo: ['Física', 'Engenharia'],
-    membrosIds: ['m3'],
-  ),
-  Grupo(
-    id: '5',
-    titulo: 'Inglês Intermediário',
-    descricao: 'Praticar inglês para conversação e escrita.',
-    capacidade: 8,
-    privado: true,
-    areasEstudo: ['Idiomas', 'Inglês'],
-    membrosIds: ['m8'],
-  ),
-  Grupo(
-    id: '6',
-    titulo: 'Desenvolvimento Web',
-    descricao: 'HTML, CSS, JavaScript e frameworks modernos.',
-    capacidade: 18,
-    privado: false,
-    areasEstudo: ['Tecnologia', 'Desenvolvimento Web'],
-    membrosIds: ['m5', 'm6'],
-  ),
-  Grupo(
-    id: '7',
-    titulo: 'Biologia Celular',
-    descricao: 'Estudo aprofundado da célula e seus componentes.',
-    capacidade: 14,
-    privado: false,
-    areasEstudo: ['Biologia'],
-    membrosIds: ['m4'],
-  ),
-  Grupo(
-    id: '8',
-    titulo: 'Redação para ENEM',
-    descricao: 'Dicas, práticas e correções de redações para o ENEM.',
-    capacidade: 10,
-    privado: true,
-    areasEstudo: ['Redação', 'ENEM'],
-    membrosIds: ['m2'],
-  ),
-];
+final apiUrl = '${dotenv.env['API_URL']}/grupos-estudo';
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 Future<List<Grupo>> getGrupos() async {
-  return _gruposDummy;
+  final response = await http.get(Uri.parse(apiUrl));
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Grupo.fromJson(json)).toList();
+  } else {
+    handleHttpError(response);
+  }
+}
+
+Future<List<Grupo>> getGruposFromUsuario(String usuarioId) async {
+  final response = await http.get(
+    Uri.parse('$apiUrl/usuario?usuarioId=$usuarioId'),
+  );
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    final List<Grupo> grupos =
+        jsonList.map((json) {
+          return Grupo.fromJson(json as Map<String, dynamic>);
+        }).toList();
+    return grupos;
+  } else {
+    handleHttpError(response);
+  }
 }
 
 Future<Grupo> getGrupoById(String id) async {
-  return _gruposDummy.where((grupo) => grupo.id == id).single;
+  final response = await http.get(Uri.parse('$apiUrl/$id'));
+
+  if (response.statusCode == 200) {
+    return Grupo.fromJson(jsonDecode(response.body));
+  } else {
+    handleHttpError(response);
+  }
 }
 
 Future<Grupo> createGrupo({
@@ -91,23 +50,29 @@ Future<Grupo> createGrupo({
   required String descricao,
   required int capacidade,
   required bool privado,
-  required List<String> areasEstudo,
+  required String areaEstudo,
   required String idCriador,
 }) async {
-  final novoGrupo = Grupo(
-    id: DateTime.now().toIso8601String(),
-    titulo: titulo,
-    descricao: descricao,
-    capacidade: capacidade,
-    membrosIds: [idCriador],
-    privado: privado,
-    areasEstudo: areasEstudo,
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'titulo': titulo,
+      'descricao': descricao,
+      'capacidade': capacidade,
+      'privado': privado,
+      'areaEstudoId': areaEstudo,
+      'usuarioCriadorId': usuarioId,
+    }),
   );
-  _gruposDummy.insert(0, novoGrupo);
-  return novoGrupo;
+  if (response.statusCode == 201) {
+    return Grupo.fromJson(jsonDecode(response.body));
+  } else {
+    handleHttpError(response);
+  }
 }
 
-Future<Grupo?> updateGrupo({
+Future<Grupo> updateGrupo({
   required String id,
   String? titulo,
   String? descricao,
@@ -115,50 +80,70 @@ Future<Grupo?> updateGrupo({
   bool? privado,
   List<String>? areasEstudo,
 }) async {
-  final grupo = _gruposDummy.firstWhere(
-    (g) => g.id == id,
-    orElse: () => throw Exception('Grupo não encontrado'),
+  final body = <String, dynamic>{};
+  if (titulo != null) body['titulo'] = titulo;
+  if (descricao != null) body['descricao'] = descricao;
+  if (capacidade != null) body['capacidade'] = capacidade;
+  if (privado != null) body['privado'] = privado;
+  if (areasEstudo != null) body['areasEstudo'] = areasEstudo;
+
+  final response = await http.put(
+    Uri.parse('$apiUrl/$id'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(body),
   );
 
-  if (titulo != null) grupo.titulo = titulo;
-  if (descricao != null) grupo.descricao = descricao;
-  if (capacidade != null) grupo.capacidade = capacidade;
-  if (privado != null) grupo.privado = privado;
-  if (areasEstudo != null) grupo.areasEstudo = areasEstudo;
-
-  return grupo;
-}
-
-Future<void> deleteGrupo(String id) async {
-  _gruposDummy.removeWhere((g) => g.id == id);
-}
-
-Future<List<Grupo>> getGruposByMembroNome(String nome) async {
-  return _gruposDummy.where((g) => g.membrosIds.contains(nome)).toList();
-}
-
-Future<void> adicionarMembroAoGrupo(String grupoId, String nomeMembro) async {
-  final grupo = _gruposDummy.firstWhere((g) => g.id == grupoId);
-  if (!grupo.membrosIds.contains(nomeMembro)) {
-    grupo.membrosIds.add(nomeMembro);
+  if (response.statusCode == 200) {
+    return Grupo.fromJson(jsonDecode(response.body));
+  } else {
+    handleHttpError(response);
   }
 }
 
-Future<void> removerMembroDoGrupo(String grupoId, String nomeMembro) async {
-  final grupo = _gruposDummy.firstWhere((g) => g.id == grupoId);
-  grupo.membrosIds.remove(nomeMembro);
+Future<void> deleteGrupo(String id) async {
+  final response = await http.delete(Uri.parse('$apiUrl/$id'));
+
+  if (response.statusCode != 204) {
+    handleHttpError(response);
+  }
 }
 
-Future<List<Membro>> getMembrosDoGrupo(String grupoId) async {
-  final grupo = _gruposDummy.firstWhere(
-    (g) => g.id == grupoId,
-    orElse: () => throw Exception('Grupo não encontrado'),
+Future<List<Grupo>> getGruposByMembroNome(String nome) async {
+  final response = await http.get(Uri.parse('$apiUrl?membroNome=$nome'));
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Grupo.fromJson(json)).toList();
+  } else {
+    handleHttpError(response);
+  }
+}
+
+Future<void> adicionarMembroAoGrupo(String grupoId, String membroId) async {
+  final response = await http.patch(
+    Uri.parse('$apiUrl/$grupoId/adicionar-usuario/$usuarioId'),
+  );
+  if (response.statusCode != 200) {
+    handleHttpError(response);
+  }
+}
+
+Future<void> removerMembroDoGrupo(String grupoId, String membroId) async {
+  final response = await http.patch(
+    Uri.parse('$apiUrl/$grupoId/remover-usuario/$membroId'),
   );
 
-  final todosMembros = await getMembros();
+  if (response.statusCode != 200) {
+    handleHttpError(response);
+  }
+}
 
-  final membros =
-      todosMembros.where((m) => grupo.membrosIds.contains(m.id)).toList();
-
-  return membros;
+Future<List<MembroComTempo>> getMembrosDoGrupo(String grupoId) async {
+  final response = await http.get(Uri.parse('$apiUrl/$grupoId/membros'));
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => MembroComTempo.fromJson(json)).toList();
+  } else {
+    handleHttpError(response);
+  }
 }

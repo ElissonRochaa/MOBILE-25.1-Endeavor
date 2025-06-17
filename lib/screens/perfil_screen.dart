@@ -1,11 +1,21 @@
+import 'package:endeavor/models/grupo.dart';
+import 'package:endeavor/models/materia.dart';
+import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/services/grupo_service.dart';
+import 'package:endeavor/services/materia_service.dart';
+import 'package:endeavor/services/tempo_materia_service.dart';
+import 'package:endeavor/services/usuario_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/perfil/materia_box.dart';
 import 'package:endeavor/widgets/perfil/number_box.dart';
 import 'package:endeavor/widgets/perfil/perfil_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -16,12 +26,101 @@ class PerfilScreen extends StatefulWidget {
 
 class _PerfilScreenState extends State<PerfilScreen> {
   String dropdownValue = "diario";
+  Usuario? _usuario;
+  List<Grupo> _gruposUsuario = [];
+  List<Materia> _materias = [];
+  List<Map<String, dynamic>> _tempoMateriaComNome = [];
+  String? _materiaMaisEstudada;
+  int _tempoTotalHoje = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarDados();
+  }
+
+  Future<void> _carregarDados() async {
+    await Future.wait([
+      _carregarUsuario(),
+      _carregarGrupos(),
+      _carregarMaterias(),
+      _carregarTempoMaterias(),
+    ]);
+  }
+
+  Future<void> _carregarUsuario() async {
+    final usuario = await buscarUsuarioPorId(usuarioId);
+    setState(() {
+      _usuario = usuario;
+    });
+  }
+
+  Future<void> _carregarGrupos() async {
+    final grupos = await getGruposFromUsuario(usuarioId);
+    setState(() {
+      _gruposUsuario = grupos;
+    });
+  }
+
+  Future<void> _carregarMaterias() async {
+    final materias = await buscarMateriasPorUsuario(usuarioId);
+    setState(() {
+      _materias = materias;
+    });
+  }
+
+  Future<void> _carregarTempoMaterias() async {
+    final sessoes = await buscarSessoesDeHojePorUsuario(usuarioId);
+
+    Map<String, int> tempoPorMateria = {};
+
+    for (var sessao in sessoes) {
+      final materia = await getMateriaById(sessao.materiaId);
+
+      final nomeMateria = materia.nome ?? 'Sem matéria';
+
+      tempoPorMateria.update(
+        nomeMateria,
+        (valorAtual) => valorAtual + sessao.tempoTotalAcumulado,
+        ifAbsent: () => sessao.tempoTotalAcumulado,
+      );
+    }
+
+    final listaOrdenada =
+        tempoPorMateria.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+    setState(() {
+      _tempoMateriaComNome =
+          listaOrdenada
+              .map((e) => {'materiaNome': e.key, 'tempo': e.value})
+              .toList();
+
+      _materiaMaisEstudada =
+          listaOrdenada.isNotEmpty ? listaOrdenada.first.key : 'Nenhuma';
+    });
+    _tempoTotalHoje = tempoPorMateria.values.fold(
+      0,
+      (sum, value) => sum + value,
+    );
+  }
+
+  String _formatarTempo(int segundos) {
+    final duracao = Duration(seconds: segundos);
+    final horas = duracao.inHours.toString().padLeft(2, '0');
+    final minutos = (duracao.inMinutes % 60).toString().padLeft(2, '0');
+    final segundosRestantes = (duracao.inSeconds % 60).toString().padLeft(
+      2,
+      '0',
+    );
+    return '$horas:$minutos:$segundosRestantes';
+  }
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: const EndeavorTopBar(title: "Perfil"),
+      appBar: EndeavorTopBar(title: "Perfil"),
       bottomNavigationBar: const EndeavorBottomBar(),
       body: Container(
         color: Colors.white,
@@ -29,7 +128,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              PerfilBanner(),
+              PerfilBanner(
+                usuario: _usuario,
+                tempoTotal: _formatarTempo(_tempoTotalHoje),
+              ),
               Divider(
                 color: Theme.of(context).colorScheme.surface,
                 thickness: 1,
@@ -39,15 +141,29 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    NumberBox(title: "Grupos", value: "12"),
+                    NumberBox(
+                      title: "Grupos",
+                      value: _gruposUsuario.length.toString(),
+                      onTap: () => Navigator.pushNamed(context, "/grupos"),
+                    ),
                     const SizedBox(width: 24),
-                    NumberBox(title: "Materias", value: "28"),
+                    NumberBox(
+                      title: "Matérias",
+                      value: _materias.length.toString(),
+                      onTap: () => Navigator.pushNamed(context, "/materias"),
+                    ),
                   ],
                 ),
               ),
               Text(
-                "Matéria mais estudada: Matemática",
-                style: GoogleFonts.nunito(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w600),
+                _tempoMateriaComNome.isNotEmpty
+                    ? "Matéria mais estudada: $_materiaMaisEstudada"
+                    : "Nenhuma matéria registrada hoje",
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Divider(
@@ -59,20 +175,34 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Tempo de estudo por matéria", style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600
-                    ),),
+                    Text(
+                      "Tempo de estudo por matéria",
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     DropdownButton(
                       style: GoogleFonts.nunito(
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       value: dropdownValue,
-                      items: [DropdownMenuItem(value: "diario", child: Text("Diário")),
-                      DropdownMenuItem(value: "semanal" ,child: Text("Semanal")),
-                      DropdownMenuItem(value: "mensal" , child: Text("Mensal")),],
+                      items: const [
+                        DropdownMenuItem(
+                          value: "diario",
+                          child: Text("Diário"),
+                        ),
+                        DropdownMenuItem(
+                          value: "semanal",
+                          child: Text("Semanal"),
+                        ),
+                        DropdownMenuItem(
+                          value: "mensal",
+                          child: Text("Mensal"),
+                        ),
+                      ],
                       onChanged: (value) {
                         setState(() {
                           dropdownValue = value!;
@@ -83,30 +213,51 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-                  Column(
-                  children: [
-                    const MateriaBox(materia: "Matemática", tempo: "2 horas e 16 minutos"),
-                    const MateriaBox(materia: "Física", tempo: "1 hora e 30 minutos"),
-                    const MateriaBox(materia: "Química", tempo: "30 minutos"),
-                    InkWell(
-                      onTap:  () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),)),
-                      child: Container(
-                        width: 330,
-                        height: 50,
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                        decoration: BoxDecoration(
-                          color: Color(0xFF373737),
-                          borderRadius: BorderRadius.circular(10),
+              Column(
+                children: [
+                  ...(_tempoMateriaComNome.isNotEmpty
+                      ? _tempoMateriaComNome.map((item) {
+                        return MateriaBox(
+                          materia: item['materiaNome'],
+                          tempo: _formatarTempo(item['tempo']),
+                        );
+                      }).toList()
+                      : [
+                        const Text(
+                          "Nenhuma matéria estudada",
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
                         ),
-                        child: Text("Desconectar",textAlign: TextAlign.center , style: TextStyle(
-                          color: Colors.white,
-                        ),),
+                      ]),
+                  InkWell(
+                    onTap:
+                        () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        ),
+                    child: Container(
+                      width: 330,
+                      height: 50,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(vertical: 24),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 16,
                       ),
-                    )
-                  ],
-                ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF373737),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        "Desconectar",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

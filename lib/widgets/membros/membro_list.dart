@@ -1,9 +1,9 @@
-import 'package:endeavor/models/membro.dart';
+import 'package:endeavor/models/membro_com_tempo.dart';
 import 'package:endeavor/widgets/membros/membro_item.dart';
 import 'package:flutter/material.dart';
 
 class MembroList extends StatelessWidget {
-  final List<Membro> membros;
+  final List<MembroComTempo> membros;
   const MembroList({super.key, required this.membros});
 
   @override

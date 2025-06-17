@@ -1,13 +1,10 @@
 import 'dart:async';
+import 'package:endeavor/models/tempo_materia.dart';
 import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:flutter/material.dart';
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import '../../services/tempo_matria_service.dart' as tempo_materia_service;
-
+import '../../services/tempo_materia_service.dart' as tempo_materia_service;
 
 class MateriaItem extends StatefulWidget {
   final Materia materia;
@@ -20,44 +17,94 @@ class MateriaItem extends StatefulWidget {
 
 class _MateriaItemState extends State<MateriaItem> {
   Timer? _timer;
-  int _secondsElapsed = 0;
-  bool _isRunning = false;
-  int? _tempoMateriaId;
-  bool _isFinalizado = false;
+  int _totalSeconds = 0;
+  StatusCronometro? _status;
+  String? _tempoMateriaId;
   DateTime? _inicioSessao;
 
+  @override
+  void initState() {
+    super.initState();
+    _initSessionData();
+  }
+
+  Future<void> _initSessionData() async {
+    final tempoMateria = widget.materia.tempoMateria;
+    final tempoTotalAcumulado = await tempo_materia_service.buscarSessaoAtiva(
+      widget.materia.usuarioId,
+      widget.materia.id,
+    );
+
+    if (tempoMateria != null) {
+      _tempoMateriaId = tempoMateria.id;
+      _status = tempoMateria.status;
+      _totalSeconds = tempoTotalAcumulado?['tempoDecorrido'] ?? 0;
+
+      if (_status == StatusCronometro.emAndamento) {
+        _inicioSessao = tempoMateria.inicio;
+        _totalSeconds += DateTime.now().difference(_inicioSessao!).inSeconds;
+        _startTimer();
+      }
+    }
+  }
 
   void _startTimer() {
-    _inicioSessao ??= DateTime.now();
+    _timer?.cancel();
+    _inicioSessao = DateTime.now();
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      final now = DateTime.now();
-
-      if (_inicioSessao != null &&
-          (now.year != _inicioSessao!.year ||
-              now.month != _inicioSessao!.month ||
-              now.day != _inicioSessao!.day)) {
-        await _handleFinalizar();
-        return;
-      }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || _inicioSessao == null) return;
 
       setState(() {
-        _secondsElapsed++;
+        _totalSeconds += 1;
       });
-    });
-
-    setState(() {
-      _isRunning = true;
     });
   }
 
 
-  void _stopTimer() {
+  Future<void> _stopTimer() async {
     _timer?.cancel();
-    setState(() {
-      _isRunning = false;
+    final atualizado = await tempo_materia_service.buscarSessaoAtiva(widget.materia.usuarioId, widget.materia.id);
+    _totalSeconds = atualizado?['tempoDecorrido'] ?? 0;
+  }
 
-    });
+  Future<void> _handlePlayPause() async {
+    try {
+      if (_status == StatusCronometro.emAndamento) {
+
+        await tempo_materia_service.pausarSessao(_tempoMateriaId!);
+        _stopTimer();
+        print(_totalSeconds);
+        setState(() => _status = StatusCronometro.pausado);
+      } else {
+
+        if (_tempoMateriaId == null) {
+          _tempoMateriaId = await tempo_materia_service.iniciarSessao(widget.materia);
+        } else {
+          await tempo_materia_service.continuarSessao(_tempoMateriaId!);
+        }
+
+        setState(() {
+          _status = StatusCronometro.emAndamento;
+          _startTimer();
+          print(_totalSeconds);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro: ${e.toString()}')),
+      );
+    }
+  }
+
+  String _formatTime(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final remainingSeconds = seconds % 60;
+
+    return '${hours.toString().padLeft(2, '0')}:'
+        '${minutes.toString().padLeft(2, '0')}:'
+        '${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -66,136 +113,83 @@ class _MateriaItemState extends State<MateriaItem> {
     super.dispose();
   }
 
-  String _formatTime(int seconds) {
-    return '${(seconds ~/ 3600).toString().padLeft(2, '0')}:'
-        '${(seconds ~/ 60 % 60).toString().padLeft(2, '0')}:'
-        '${(seconds % 60).toString().padLeft(2, '0')}';
-  }
-
-  //dependente de exisitr usuário
-  Future<void> _handlePlayPause() async {
-    if (_isFinalizado) return ;
-
-    if (_isRunning) {
-      final success = await tempo_materia_service.pausarSessao(_tempoMateriaId!);
-      print("pausou");
-      if (success) _stopTimer();
-    } else {
-      if (_tempoMateriaId == null) {
-        final id = await tempo_materia_service.iniciarSessao(widget.materia);
-        setState(() {
-          _tempoMateriaId = id;
-          _inicioSessao = DateTime.now();
-        });
-
-      } else {
-        await tempo_materia_service.continuarSessao(_tempoMateriaId!);
-      }
-      _startTimer();
-    }
-  }
-
-  Future<void> _handleFinalizar() async {
-    if (_tempoMateriaId == null || _isFinalizado) return;
-    final success = await tempo_materia_service.finalizarSessao(_tempoMateriaId!);
-    if (success) {
-      _stopTimer();
-      setState(() {
-        _isFinalizado = true;
-        _inicioSessao = null;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MateriasDetailsScreen(materia: widget.materia),
-            ),
-          );
-        },
-        child: Card(
-          color: Theme.of(context).colorScheme.tertiary,
-          child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MateriasDetailsScreen(materiaId: widget.materia.id),
+        ),
+      ),
+      child: Card(
+        color: Theme.of(context).colorScheme.tertiary,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
-              children: [
-              Expanded(
-                child: Text(widget.materia.nome, style: TextStyle(
-                  color: Theme.of(context).colorScheme.onTertiary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                )),
-              ),
-                IconButton(
-                  onPressed: () {
-                    print("Clicou no botão, isRunning=$_isRunning");
-                    if (_isRunning) {
-                      _stopTimer();
-                    } else {
-                      _startTimer();
-                    }
-
-                    //_handlePlayPause();
-                  },
-                  icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.materia.nome,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onTertiary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _handlePlayPause,
+                    icon: Icon(
+                      _status == StatusCronometro.emAndamento ? Icons.pause : Icons.play_arrow,
                       color: Theme.of(context).colorScheme.onTertiary,
-                      size: 32),
-                ),
-                  ],
+                      size: 32,
+                    ),
                   ),
-                Text(
-                  widget.materia.descricao,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onTertiary,
-                  ),
+                ],
+              ),
+              Text(
+                widget.materia.descricao,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onTertiary,
                 ),
-                const SizedBox(height: 24),
-                      Row(
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => CriarMetaScreen(materiaId: widget.materia.id,)),
+                      ),
+                      child: Row(
                         children: [
-                          Expanded(
-                            child: InkWell(onTap: (){
-                              Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => CriarMetaScreen(),
-                                  ),
-                              );
-                            }, child: Row(
-                              children: [
-                                Icon(Icons.add,
-                                    color: Theme.of(context).colorScheme.onTertiary,
-                                    size: 32),
-                                Text('Adicionar Meta',
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onTertiary,
-                                  ),
-                                ),
-
-                              ],
-                            ),
-                              ),
+                          Icon(Icons.add, color: Theme.of(context).colorScheme.onTertiary, size: 32),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Adicionar Meta',
+                            style: TextStyle(color: Theme.of(context).colorScheme.onTertiary),
                           ),
-                          if (_secondsElapsed > 0)
-                            Text(
-                              _formatTime(_secondsElapsed),
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onTertiary,
-                                fontSize: 16,
-                              ),
-                            )
                         ],
                       ),
-                      ]
-                  )
+                    ),
+                  ),
+                  Text(
+                    _formatTime(_totalSeconds),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onTertiary,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }

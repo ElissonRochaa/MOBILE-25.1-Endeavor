@@ -27,7 +27,6 @@ class CardGrupo extends StatelessWidget {
                 width: 100,
                 child: Text(
                   grupo.titulo,
-                  overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: GoogleFonts.nunito(
                     fontSize: 16,
@@ -47,17 +46,25 @@ class CardGrupo extends StatelessWidget {
                   ),
             ],
           ),
-          SizedBox(height: 12,),
+          SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Tópico",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Theme.of(context).colorScheme.surface),
+                grupo.areasEstudo.join(", "),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
               ),
               Text(
                 "${grupo.membros}/${grupo.capacidade}",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Theme.of(context).colorScheme.surface),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).colorScheme.surface,
+                ),
               ),
             ],
           ),

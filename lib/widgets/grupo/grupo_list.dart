@@ -68,6 +68,7 @@ class _GrupoListState extends State<GrupoList> {
                   ? Center(
                     child: Text(
                       "Não foi encontrado nenhum grupo ${busca.isNotEmpty ? "chamado '$busca'" : ''}. Tente novamente!",
+                      textAlign: TextAlign.center,
                     ),
                   )
                   : ListView.builder(
@@ -126,7 +127,7 @@ class _GrupoListState extends State<GrupoList> {
             },
           ),
           ListTile(
-            title: const Text("Ordenar por visibilidade"),
+            title: const Text("Ordenar por público"),
             leading: Radio<Ordenacao>(
               value: Ordenacao.privado,
               groupValue: ordenarPor,
