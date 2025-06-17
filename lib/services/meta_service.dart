@@ -7,7 +7,6 @@ import '../models/meta.dart';
 import '../utils/error_handler.dart';
 
 final apiUrl = '${dotenv.env['API_URL']}/metas';
-final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
 
 

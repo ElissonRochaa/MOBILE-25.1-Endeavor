@@ -1,19 +1,23 @@
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../services/materia_service.dart';
 
-class CriarMateriaScreen extends StatefulWidget {
+class CriarMateriaScreen extends ConsumerStatefulWidget {
   const CriarMateriaScreen({super.key});
 
   @override
-  State<CriarMateriaScreen> createState() => _CriarMateriaScreenState();
+  ConsumerState<CriarMateriaScreen> createState() => _CriarMateriaScreenState();
 }
 
-class _CriarMateriaScreenState extends State<CriarMateriaScreen> {
+class _CriarMateriaScreenState extends ConsumerState<CriarMateriaScreen> {
   final TextEditingController nomeMateriaController = TextEditingController();
   final TextEditingController descricaoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  late String token;
+  late String usuarioId;
 
   void retornarHandler() {
     Navigator.pop(context, true);
@@ -37,6 +41,8 @@ class _CriarMateriaScreenState extends State<CriarMateriaScreen> {
   }
 
   void criarMateriaHandler() async {
+    token = ref.watch(authProvider).token!;
+    usuarioId = ref.watch(authProvider).id!;
     final isValido = _formKey.currentState!.validate();
     if (!isValido) return;
 
@@ -46,7 +52,8 @@ class _CriarMateriaScreenState extends State<CriarMateriaScreen> {
       final materiaCriada = await createMateria(
         nome: nomeMateriaController.text,
         descricao: descricaoController.text,
-        usuarioId: '',
+        usuarioId: usuarioId,
+        token: token,
       );
 
       if (!mounted) return;

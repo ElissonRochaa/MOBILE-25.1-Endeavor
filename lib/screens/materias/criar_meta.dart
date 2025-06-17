@@ -82,7 +82,7 @@ class _CriarMetaScreenState extends State<CriarMetaScreen> {
 
       Navigator.pop(context, metaCriada);
     } catch (e) {
-      print('materia: ' + widget.materiaId);
+      print('materia: ${widget.materiaId}');
       if (mounted) {
         showError(e);
       }

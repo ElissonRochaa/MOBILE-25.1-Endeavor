@@ -1,6 +1,7 @@
 import 'package:endeavor/models/grupo.dart';
 import 'package:endeavor/models/materia.dart';
 import 'package:endeavor/models/usuario.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/services/materia_service.dart';
@@ -12,21 +13,22 @@ import 'package:endeavor/widgets/perfil/materia_box.dart';
 import 'package:endeavor/widgets/perfil/number_box.dart';
 import 'package:endeavor/widgets/perfil/perfil_banner.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
-class PerfilScreen extends StatefulWidget {
+class PerfilScreen extends ConsumerStatefulWidget {
   const PerfilScreen({super.key});
 
   @override
-  State<PerfilScreen> createState() => _PerfilScreenState();
+  ConsumerState<PerfilScreen> createState() => _PerfilScreenState();
 }
 
-class _PerfilScreenState extends State<PerfilScreen> {
+class _PerfilScreenState extends ConsumerState<PerfilScreen> {
+  late Usuario _usuario;
+  late String usuarioId;
+  late String token;
   String dropdownValue = "diario";
-  Usuario? _usuario;
   List<Grupo> _gruposUsuario = [];
   List<Materia> _materias = [];
   List<Map<String, dynamic>> _tempoMateriaComNome = [];
@@ -49,21 +51,23 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   Future<void> _carregarUsuario() async {
-    final usuario = await buscarUsuarioPorId(usuarioId);
+    usuarioId = ref.watch(authProvider).id!;
+    token = ref.watch(authProvider).token!;
+    final usuario = await buscarUsuarioPorId(usuarioId, token);
     setState(() {
       _usuario = usuario;
     });
   }
 
   Future<void> _carregarGrupos() async {
-    final grupos = await getGruposFromUsuario(usuarioId);
+    final grupos = await getGruposFromUsuario(usuarioId, token);
     setState(() {
       _gruposUsuario = grupos;
     });
   }
 
   Future<void> _carregarMaterias() async {
-    final materias = await buscarMateriasPorUsuario(usuarioId);
+    final materias = await buscarMateriasPorUsuario(usuarioId, token);
     setState(() {
       _materias = materias;
     });
@@ -233,7 +237,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         () => Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
+                            builder: (context) => LoginScreen(),
                           ),
                         ),
                     child: Container(

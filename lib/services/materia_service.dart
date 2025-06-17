@@ -6,7 +6,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 final apiUrl = '${dotenv.env['API_URL']}/materias';
-final String usuarioIdMock = dotenv.env["USUARIO_ID"]!;
 
 Future<List<Materia>> getMaterias() async {
   final response = await http.get(Uri.parse(apiUrl));
@@ -31,15 +30,17 @@ Future<Materia> createMateria({
   required String nome,
   required String descricao,
   required String usuarioId,
+  required String token,
 }) async {
   final response = await http.post(
     Uri.parse('$apiUrl/create'),
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
     body: jsonEncode({
       'nome': nome,
       'descricao': descricao,
-      'usuarioId': usuarioId.isNotEmpty ? usuarioId : usuarioIdMock,
+      'usuarioId': usuarioId.isNotEmpty ? usuarioId : usuarioId,
     }),
+    
   );
   if (response.statusCode == 200) {
     return Materia.fromJson(jsonDecode(response.body));
@@ -79,11 +80,15 @@ Future<void> deleteMateria(String id) async {
   }
 }
 
-Future<List<Materia>> buscarMateriasPorUsuario(String usuarioId) async {
+Future<List<Materia>> buscarMateriasPorUsuario(String usuarioId, String token) async {
   final response = await http.get(
     Uri.parse(
-      '$apiUrl/usuario/${usuarioId.isNotEmpty ? usuarioId : usuarioIdMock}',
+      '$apiUrl/usuario/${usuarioId.isNotEmpty ? usuarioId : usuarioId}',
     ),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
 
   if (response.statusCode == 200) {

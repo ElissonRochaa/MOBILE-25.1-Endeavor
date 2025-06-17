@@ -96,7 +96,7 @@ class _MembroItemState extends State<MembroItem> {
         padding: const EdgeInsets.all(12),
         child: ListTile(
           title: Text(
-            widget.membroDetails.usuario.nome,
+            widget.membroDetails.usuario.nome!,
             textAlign: TextAlign.end,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           ),

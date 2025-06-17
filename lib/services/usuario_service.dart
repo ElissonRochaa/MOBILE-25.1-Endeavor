@@ -18,13 +18,24 @@ Future<List<Usuario>> listarUsuarios() async {
   }
 }
 
-Future<Usuario> buscarUsuarioPorId(String id) async {
-  final response = await http.get(Uri.parse('$apiUrl/$id'));
+Future<Usuario> buscarUsuarioPorId(String id, String token) async {
+  final url = Uri.parse('$apiUrl/$id');
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
-    return Usuario.fromJson(jsonDecode(response.body));
+    final Map<String, dynamic> jsonData = json.decode(response.body);
+    return Usuario.fromJson(jsonData);
+  } else if (response.statusCode == 404) {
+    throw Exception('Usuário não encontrado');
   } else {
-    handleHttpError(response);
+    throw Exception('Erro ao buscar usuário: ${response.statusCode}');
   }
 }
 
@@ -74,3 +85,5 @@ Future<List<Usuario>> buscarUsuariosPorNome(String nome) async {
     handleHttpError(response);
   }
 }
+
+

@@ -1,4 +1,6 @@
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/grupo_service.dart';
+import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/home/areas_estudo.dart';
@@ -7,20 +9,28 @@ import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/home/materia_list.dart';
 import 'package:endeavor/widgets/home/search_bar_home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final String usuarioId = dotenv.env["USUARIO_ID"]!;
-
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   final String? nome;
 
   const HomeScreen({super.key, this.nome});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late String usuarioId;
+  late String token;
+
+  @override
+  void initState() {
+    usuarioId = ref.read(authProvider).id!;
+    token = ref.read(authProvider).token!;
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(context).pushNamed('/materias/criar');
               },
             ),
-            MateriaList(),
+            MateriaList(getFn: () => buscarMateriasPorUsuario(usuarioId, token),),
             SizedBox(height: 40),
             Label(
               title: "Meus grupos",
@@ -54,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               onSeeAll: () => Navigator.of(context).pushNamed('/grupos'),
             ),
-            GrupoList(getFn: () => getGruposFromUsuario(usuarioId)),
+            GrupoList(getFn: () => getGruposFromUsuario(usuarioId, token)),
             SizedBox(height: 40),
             Label(title: "Áreas de estudo", onAdd: () {}, onSeeAll: () {}),
             Container(

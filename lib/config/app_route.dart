@@ -84,9 +84,9 @@ class AppRouter {
       case '/':
         return MaterialPageRoute(builder: (_) => const InitialScreen());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(builder: (_) => LoginScreen());
       case '/login-2':
-        return MaterialPageRoute(builder: (_) => const SecondLoginScreen());
+        return MaterialPageRoute(builder: (_) => SecondLoginScreen());
       case '/registro':
         return MaterialPageRoute(builder: (_) => const RegistroScreen());
       case '/home':

@@ -7,10 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 final apiUrl = '${dotenv.env['API_URL']}/grupos-estudo';
-final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
-Future<List<Grupo>> getGrupos() async {
-  final response = await http.get(Uri.parse(apiUrl));
+Future<List<Grupo>> getGrupos(String token) async {
+  final response = await http.get(Uri.parse(apiUrl),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => Grupo.fromJson(json)).toList();
@@ -19,9 +23,13 @@ Future<List<Grupo>> getGrupos() async {
   }
 }
 
-Future<List<Grupo>> getGruposFromUsuario(String usuarioId) async {
+Future<List<Grupo>> getGruposFromUsuario(String usuarioId, String token) async {
   final response = await http.get(
     Uri.parse('$apiUrl/usuario?usuarioId=$usuarioId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);
@@ -52,17 +60,18 @@ Future<Grupo> createGrupo({
   required bool privado,
   required String areaEstudo,
   required String idCriador,
+  required String token,
 }) async {
   final response = await http.post(
     Uri.parse(apiUrl),
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
     body: jsonEncode({
       'titulo': titulo,
       'descricao': descricao,
       'capacidade': capacidade,
       'privado': privado,
       'areaEstudoId': areaEstudo,
-      'usuarioCriadorId': usuarioId,
+      'usuarioCriadorId': idCriador,
     }),
   );
   if (response.statusCode == 201) {
@@ -121,7 +130,7 @@ Future<List<Grupo>> getGruposByMembroNome(String nome) async {
 
 Future<void> adicionarMembroAoGrupo(String grupoId, String membroId) async {
   final response = await http.patch(
-    Uri.parse('$apiUrl/$grupoId/adicionar-usuario/$usuarioId'),
+    Uri.parse('$apiUrl/$grupoId/adicionar-usuario/$membroId'),
   );
   if (response.statusCode != 200) {
     handleHttpError(response);

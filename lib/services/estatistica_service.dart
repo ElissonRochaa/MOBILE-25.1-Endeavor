@@ -2,7 +2,7 @@ import 'package:endeavor/models/evolucao_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String baseEstatisticasUrl = 'http://10.0.2.2:8080/api/estatisticas';
+const String baseEstatisticasUrl = 'http://192.168.0.102:8080/api/estatisticas';
 
 Future<int> getTempoTotalPorMateria({
   required String usuarioId,

@@ -1,22 +1,26 @@
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/area_estudo.dart';
 import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/area_estudo.dart';
 import '../../services/grupo_service.dart' as grupo_service;
 
-class CriarGrupoScreen extends StatefulWidget {
+class CriarGrupoScreen extends ConsumerStatefulWidget {
   const CriarGrupoScreen({super.key});
 
   @override
-  State<CriarGrupoScreen> createState() => _CriarGrupoScreenState();
+  ConsumerState<CriarGrupoScreen> createState() => _CriarGrupoScreenState();
 }
 
-class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
+class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   List<AreaEstudo> _areasEstudo = [];
+  late String token;
+  late String usuarioId;
 
   String? area;
   int? capacidade;
@@ -56,6 +60,8 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
 
   void submitHandler() async {
     try {
+      token = ref.watch(authProvider).token!;
+      usuarioId = ref.watch(authProvider).id!;
       final isValido = _formKey.currentState!.validate();
       if (!isValido) return;
 
@@ -67,7 +73,8 @@ class _CriarGrupoScreenState extends State<CriarGrupoScreen> {
         capacidade: capacidade!,
         privado: isPrivado,
         areaEstudo: area!,
-        idCriador: "277cda16-1e67-453e-94f0-2de7d5fa3124",
+        idCriador: usuarioId,
+        token: token,
       );
 
       if (!mounted) return;

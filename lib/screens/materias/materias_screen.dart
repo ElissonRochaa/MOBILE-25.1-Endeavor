@@ -2,29 +2,35 @@ import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/materias/materia_list.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import '../../models/materia.dart';
 import '../../services/materia_service.dart';
 
-class MateriasScreen extends StatefulWidget {
+class MateriasScreen extends ConsumerStatefulWidget {
   const MateriasScreen({super.key});
+  
 
   @override
-  State<MateriasScreen> createState() => _MateriasScreenState();
+  ConsumerState<MateriasScreen> createState() => _MateriasScreenState();
 }
 
-class _MateriasScreenState extends State<MateriasScreen> {
+class _MateriasScreenState extends ConsumerState<MateriasScreen> {
   late Future<List<Materia>> _materiasFuture;
+  late String _usuarioId;
+  late String _token;
 
   @override
   void initState() {
+    _usuarioId = ref.watch(authProvider).id!;
+    _token = ref.watch(authProvider).token!;
     super.initState();
-    _materiasFuture = buscarMateriasPorUsuario(usuarioIdMock);
+    _materiasFuture = buscarMateriasPorUsuario(_usuarioId, _token);
   }
 
   void _reloadMaterias() {
     setState(() {
-      _materiasFuture = buscarMateriasPorUsuario(usuarioIdMock);
+      _materiasFuture = buscarMateriasPorUsuario(_usuarioId, _token);
     });
   }
 

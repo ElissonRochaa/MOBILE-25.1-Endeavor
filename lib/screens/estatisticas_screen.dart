@@ -106,6 +106,7 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
           children: [
             SizedBox(height: 20),
             Text("Seu Strike", style: TextStyle(fontSize: 20)),
+            Text("Seu Strike", style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             Container(
               height: 140,
@@ -177,8 +178,8 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
                   evolucao: evolucao,
                   animate: true,
                   labels: gerarLabels(evolucao),
-                ),
               ),
+            ),
             ),
           ],
         ),
