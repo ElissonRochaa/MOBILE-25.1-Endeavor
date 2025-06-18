@@ -8,7 +8,8 @@ import 'package:http/http.dart' as http;
 final apiUrl = '${dotenv.env['API_URL']}/areas-estudo';
 
 Future<List<AreaEstudo>> getAreasEstudo(String token) async {
-  final response = await http.get(Uri.parse(apiUrl),
+  final response = await http.get(
+    Uri.parse(apiUrl),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -23,7 +24,8 @@ Future<List<AreaEstudo>> getAreasEstudo(String token) async {
 }
 
 Future<AreaEstudo> getAreaEstudoById(String id, String token) async {
-  final response = await http.get(Uri.parse('$apiUrl/$id'),
+  final response = await http.get(
+    Uri.parse('$apiUrl/$id'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -37,11 +39,15 @@ Future<AreaEstudo> getAreaEstudoById(String id, String token) async {
   }
 }
 
-Future<AreaEstudo> createAreaEstudo(String nome, String token) async {
+Future<AreaEstudo> createAreaEstudo({
+  required String nome,
+  required String token,
+}) async {
   final response = await http.post(
     Uri.parse(apiUrl),
-    headers: {'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token'
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
     },
     body: jsonEncode({'nome': nome}),
   );
@@ -53,10 +59,17 @@ Future<AreaEstudo> createAreaEstudo(String nome, String token) async {
   }
 }
 
-Future<AreaEstudo> updateAreaEstudo(String id, String novoNome, String token) async {
+Future<AreaEstudo> updateAreaEstudo(
+  String id,
+  String novoNome,
+  String token,
+) async {
   final response = await http.put(
     Uri.parse('$apiUrl/$id'),
-    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
     body: jsonEncode(novoNome),
   );
 
@@ -68,12 +81,13 @@ Future<AreaEstudo> updateAreaEstudo(String id, String novoNome, String token) as
 }
 
 Future<void> deleteAreaEstudo(String id, String token) async {
-  final response = await http.delete(Uri.parse('$apiUrl/$id'),
+  final response = await http.delete(
+    Uri.parse('$apiUrl/$id'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     },
-    );
+  );
 
   if (response.statusCode != 204) {
     handleHttpError(response);
@@ -81,12 +95,13 @@ Future<void> deleteAreaEstudo(String id, String token) async {
 }
 
 Future<List<AreaEstudo>> findAreaEstudoByNome(String nome, String token) async {
-  final response = await http.get(Uri.parse('$apiUrl/search?nome=$nome'),
+  final response = await http.get(
+    Uri.parse('$apiUrl/search?nome=$nome'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     },
-    );
+  );
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);

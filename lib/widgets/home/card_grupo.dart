@@ -10,10 +10,10 @@ class CardGrupo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       width: 160,
       height: 75,
-      margin: EdgeInsets.symmetric(horizontal: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(8),
@@ -28,6 +28,7 @@ class CardGrupo extends StatelessWidget {
                 child: Text(
                   grupo.titulo,
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -46,18 +47,23 @@ class CardGrupo extends StatelessWidget {
                   ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                grupo.areasEstudo.join(", "),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.surface,
+              Flexible(
+                child: Text(
+                  grupo.areasEstudo.join(", "),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).colorScheme.surface,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
                 "${grupo.membros}/${grupo.capacidade}",
                 style: TextStyle(

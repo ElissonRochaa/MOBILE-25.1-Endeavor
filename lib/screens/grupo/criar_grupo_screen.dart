@@ -17,7 +17,9 @@ class CriarGrupoScreen extends ConsumerStatefulWidget {
 class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
+  final TextEditingController _novaAreaController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   List<AreaEstudo> _areasEstudo = [];
   late String token;
   late String usuarioId;
@@ -25,6 +27,15 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
   String? area;
   int? capacidade;
   bool isPrivado = false;
+  bool isOutro = false;
+
+  @override
+  void initState() {
+    super.initState();
+    token = ref.read(authProvider).token!;
+    usuarioId = ref.read(authProvider).id!;
+    loadAreasEstudo();
+  }
 
   void loadAreasEstudo() async {
     final areas = await getAreasEstudo(token);
@@ -36,30 +47,6 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    token = ref.read(authProvider).token!;
-    usuarioId = ref.read(authProvider).id!;
-    loadAreasEstudo();
-  }
-
-  void areaHandler(String novaArea) {
-    setState(() {
-      area = novaArea;
-    });
-  }
-
-  void capacidadeHandler(int novaCapacidade) {
-    setState(() {
-      capacidade = novaCapacidade;
-    });
-  }
-
-  void retornarHandler() {
-    Navigator.pop(context, true);
-  }
-
   void submitHandler() async {
     try {
       final isValido = _formKey.currentState!.validate();
@@ -67,12 +54,24 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
 
       _formKey.currentState!.save();
 
+      String areaId = area!;
+
+      if (isOutro) {
+        final novaArea = await createAreaEstudo(
+          nome: _novaAreaController.text.trim(),
+          token: token,
+        );
+        areaId = novaArea.id;
+      }
+
+      if (!mounted) return;
+
       final grupoCriado = await grupo_service.createGrupo(
         titulo: _tituloController.text,
         descricao: _descricaoController.text,
         capacidade: capacidade!,
         privado: isPrivado,
-        areaEstudo: area!,
+        areaEstudo: areaId,
         idCriador: usuarioId,
         token: token,
       );
@@ -116,22 +115,19 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
             vertical: 10,
           ),
         ),
-        hint:
-            _areasEstudo.isEmpty
-                ? const Text("Carregando...")
-                : const Text("Selecione uma área"),
-        items:
-            _areasEstudo.map((area) {
-              return DropdownMenuItem(value: area.id, child: Text(area.nome));
-            }).toList(),
-        onChanged:
-            _areasEstudo.isEmpty
-                ? null
-                : (value) {
-                  setState(() {
-                    area = value;
-                  });
-                },
+        hint: const Text("Selecione uma área"),
+        items: [
+          ..._areasEstudo.map(
+            (a) => DropdownMenuItem(value: a.id, child: Text(a.nome)),
+          ),
+          const DropdownMenuItem(value: 'OUTRO', child: Text('Outro')),
+        ],
+        onChanged: (value) {
+          setState(() {
+            area = value;
+            isOutro = value == 'OUTRO';
+          });
+        },
         validator: (value) {
           if (value == null) {
             return 'Selecione uma área';
@@ -155,6 +151,7 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Título
                 TextFormField(
                   controller: _tituloController,
                   decoration: InputDecoration(
@@ -170,11 +167,13 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
                         value.isEmpty ||
                         value.length < 4 ||
                         value.trim().isEmpty) {
-                      return "O titulo do grupo deve conter, ao menos, 4 caracteres.";
+                      return "O título do grupo deve conter, ao menos, 4 caracteres.";
                     }
                     return null;
                   },
                 ),
+
+                // Descrição
                 TextFormField(
                   controller: _descricaoController,
                   decoration: InputDecoration(
@@ -189,12 +188,15 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
                     if (value == null ||
                         value.isEmpty ||
                         value.trim().isEmpty) {
-                      return "A descrição não pode ser nula.";
+                      return "A descrição não pode ser vazia.";
                     }
                     return null;
                   },
                 ),
+
                 const SizedBox(height: 32),
+
+                // Dropdowns de Área e Capacidade
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -234,6 +236,28 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
                     ),
                   ],
                 ),
+
+                // Campo para Nova Área, caso "Outro" seja selecionado
+                if (isOutro) ...[
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _novaAreaController,
+                    decoration: InputDecoration(
+                      labelText: "Nome da nova área",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (isOutro && (value == null || value.trim().isEmpty)) {
+                        return 'Informe o nome da nova área';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+
+                // Checkbox Privado
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: Row(
@@ -257,6 +281,8 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
                     ],
                   ),
                 ),
+
+                // Botão Criar
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 56,
@@ -276,9 +302,7 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
                           ),
                         ),
                       ),
-                      onPressed: () {
-                        submitHandler();
-                      },
+                      onPressed: submitHandler,
                       child: Text(
                         "Criar Grupo",
                         style: TextStyle(
