@@ -26,9 +26,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void initState() {
+    super.initState();
     usuarioId = ref.read(authProvider).id!;
     token = ref.read(authProvider).token!;
-    super.initState();
   }
   
   @override
@@ -45,8 +45,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               title: "Minhas matérias",
               onSeeAll: () => Navigator.of(context).pushNamed('/materias'),
 
-              onAdd: () {
-                Navigator.of(context).pushNamed('/materias/criar');
+              onAdd: () async {
+                final novaMateria = await Navigator.of(context).pushNamed('/materias/criar');
+                if (novaMateria != null) {
+                  setState(() {}); 
+                }
               },
             ),
             MateriaList(getFn: () => buscarMateriasPorUsuario(usuarioId, token),),

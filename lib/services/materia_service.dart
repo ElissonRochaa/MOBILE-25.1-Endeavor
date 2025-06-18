@@ -54,6 +54,7 @@ Future<Materia> updateMateria({
   String? nome,
   String? descricao,
   String? usuarioId,
+  String? token,
 }) async {
   final body = <String, dynamic>{'id': id};
   if (nome != null) body['nome'] = nome;
@@ -62,7 +63,7 @@ Future<Materia> updateMateria({
 
   final response = await http.put(
     Uri.parse('$apiUrl/update'),
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
     body: jsonEncode(body),
   );
 
@@ -73,8 +74,13 @@ Future<Materia> updateMateria({
   }
 }
 
-Future<void> deleteMateria(String id) async {
-  final response = await http.delete(Uri.parse('$apiUrl/$id'));
+Future<void> deleteMateria(String id, String token) async {
+  final response = await http.delete(Uri.parse('$apiUrl/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
   if (response.statusCode != 204) {
     handleHttpError(response);
   }

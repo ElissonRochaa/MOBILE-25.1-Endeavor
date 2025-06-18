@@ -32,6 +32,7 @@ void initState() {
 }
 
 Future<void> _checarAutenticacao() async {
+  //Isso é para limpar os dados de autenticação
   ref.watch(authProvider.notifier).clearAuth();
   AuthStorageService().clearAuthData();
   bool value = await AuthStorageService().isAuthenticated();
@@ -39,8 +40,6 @@ Future<void> _checarAutenticacao() async {
   if (value) {
     String? id = await AuthStorageService().getId();
     String? token = await AuthStorageService().getToken();
-    Usuario usuario = await buscarUsuarioPorId(id!, token!);
-    ref.read(usuarioProvider.notifier).setUsuario(usuario);
     ref.watch(authProvider.notifier).setAuth(
       AuthResponse(id: id, token: token),
     );

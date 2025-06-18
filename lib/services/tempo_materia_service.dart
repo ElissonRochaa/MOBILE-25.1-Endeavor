@@ -7,10 +7,10 @@ import 'package:http/http.dart' as http;
 
 final String _baseUrl = '${dotenv.env['API_URL']}/tempo-materias';
 
-Future<String?> iniciarSessao(materia) async {
+Future<String?> iniciarSessao(materia, String token) async {
   final response = await http.post(
     Uri.parse('$_baseUrl/criar'),
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
     body: jsonEncode({'usuarioId': materia.usuarioId, 'materiaId': materia.id}),
   );
 
@@ -22,10 +22,14 @@ Future<String?> iniciarSessao(materia) async {
   }
 }
 
-Future<String?> pausarSessao(String tempoMateriaId) async {
+Future<String?> pausarSessao(String tempoMateriaId, String token) async {
   try {
     final response = await http.put(
       Uri.parse('$_baseUrl/pausar/$tempoMateriaId'),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
     );
 
     if (response.statusCode == 200) {
@@ -46,9 +50,13 @@ Future<String?> pausarSessao(String tempoMateriaId) async {
   }
 }
 
-Future<String?> continuarSessao(String tempoMateriaId) async {
+Future<String?> continuarSessao(String tempoMateriaId, String token) async {
   final response = await http.put(
     Uri.parse('$_baseUrl/continuar/$tempoMateriaId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
 
   if (response.statusCode == 200) {
@@ -60,9 +68,13 @@ Future<String?> continuarSessao(String tempoMateriaId) async {
   }
 }
 
-Future<String?> finalizarSessao(String tempoMateriaId) async {
+Future<String?> finalizarSessao(String tempoMateriaId, String token) async {
   final response = await http.put(
     Uri.parse('$_baseUrl/finalizar/$tempoMateriaId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
@@ -76,11 +88,16 @@ Future<String?> finalizarSessao(String tempoMateriaId) async {
 Future<Map<String, dynamic>?> buscarSessaoAtiva(
   String usuarioId,
   String materiaId,
+  String token
 ) async {
   final response = await http.get(
     Uri.parse(
       '$_baseUrl/buscaPorUsuarioMateriaAtiva?usuarioId=$usuarioId&materiaId=$materiaId',
     ),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
 
   if (response.statusCode == 200) {
@@ -106,9 +123,14 @@ Future<Map<String, dynamic>?> buscarSessaoAtiva(
 
 Future<List<TempoMateria>> buscarSessoesDeHojePorUsuario(
   String usuarioId,
+  String token,
 ) async {
   final response = await http.get(
     Uri.parse('$_baseUrl/sessoes-hoje?usuarioId=$usuarioId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
 
   if (response.statusCode == 200) {

@@ -21,8 +21,8 @@ class _GrupoScreenState extends ConsumerState<GrupoScreen> {
 
   @override
   void initState() {
-    token = ref.watch(authProvider).token!;
     super.initState();
+    token = ref.read(authProvider).token!;
     _gruposFuture = grupo_service.getGrupos(token);
   }
 

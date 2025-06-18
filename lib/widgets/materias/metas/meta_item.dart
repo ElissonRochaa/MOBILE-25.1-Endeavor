@@ -1,23 +1,27 @@
 import 'package:endeavor/models/meta.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../services/meta_service.dart';
 
-class MetaItem extends StatefulWidget {
+class MetaItem extends ConsumerStatefulWidget {
   final Meta meta;
 
   const MetaItem({super.key, required  this.meta});
 
   @override
-  State<MetaItem> createState() => _MetaItemState();
+  ConsumerState<MetaItem> createState() => _MetaItemState();
 }
 
-class _MetaItemState extends State<MetaItem> {
+class _MetaItemState extends ConsumerState<MetaItem> {
   late bool done;
+  late String token;
 
   @override
   void initState() {
     super.initState();
+    token = ref.read(authProvider).token!;
     done = widget.meta.concluida;
   }
 
@@ -26,7 +30,7 @@ class _MetaItemState extends State<MetaItem> {
       done = value ?? false;
     });
 
-    await updateMeta(id: widget.meta.id, concluida: done);
+    await updateMeta(id: widget.meta.id, concluida: done, token: token);
   }
 
   @override

@@ -1,28 +1,30 @@
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/widgets/estatisticas/dropdown_button_periodo.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/evolucao_model.dart';
 import '../services/estatistica_service.dart';
 import '../widgets/estatisticas/bar_chart.dart' as bar_chart;
 
-final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
-class EstatisticasScreen extends StatefulWidget {
+class EstatisticasScreen extends ConsumerStatefulWidget {
   final String? nome;
 
   const EstatisticasScreen({super.key, this.nome});
 
   @override
-  State<EstatisticasScreen> createState() => _EstatisticasScreenState();
+  ConsumerState<EstatisticasScreen> createState() => _EstatisticasScreenState();
 }
 
-class _EstatisticasScreenState extends State<EstatisticasScreen> {
+class _EstatisticasScreenState extends ConsumerState<EstatisticasScreen> {
   List<EvolucaoModel> evolucao = [];
   int diasConsecutivos = 0;
   Periodo periodoSelecionado = Periodo.dia;
+  late String usuarioId;
+  late String token;
 
   Duration definirIntervalo(Periodo periodo) {
     switch (periodo) {
@@ -40,6 +42,8 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
   @override
   void initState() {
     super.initState();
+    usuarioId = ref.read(authProvider).id!;
+    token = ref.read(authProvider).token!;
     carregarEstatisticas();
   }
 
@@ -57,7 +61,7 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
       }
 
       final List<EvolucaoModel> evolucaoPeriodo = await getEvolucao(
-        usuarioId: "e1e78a67-7ba6-4ebb-9330-084da088037f",
+        usuarioId: usuarioId,
         inicio:
             periodoSelecionado == Periodo.mes
                 ? DateTime.parse("${DateTime.now().year}-01-01")
@@ -68,9 +72,10 @@ class _EstatisticasScreenState extends State<EstatisticasScreen> {
                 : DateTime.now(),
         unidade: periodoToString(periodoSelecionado),
         intervalo: 1,
+        token: token,
       );
 
-      final strike = await getDiasConsecutivosDeEstudo(usuarioId: usuarioId);
+      final strike = await getDiasConsecutivosDeEstudo(usuarioId: usuarioId, token: token);
 
       setState(() {
         evolucao = evolucaoPeriodo;

@@ -22,9 +22,9 @@ class _MateriasScreenState extends ConsumerState<MateriasScreen> {
 
   @override
   void initState() {
-    _usuarioId = ref.watch(authProvider).id!;
-    _token = ref.watch(authProvider).token!;
     super.initState();
+    _usuarioId = ref.read(authProvider).id!;
+    _token = ref.read(authProvider).token!;
     _materiasFuture = buscarMateriasPorUsuario(_usuarioId, _token);
   }
 

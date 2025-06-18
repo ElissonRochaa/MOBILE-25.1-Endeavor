@@ -41,8 +41,6 @@ class _CriarMateriaScreenState extends ConsumerState<CriarMateriaScreen> {
   }
 
   void criarMateriaHandler() async {
-    token = ref.watch(authProvider).token!;
-    usuarioId = ref.watch(authProvider).id!;
     final isValido = _formKey.currentState!.validate();
     if (!isValido) return;
 
@@ -85,6 +83,8 @@ class _CriarMateriaScreenState extends ConsumerState<CriarMateriaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    token = ref.watch(authProvider).token!;
+    usuarioId = ref.watch(authProvider).id!;
     return Scaffold(
       appBar: EndeavorTopBar(title: "Criar Matéria", hideLogo: true),
       body: Form(

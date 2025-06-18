@@ -1,17 +1,18 @@
 import 'package:endeavor/models/grupo.dart';
 import 'package:endeavor/models/membro_com_tempo.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/grupo_service.dart' as grupo_service;
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:endeavor/widgets/membros/membro_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 final apiUrl = dotenv.env['API_URL'];
-final String usuarioId = dotenv.env["USUARIO_ID"]!;
 
-class DetalhesGrupoScreen extends StatefulWidget {
+class DetalhesGrupoScreen extends ConsumerStatefulWidget {
   final String grupoId;
   final bool isConvite;
 
@@ -22,20 +23,24 @@ class DetalhesGrupoScreen extends StatefulWidget {
   });
 
   @override
-  State<DetalhesGrupoScreen> createState() => _DetalhesGrupoScreenState();
+  ConsumerState<DetalhesGrupoScreen> createState() => _DetalhesGrupoScreenState();
 }
 
-class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
+class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
   late Future<Grupo?> _grupoFuture;
   late Future<List<MembroComTempo>> _membrosFuture;
+  late String usuarioId;
+  late String token;
 
   bool _navegarParaHome = false;
 
   @override
   void initState() {
     super.initState();
-    _grupoFuture = grupo_service.getGrupoById(widget.grupoId);
-    _membrosFuture = grupo_service.getMembrosDoGrupo(widget.grupoId);
+    usuarioId = ref.read(authProvider).id!;
+    token = ref.read(authProvider).token!;
+    _grupoFuture = grupo_service.getGrupoById(widget.grupoId, token);
+    _membrosFuture = grupo_service.getMembrosDoGrupo(widget.grupoId, token);
 
     _grupoFuture.then((grupo) {
       if (grupo != null &&
@@ -69,12 +74,14 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                     await grupo_service.adicionarMembroAoGrupo(
                       grupo.id,
                       usuarioId,
+                      token,
                     );
                     if (!mounted) return;
                     grupo.membrosIds.add(usuarioId);
                     setState(() {
                       _membrosFuture = grupo_service.getMembrosDoGrupo(
                         widget.grupoId,
+                        token,
                       );
                     });
                   } catch (e) {
@@ -308,6 +315,7 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                                               .removerMembroDoGrupo(
                                                 grupo.id,
                                                 usuarioId,
+                                                token,
                                               );
                                           grupo.membrosIds.remove(usuarioId);
 
@@ -321,6 +329,7 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                                               .adicionarMembroAoGrupo(
                                                 grupo.id,
                                                 usuarioId,
+                                                token
                                               );
                                           grupo.membrosIds.add(usuarioId);
                                         }
@@ -330,6 +339,7 @@ class _DetalhesGrupoScreenState extends State<DetalhesGrupoScreen> {
                                           _membrosFuture = grupo_service
                                               .getMembrosDoGrupo(
                                                 widget.grupoId,
+                                                token,
                                               );
                                         });
                                       } catch (e) {

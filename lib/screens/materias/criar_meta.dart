@@ -1,21 +1,24 @@
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/meta_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CriarMetaScreen extends StatefulWidget {
+class CriarMetaScreen extends ConsumerStatefulWidget {
   final String materiaId;
   const CriarMetaScreen({super.key, required this.materiaId});
 
   @override
-  State<CriarMetaScreen> createState() => _CriarMetaScreenState();
+  ConsumerState<CriarMetaScreen> createState() => _CriarMetaScreenState();
 }
 
-class _CriarMetaScreenState extends State<CriarMetaScreen> {
+class _CriarMetaScreenState extends ConsumerState<CriarMetaScreen> {
   final TextEditingController nomeMetaController = TextEditingController();
   final TextEditingController descricaoController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   DateTime? _prazoSelecionado;
+  late String token;
 
   String _formatDate(DateTime date) {
     return "${date.day.toString().padLeft(2, '0')}/"
@@ -57,7 +60,9 @@ class _CriarMetaScreenState extends State<CriarMetaScreen> {
           descricao: descricaoController.text,
           materiaId: widget.materiaId,
           data: _prazoSelecionado,
-          concluida: false);
+          concluida: false,
+          token: token,
+          );
 
       print(metaCriada);
 
@@ -91,6 +96,7 @@ class _CriarMetaScreenState extends State<CriarMetaScreen> {
 
   @override
   Widget build(BuildContext context) {
+    token = ref.watch(authProvider).token!;
     return Scaffold(
       appBar: EndeavorTopBar(title: "Criar Meta", hideLogo: true,),
       body: Form(

@@ -25,7 +25,7 @@ class PerfilScreen extends ConsumerStatefulWidget {
 }
 
 class _PerfilScreenState extends ConsumerState<PerfilScreen> {
-  late Usuario _usuario;
+  Usuario? _usuario;
   late String usuarioId;
   late String token;
   String dropdownValue = "diario";
@@ -38,6 +38,8 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   @override
   void initState() {
     super.initState();
+    usuarioId = ref.read(authProvider).id!;
+    token = ref.read(authProvider).token!;
     _carregarDados();
   }
 
@@ -51,8 +53,6 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   }
 
   Future<void> _carregarUsuario() async {
-    usuarioId = ref.watch(authProvider).id!;
-    token = ref.watch(authProvider).token!;
     final usuario = await buscarUsuarioPorId(usuarioId, token);
     setState(() {
       _usuario = usuario;
@@ -74,7 +74,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   }
 
   Future<void> _carregarTempoMaterias() async {
-    final sessoes = await buscarSessoesDeHojePorUsuario(usuarioId);
+    final sessoes = await buscarSessoesDeHojePorUsuario(usuarioId, token);
 
     Map<String, int> tempoPorMateria = {};
 
@@ -122,6 +122,11 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_usuario == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: EndeavorTopBar(title: "Perfil"),
@@ -133,7 +138,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
           child: Column(
             children: [
               PerfilBanner(
-                usuario: _usuario,
+                usuario: _usuario!,
                 tempoTotal: _formatarTempo(_tempoTotalHoje),
               ),
               Divider(

@@ -27,7 +27,7 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
   bool isPrivado = false;
 
   void loadAreasEstudo() async {
-    final areas = await getAreasEstudo();
+    final areas = await getAreasEstudo(token);
     setState(() {
       _areasEstudo = areas;
       if (_areasEstudo.isNotEmpty) {
@@ -39,6 +39,8 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
   @override
   void initState() {
     super.initState();
+    token = ref.read(authProvider).token!;
+    usuarioId = ref.read(authProvider).id!;
     loadAreasEstudo();
   }
 
@@ -60,8 +62,6 @@ class _CriarGrupoScreenState extends ConsumerState<CriarGrupoScreen> {
 
   void submitHandler() async {
     try {
-      token = ref.watch(authProvider).token!;
-      usuarioId = ref.watch(authProvider).id!;
       final isValido = _formKey.currentState!.validate();
       if (!isValido) return;
 

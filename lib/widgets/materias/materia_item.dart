@@ -1,30 +1,34 @@
 import 'dart:async';
 import 'package:endeavor/models/tempo_materia.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
 import '../../services/tempo_materia_service.dart' as tempo_materia_service;
 
-class MateriaItem extends StatefulWidget {
+class MateriaItem extends ConsumerStatefulWidget {
   final Materia materia;
 
   const MateriaItem({super.key, required this.materia});
 
   @override
-  State<MateriaItem> createState() => _MateriaItemState();
+  ConsumerState<MateriaItem> createState() => _MateriaItemState();
 }
 
-class _MateriaItemState extends State<MateriaItem> {
+class _MateriaItemState extends ConsumerState<MateriaItem> {
   Timer? _timer;
   int _totalSeconds = 0;
   StatusCronometro? _status;
   String? _tempoMateriaId;
   DateTime? _inicioSessao;
+  late String _token;
 
   @override
   void initState() {
     super.initState();
+    _token = ref.read(authProvider).token!;
     _initSessionData();
   }
 
@@ -33,6 +37,7 @@ class _MateriaItemState extends State<MateriaItem> {
     final tempoTotalAcumulado = await tempo_materia_service.buscarSessaoAtiva(
       widget.materia.usuarioId,
       widget.materia.id,
+      _token
     );
 
     if (tempoMateria != null) {
@@ -64,7 +69,7 @@ class _MateriaItemState extends State<MateriaItem> {
 
   Future<void> _stopTimer() async {
     _timer?.cancel();
-    final atualizado = await tempo_materia_service.buscarSessaoAtiva(widget.materia.usuarioId, widget.materia.id);
+    final atualizado = await tempo_materia_service.buscarSessaoAtiva(widget.materia.usuarioId, widget.materia.id, _token);
     _totalSeconds = atualizado?['tempoDecorrido'] ?? 0;
   }
 
@@ -72,16 +77,16 @@ class _MateriaItemState extends State<MateriaItem> {
     try {
       if (_status == StatusCronometro.emAndamento) {
 
-        await tempo_materia_service.pausarSessao(_tempoMateriaId!);
+        await tempo_materia_service.pausarSessao(_tempoMateriaId!, _token);
         _stopTimer();
         print(_totalSeconds);
         setState(() => _status = StatusCronometro.pausado);
       } else {
 
         if (_tempoMateriaId == null) {
-          _tempoMateriaId = await tempo_materia_service.iniciarSessao(widget.materia);
+          _tempoMateriaId = await tempo_materia_service.iniciarSessao(widget.materia, _token);
         } else {
-          await tempo_materia_service.continuarSessao(_tempoMateriaId!);
+          await tempo_materia_service.continuarSessao(_tempoMateriaId!, _token);
         }
 
         setState(() {

@@ -1,7 +1,9 @@
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/materia.dart';
 import '../../models/meta.dart';
@@ -9,29 +11,31 @@ import '../../services/meta_service.dart';
 import '../../widgets/materias/metas/meta_list.dart';
 import 'criar_meta.dart';
 
-class MateriasDetailsScreen extends StatefulWidget {
+class MateriasDetailsScreen extends ConsumerStatefulWidget {
   final String materiaId;
 
   const MateriasDetailsScreen({super.key, required this.materiaId});
 
   @override
-  State<MateriasDetailsScreen> createState() => _MateriasDetailsScreenState();
+  ConsumerState<MateriasDetailsScreen> createState() => _MateriasDetailsScreenState();
 }
 
-class _MateriasDetailsScreenState extends State<MateriasDetailsScreen> {
+class _MateriasDetailsScreenState extends ConsumerState<MateriasDetailsScreen> {
   late Future<Materia> _materiaFuture;
   late Future<List<Meta>> _metasFuture;
+  late String _token;
 
   @override
   void initState() {
     super.initState();
+    _token = ref.read(authProvider).token!;
     _materiaFuture = getMateriaById(widget.materiaId);
-    _metasFuture = getMetaByMateria(widget.materiaId);
+    _metasFuture = getMetaByMateria(widget.materiaId, _token);
   }
 
   void _reloadMaterias() {
     setState(() {
-      _metasFuture = getMetaByMateria(widget.materiaId);
+      _metasFuture = getMetaByMateria(widget.materiaId, _token);
     });
   }
 

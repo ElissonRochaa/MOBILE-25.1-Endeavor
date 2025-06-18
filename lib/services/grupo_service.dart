@@ -43,8 +43,13 @@ Future<List<Grupo>> getGruposFromUsuario(String usuarioId, String token) async {
   }
 }
 
-Future<Grupo> getGrupoById(String id) async {
-  final response = await http.get(Uri.parse('$apiUrl/$id'));
+Future<Grupo> getGrupoById(String id, String token) async {
+  final response = await http.get(Uri.parse('$apiUrl/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return Grupo.fromJson(jsonDecode(response.body));
@@ -88,6 +93,7 @@ Future<Grupo> updateGrupo({
   int? capacidade,
   bool? privado,
   List<String>? areasEstudo,
+  String? token,
 }) async {
   final body = <String, dynamic>{};
   if (titulo != null) body['titulo'] = titulo;
@@ -98,7 +104,7 @@ Future<Grupo> updateGrupo({
 
   final response = await http.put(
     Uri.parse('$apiUrl/$id'),
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
     body: jsonEncode(body),
   );
 
@@ -109,16 +115,26 @@ Future<Grupo> updateGrupo({
   }
 }
 
-Future<void> deleteGrupo(String id) async {
-  final response = await http.delete(Uri.parse('$apiUrl/$id'));
+Future<void> deleteGrupo(String id, String token) async {
+  final response = await http.delete(Uri.parse('$apiUrl/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode != 204) {
     handleHttpError(response);
   }
 }
 
-Future<List<Grupo>> getGruposByMembroNome(String nome) async {
-  final response = await http.get(Uri.parse('$apiUrl?membroNome=$nome'));
+Future<List<Grupo>> getGruposByMembroNome(String nome, String token) async {
+  final response = await http.get(Uri.parse('$apiUrl?membroNome=$nome'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);
@@ -128,18 +144,26 @@ Future<List<Grupo>> getGruposByMembroNome(String nome) async {
   }
 }
 
-Future<void> adicionarMembroAoGrupo(String grupoId, String membroId) async {
+Future<void> adicionarMembroAoGrupo(String grupoId, String membroId, String token) async {
   final response = await http.patch(
     Uri.parse('$apiUrl/$grupoId/adicionar-usuario/$membroId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
   if (response.statusCode != 200) {
     handleHttpError(response);
   }
 }
 
-Future<void> removerMembroDoGrupo(String grupoId, String membroId) async {
+Future<void> removerMembroDoGrupo(String grupoId, String membroId, String token) async {
   final response = await http.patch(
     Uri.parse('$apiUrl/$grupoId/remover-usuario/$membroId'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
   );
 
   if (response.statusCode != 200) {
@@ -147,8 +171,13 @@ Future<void> removerMembroDoGrupo(String grupoId, String membroId) async {
   }
 }
 
-Future<List<MembroComTempo>> getMembrosDoGrupo(String grupoId) async {
-  final response = await http.get(Uri.parse('$apiUrl/$grupoId/membros'));
+Future<List<MembroComTempo>> getMembrosDoGrupo(String grupoId, String token) async {
+  final response = await http.get(Uri.parse('$apiUrl/$grupoId/membros'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => MembroComTempo.fromJson(json)).toList();

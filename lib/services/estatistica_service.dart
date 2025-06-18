@@ -7,12 +7,18 @@ const String baseEstatisticasUrl = 'http://192.168.0.102:8080/api/estatisticas';
 Future<int> getTempoTotalPorMateria({
   required String usuarioId,
   required int materiaId,
+  required String token
 }) async {
   final url = Uri.parse(
     '$baseEstatisticasUrl/materia?usuarioId=$usuarioId&materiaId=$materiaId',
   );
 
-  final response = await http.get(url);
+  final response = await http.get(url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return int.parse(response.body);
@@ -24,13 +30,19 @@ Future<int> getTempoTotalPorMateria({
 Future<int> getTempoTotalNoDia({
   required String usuarioId,
   required DateTime data,
+  required String token
 }) async {
   final dataStr = data.toIso8601String().substring(0, 10);
   final url = Uri.parse(
     '$baseEstatisticasUrl/dia?usuarioId=$usuarioId&data=$dataStr',
   );
 
-  final response = await http.get(url);
+  final response = await http.get(url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return int.parse(response.body);
@@ -43,13 +55,19 @@ Future<int> getTempoTotalNoDiaPorMateria({
   required String usuarioId,
   required int materiaId,
   required DateTime data,
+  required String token
 }) async {
   final dataStr = data.toIso8601String().substring(0, 10);
   final url = Uri.parse(
     '$baseEstatisticasUrl/dia/materia?usuarioId=$usuarioId&materiaId=$materiaId&data=$dataStr',
   );
 
-  final response = await http.get(url);
+  final response = await http.get(url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return int.parse(response.body);
@@ -62,6 +80,7 @@ Future<int> getTempoNaSemana({
   required String usuarioId,
   required DateTime inicio,
   required DateTime fim,
+  required String token,
 }) async {
   final inicioStr = inicio.toIso8601String().substring(0, 10);
   final fimStr = fim.toIso8601String().substring(0, 10);
@@ -69,7 +88,12 @@ Future<int> getTempoNaSemana({
     '$baseEstatisticasUrl/semana?usuarioId=$usuarioId&inicio=$inicioStr&fim=$fimStr',
   );
 
-  final response = await http.get(url);
+  final response = await http.get(url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return int.parse(response.body);
@@ -83,6 +107,7 @@ Future<int> getTempoNaSemanaPorMateria({
   required int materiaId,
   required DateTime inicio,
   required DateTime fim,
+  required String token,
 }) async {
   final inicioStr = inicio.toIso8601String().substring(0, 10);
   final fimStr = fim.toIso8601String().substring(0, 10);
@@ -90,7 +115,12 @@ Future<int> getTempoNaSemanaPorMateria({
     '$baseEstatisticasUrl/semana/materia?usuarioId=$usuarioId&materiaId=$materiaId&inicio=$inicioStr&fim=$fimStr',
   );
 
-  final response = await http.get(url);
+  final response = await http.get(url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return int.parse(response.body);
@@ -104,7 +134,9 @@ Future<List<EvolucaoModel>> getEvolucao({
   required DateTime inicio,
   required DateTime fim,
   required String unidade, // "DAYS", "WEEKS", "MONTHS" - unidades de tempo
+  required String token,
   int intervalo = 1,
+
 }) async {
   final String url = '$baseEstatisticasUrl/evolucao'
       '?usuarioId=$usuarioId'
@@ -113,7 +145,12 @@ Future<List<EvolucaoModel>> getEvolucao({
       '&unidade=$unidade'
       '&intervalo=$intervalo';
 
-  final response = await http.get(Uri.parse(url));
+  final response = await http.get(Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     List<dynamic> data = json.decode(response.body);
@@ -128,6 +165,7 @@ Future<List<EvolucaoModel>> getEvolucao({
 
 Future<int> getDiasConsecutivosDeEstudo({
   required String usuarioId,
+  required String token,
   int tempoMinimoDiario = 5,
 }) async {
   final url = Uri.parse(
@@ -136,7 +174,12 @@ Future<int> getDiasConsecutivosDeEstudo({
         '&tempoMinimoDiario=$tempoMinimoDiario',
   );
 
-  final response = await http.get(url);
+  final response = await http.get(url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
 
   if (response.statusCode == 200) {
     return int.parse(response.body);
