@@ -17,59 +17,57 @@ class PerfilBanner extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 24, bottom: 16),
       child: Column(
-                spacing: 8,
-                mainAxisAlignment: MainAxisAlignment.start, 
-                children: [
-                  const CircleAvatar(
-                    radius: 60,
-                    backgroundImage: NetworkImage(
-                        'https://www.w3schools.com/howto/img_avatar.png'),
-                  ),
-                  Text(
-                    usuario.nome!,
-                    style: GoogleFonts.nunito(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    width: 200,
-      
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '$tempoTotal estudados hoje',
-                      style: GoogleFonts.nunito(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Card(
-                    color: Colors.white,
-                    elevation: 4,
-                    margin: const EdgeInsets.only(top: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Container(
-                      width: 200,
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        "Escolaridade: ${usuario.escolaridade}\nIdade: ${usuario.idade}",
-                        style: GoogleFonts.nunito(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+        spacing: 8,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const CircleAvatar(
+            radius: 60,
+            backgroundImage: NetworkImage(
+              'https://www.w3schools.com/howto/img_avatar.png',
+            ),
+          ),
+          Text(
+            usuario.nome!,
+            style: GoogleFonts.nunito(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            width: 200,
+
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '$tempoTotal estudados hoje',
+              style: GoogleFonts.nunito(fontSize: 16, color: Colors.white),
+            ),
+          ),
+          Card(
+            color: Colors.white,
+            elevation: 4,
+            margin: const EdgeInsets.only(top: 4),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(2),
+            ),
+            child: Container(
+              width: 200,
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                "Escolaridade: ${usuario.escolaridade?.label}\nIdade: ${usuario.idade}",
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            );
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

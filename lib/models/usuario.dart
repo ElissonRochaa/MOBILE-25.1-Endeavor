@@ -1,4 +1,3 @@
-
 enum Escolaridade {
   ENSINO_FUNDAMENTAL,
   ENSINO_MEDIO,
@@ -7,6 +6,27 @@ enum Escolaridade {
   MESTRADO,
   DOUTORADO,
   NAO_INFORMADO,
+}
+
+extension EscolaridadeExt on Escolaridade {
+  String get label {
+    switch (this) {
+      case Escolaridade.ENSINO_FUNDAMENTAL:
+        return "Ensino Fundamental";
+      case Escolaridade.ENSINO_MEDIO:
+        return "Ensino Médio";
+      case Escolaridade.ENSINO_SUPERIOR:
+        return "Ensino Superior";
+      case Escolaridade.POS_GRADUACAO:
+        return "Pós-graduação";
+      case Escolaridade.MESTRADO:
+        return "Mestrado";
+      case Escolaridade.DOUTORADO:
+        return "Doutorado";
+      case Escolaridade.NAO_INFORMADO:
+        return "Não informado";
+    }
+  }
 }
 
 class Usuario {

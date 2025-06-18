@@ -3,21 +3,23 @@ import 'dart:async';
 import 'package:endeavor/models/materia.dart';
 import 'package:endeavor/models/membro_com_tempo.dart';
 import 'package:endeavor/models/tempo_materia.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/widgets/membros/info_box.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../services/materia_service.dart';
 
-class MembroItem extends StatefulWidget {
+class MembroItem extends ConsumerStatefulWidget {
   final MembroComTempo membroDetails;
 
   const MembroItem({super.key, required this.membroDetails});
 
   @override
-  State<MembroItem> createState() => _MembroItemState();
+  ConsumerState<MembroItem> createState() => _MembroItemState();
 }
 
-class _MembroItemState extends State<MembroItem> {
+class _MembroItemState extends ConsumerState<MembroItem> {
   late Timer _timer;
   String? _materiaNome;
   bool _loadingMateria = false;
@@ -58,11 +60,13 @@ class _MembroItemState extends State<MembroItem> {
 
     setState(() => _loadingMateria = true);
     try {
+      final token = ref.read(authProvider).token!;
       Materia? materia;
 
       if (widget.membroDetails.tempoMateria != null) {
         materia = await getMateriaById(
           widget.membroDetails.tempoMateria!.materiaId,
+          token,
         );
       }
       setState(
@@ -114,14 +118,16 @@ class _MembroItemState extends State<MembroItem> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  InfoBox(
-                    corBackground: corInterna,
-                    isAtivo: isAtivo,
-                    titulo: "Matéria",
-                    data:
-                        _loadingMateria
-                            ? 'Carregando...'
-                            : _materiaNome ?? 'Não informado',
+                  Expanded(
+                    child: InfoBox(
+                      corBackground: corInterna,
+                      isAtivo: isAtivo,
+                      titulo: "Matéria",
+                      data:
+                          _loadingMateria
+                              ? 'Carregando...'
+                              : _materiaNome ?? 'Não informado',
+                    ),
                   ),
                   const SizedBox(width: 8),
                   InfoBox(

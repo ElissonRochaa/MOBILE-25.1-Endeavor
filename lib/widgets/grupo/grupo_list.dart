@@ -72,7 +72,7 @@ class _GrupoListState extends State<GrupoList> {
                     ),
                   )
                   : ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     itemCount: gruposFiltrados.length,
                     itemBuilder: (context, index) {
                       return GrupoItem(grupoData: gruposFiltrados[index]);

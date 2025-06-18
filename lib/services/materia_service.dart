@@ -17,8 +17,14 @@ Future<List<Materia>> getMaterias() async {
   }
 }
 
-Future<Materia> getMateriaById(String id) async {
-  final response = await http.get(Uri.parse('$apiUrl/$id'));
+Future<Materia> getMateriaById(String id, String token) async {
+  final response = await http.get(
+    Uri.parse('$apiUrl/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
   if (response.statusCode == 200) {
     return Materia.fromJson(jsonDecode(response.body));
   } else {
@@ -34,13 +40,15 @@ Future<Materia> createMateria({
 }) async {
   final response = await http.post(
     Uri.parse('$apiUrl/create'),
-    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
     body: jsonEncode({
       'nome': nome,
       'descricao': descricao,
       'usuarioId': usuarioId.isNotEmpty ? usuarioId : usuarioId,
     }),
-    
   );
   if (response.statusCode == 200) {
     return Materia.fromJson(jsonDecode(response.body));
@@ -63,7 +71,10 @@ Future<Materia> updateMateria({
 
   final response = await http.put(
     Uri.parse('$apiUrl/update'),
-    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
     body: jsonEncode(body),
   );
 
@@ -75,7 +86,8 @@ Future<Materia> updateMateria({
 }
 
 Future<void> deleteMateria(String id, String token) async {
-  final response = await http.delete(Uri.parse('$apiUrl/$id'),
+  final response = await http.delete(
+    Uri.parse('$apiUrl/$id'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -86,7 +98,10 @@ Future<void> deleteMateria(String id, String token) async {
   }
 }
 
-Future<List<Materia>> buscarMateriasPorUsuario(String usuarioId, String token) async {
+Future<List<Materia>> buscarMateriasPorUsuario(
+  String usuarioId,
+  String token,
+) async {
   final response = await http.get(
     Uri.parse(
       '$apiUrl/usuario/${usuarioId.isNotEmpty ? usuarioId : usuarioId}',

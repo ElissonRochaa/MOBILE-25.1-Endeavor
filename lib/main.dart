@@ -4,8 +4,9 @@ import 'package:app_links/app_links.dart';
 import 'package:endeavor/config/app_route.dart';
 import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'config/theme_app.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -13,7 +14,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void loadDotEnv() async {
   await dotenv.load(fileName: "assets/.env");
 }
-
 
 void main() {
   runZonedGuarded(
@@ -97,13 +97,6 @@ class _MyAppState extends State<MyApp> {
         debugPrint('Entidade não suportada: ${uri.host}');
       }
     });
-  }
-
-  String? _extrairUri(Uri uri) {
-    if (uri.pathSegments.isNotEmpty) {
-      return uri.pathSegments[0];
-    }
-    return null;
   }
 
   @override
