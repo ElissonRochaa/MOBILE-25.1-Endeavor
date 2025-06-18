@@ -80,7 +80,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
     for (var sessao in sessoes) {
       final materia = await getMateriaById(sessao.materiaId, token);
 
-      final nomeMateria = materia.nome ?? 'Sem matéria';
+      final nomeMateria = materia.nome;
 
       tempoPorMateria.update(
         nomeMateria,
@@ -188,32 +188,6 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
-                    ),
-                    DropdownButton(
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      value: dropdownValue,
-                      items: const [
-                        DropdownMenuItem(
-                          value: "diario",
-                          child: Text("Diário"),
-                        ),
-                        DropdownMenuItem(
-                          value: "semanal",
-                          child: Text("Semanal"),
-                        ),
-                        DropdownMenuItem(
-                          value: "mensal",
-                          child: Text("Mensal"),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          dropdownValue = value!;
-                        });
-                      },
                     ),
                   ],
                 ),

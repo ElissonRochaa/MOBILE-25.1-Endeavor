@@ -6,6 +6,8 @@ import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:endeavor/providers/theme_provider.dart';
+
 
 import 'config/theme_app.dart';
 
@@ -25,7 +27,7 @@ void main() {
         ErrorHandler.handleFlutterError(details.exception);
       };
 
-      runApp(ProviderScope(child: const MyApp()));
+      runApp(ProviderScope(child: MyApp()));
     },
     (error, stackTrace) {
       ErrorHandler.handleError(error);
@@ -33,14 +35,14 @@ void main() {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   late final AppLinks _appLinks;
 
   @override
@@ -101,10 +103,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       title: 'Endeavor',
       navigatorKey: navigatorKey,
       theme: ThemeApp.theme,
+      darkTheme: ThemeApp.darkTheme,
+      themeMode: themeMode,
       initialRoute: "/",
       onGenerateRoute: AppRouter.generateRoute,
     );

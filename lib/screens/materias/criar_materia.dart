@@ -73,7 +73,7 @@ class _CriarMateriaScreenState extends ConsumerState<CriarMateriaScreen> {
 
       if (!mounted) return;
 
-      Navigator.pop(context, materiaCriada);
+      Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {
         showError(e);

@@ -1,8 +1,9 @@
 import 'package:endeavor/models/evolucao_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-const String baseEstatisticasUrl = 'http://192.168.0.102:8080/api/estatisticas';
+final String baseEstatisticasUrl = '${dotenv.env['API_URL']}/estatisticas';
 
 Future<int> getTempoTotalPorMateria({
   required String usuarioId,
