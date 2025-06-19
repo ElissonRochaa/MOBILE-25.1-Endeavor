@@ -1,32 +1,25 @@
 import 'dart:convert';
-import 'package:endeavor/models/auth_response.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-String baseUrl = '${dotenv.env['API_URL']}/auth';
+import 'package:endeavor/models/auth_response.dart';
+import 'package:endeavor/utils/error_handler.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+
+final _authUrl = '${dotenv.env['API_URL']}/auth';
 
 Future<AuthResponse> login(String email, String senha) async {
-
   final response = await http.post(
-    Uri.parse('$baseUrl/login'),
+    Uri.parse('$_authUrl/login'),
     headers: {'Content-Type': 'application/json'},
-    body: json.encode({
-      'email': email,
-      'senha': senha,
-    }),
+    body: json.encode({'email': email, 'senha': senha}),
   );
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    return AuthResponse(
-      id: data['id'],
-      token: data['token'],
-    );
-  } else if (response.statusCode == 401) {
-    throw Exception('Credenciais inválidas');
+    return AuthResponse(id: data['id'], token: data['token']);
   } else {
-    throw Exception('Erro ao autenticar usuário');
-  } 
+    handleHttpError(response);
+  }
 }
 
 Future<String> registrar(
@@ -37,7 +30,7 @@ Future<String> registrar(
   String escolaridade,
 ) async {
   final response = await http.post(
-    Uri.parse('$baseUrl/registro'),
+    Uri.parse('$_authUrl/registro'),
     headers: {'Content-Type': 'application/json'},
     body: json.encode({
       'nome': nome,
@@ -50,11 +43,7 @@ Future<String> registrar(
 
   if (response.statusCode == 200) {
     return 'Usuário registrado com sucesso';
-  } else if (response.statusCode == 400) {
-    final data = json.decode(response.body);
-    throw Exception(data['message'] ?? 'Erro ao registrar usuário');
-    
   } else {
-    throw Exception('Erro ao registrar usuário');
+    handleHttpError(response);
   }
 }
