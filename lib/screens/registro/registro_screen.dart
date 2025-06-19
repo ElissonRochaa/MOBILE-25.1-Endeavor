@@ -1,18 +1,9 @@
+import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
 import 'package:endeavor/services/auth_service.dart';
 import 'package:endeavor/widgets/loginRegistro/input_texto.dart';
 import 'package:endeavor/widgets/loginRegistro/senha_input.dart';
 import 'package:flutter/material.dart';
-
-enum Escolaridade {
-  ENSINO_FUNDAMENTAL,
-  ENSINO_MEDIO,
-  ENSINO_SUPERIOR,
-  POS_GRADUACAO,
-  MESTRADO,
-  DOUTORADO,
-  NAO_INFORMADO,
-}
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
@@ -172,9 +163,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
               Escolaridade.values.map((escolaridade) {
                 return DropdownMenuItem(
                   value: escolaridade,
-                  child: Text(
-                    escolaridade.name.replaceAll('_', ' ').toUpperCase(),
-                  ),
+                  child: Text(escolaridade.label),
                 );
               }).toList(),
           onChanged: (Escolaridade? novaEscolaridade) {

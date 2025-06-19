@@ -76,7 +76,7 @@ class GrupoItem extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        grupoData.areasEstudo.join(', '),
+                        grupoData.areasEstudo.map((area) => area.nome).join(", "),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(

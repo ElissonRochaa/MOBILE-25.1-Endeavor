@@ -53,7 +53,7 @@ class CardGrupo extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  grupo.areasEstudo.join(", "),
+                  grupo.areasEstudo.map((area) => area.nome).join(", "),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

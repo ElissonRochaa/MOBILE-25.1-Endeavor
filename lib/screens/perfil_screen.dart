@@ -80,7 +80,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
     for (var sessao in sessoes) {
       final materia = await getMateriaById(sessao.materiaId, token);
 
-      final nomeMateria = materia.nome ?? 'Sem matéria';
+      final nomeMateria = materia.nome;
 
       tempoPorMateria.update(
         nomeMateria,

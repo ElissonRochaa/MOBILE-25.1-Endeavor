@@ -7,7 +7,7 @@ import '../../config/theme_app.dart';
 class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool hideLogo;
-  final IconButton? icone;
+  final Widget? icone;
 
   const EndeavorTopBar({
     super.key,
