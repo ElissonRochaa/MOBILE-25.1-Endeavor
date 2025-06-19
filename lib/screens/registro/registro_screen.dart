@@ -1,5 +1,6 @@
 import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/screens/registro/quiz_screen.dart';
 import 'package:endeavor/services/auth_service.dart';
 import 'package:endeavor/widgets/loginRegistro/input_texto.dart';
 import 'package:endeavor/widgets/loginRegistro/senha_input.dart';
@@ -55,7 +56,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => QuizScreen()),
       );
     } catch (e) {
       if (!mounted) return;

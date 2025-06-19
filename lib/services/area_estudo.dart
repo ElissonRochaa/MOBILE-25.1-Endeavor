@@ -94,12 +94,11 @@ Future<void> deleteAreaEstudo(String id, String token) async {
   }
 }
 
-Future<List<AreaEstudo>> findAreaEstudoByNome(String nome, String token) async {
+Future<List<AreaEstudo>> findAreaEstudoByNome(String nome) async {
   final response = await http.get(
     Uri.parse('$apiUrl/search?nome=$nome'),
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
     },
   );
 

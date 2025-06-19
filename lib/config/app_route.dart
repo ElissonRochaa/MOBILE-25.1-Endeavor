@@ -11,7 +11,7 @@ import 'package:endeavor/screens/materias/criar_materia.dart';
 import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:endeavor/screens/materias/materias_details_screen.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
-import 'package:endeavor/screens/quiz_screen.dart';
+import 'package:endeavor/screens/registro/quiz_screen.dart';
 import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:flutter/material.dart';
