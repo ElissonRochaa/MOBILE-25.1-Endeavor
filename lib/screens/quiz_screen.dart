@@ -1,15 +1,9 @@
+import 'package:endeavor/models/area_estudo.dart';
+import 'package:endeavor/models/grupo.dart';
+import 'package:endeavor/services/area_estudo_service.dart';
+import 'package:endeavor/services/grupo_service.dart';
+import 'package:endeavor/widgets/grupo/grupo_list.dart';
 import 'package:flutter/material.dart';
-
-const escolaridade = [
-  [
-    "Fundamental 1",
-    "Fundamental 2",
-    "Ensino médio",
-    "Graduação",
-    "Pós-graduação",
-  ],
-  ["Tecnologia", "Ciências", "Culinária"],
-];
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -22,11 +16,42 @@ class _QuizScreenState extends State<QuizScreen> {
   String? _opcaoSelecionada;
   int passo = 0;
 
-  void _avancarPasso() {
-    if (passo < escolaridade.length - 1) {
+  List<AreaEstudo> areas = [];
+  List<Grupo> grupos = [];
+  bool carregando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarAreas();
+  }
+
+  Future<void> _carregarAreas() async {
+    setState(() => carregando = true);
+    try {
+      areas = await getAreasEstudo("");
+    } catch (e) {
+      debugPrint('Erro ao buscar áreas: $e');
+    }
+    setState(() => carregando = false);
+  }
+
+  Future<void> _carregarGruposPorArea(String areaId) async {
+    setState(() => carregando = true);
+    try {
+      print(areaId);
+      grupos = await getGruposPorArea(areaId);
+    } catch (e) {
+      debugPrint('Erro ao buscar grupos: $e');
+    }
+    setState(() => carregando = false);
+  }
+
+  void _avancarPasso() async {
+    if (passo == 0 && _opcaoSelecionada != null) {
+      await _carregarGruposPorArea(_opcaoSelecionada!);
       setState(() {
         passo++;
-        _opcaoSelecionada = null;
       });
     } else {
       Navigator.pushReplacementNamed(context, "/home");
@@ -35,7 +60,10 @@ class _QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final opcoes = escolaridade[passo];
+    final opcoes =
+        passo == 0
+            ? areas.map((a) => {'id': a.id, 'nome': a.nome}).toList()
+            : [];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,148 +83,181 @@ class _QuizScreenState extends State<QuizScreen> {
                 )
                 : null,
       ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              color: Theme.of(context).colorScheme.tertiaryContainer,
-              child: Column(
-                children: [
-                  Image.asset("assets/flameLogo.png", width: 300),
-                  const Text(
-                    "Endeavor",
-                    style: TextStyle(fontSize: 48, fontFamily: 'BebasNeue'),
-                  ),
-                ],
-              ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  passo == 0
-                      ? "Qual sua escolaridade?"
-                      : "Qual área você mais se interessa?",
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: opcoes.length,
-                itemBuilder: (context, index) {
-                  final item = opcoes[index];
-                  return InkWell(
-                    splashColor: Theme.of(context).colorScheme.tertiary,
-                    onTap: () {
-                      setState(() {
-                        _opcaoSelecionada = item;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border(
-                          bottom: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        color: Theme.of(context).colorScheme.tertiary,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            item,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Theme.of(context).colorScheme.onTertiary,
+      body:
+          carregando
+              ? const Center(child: CircularProgressIndicator())
+              : SafeArea(
+                child:
+                    passo == 0
+                        ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildHeader(),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: const Text(
+                                  "Qual área você mais se interessa?",
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          Radio<String>(
-                            value: item,
-                            groupValue: _opcaoSelecionada,
-                            onChanged: (value) {
-                              setState(() {
-                                _opcaoSelecionada = value;
-                              });
-                            },
-                            activeColor: Theme.of(context).colorScheme.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Center(
-              child: InkWell(
-                onTap: _opcaoSelecionada != null ? _avancarPasso : null,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color:
-                        _opcaoSelecionada != null
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey,
-                  ),
-                  child: Text(
-                    passo < escolaridade.length - 1 ? 'Continuar' : 'Finalizar',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 50,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(escolaridade.length, (index) {
-                    final isSelected = index <= passo;
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 6),
-                      width: 14,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color:
-                            isSelected
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.transparent,
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 2,
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: opcoes.length,
+                                itemBuilder: (context, index) {
+                                  final item = opcoes[index];
+                                  return _buildOpcao(
+                                    item['nome']!,
+                                    item['id']!,
+                                  );
+                                },
+                              ),
+                            ),
+                            _buildBotaoContinuar(),
+                            _buildIndicador(),
+                          ],
+                        )
+                        : Column(
+                          children: [
+                            _buildHeader(),
+                            const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Grupos disponíveis nessa área",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Expanded(child: GrupoList(lista: grupos)),
+                            _buildBotaoContinuar(),
+                            _buildIndicador(),
+                          ],
                         ),
-                      ),
-                    );
-                  }),
-                ),
               ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      color: Theme.of(context).colorScheme.tertiaryContainer,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset("assets/flameLogo.png", width: 120, height: 120),
+          const SizedBox(width: 12),
+          const Text(
+            "Endeavor",
+            style: TextStyle(fontSize: 32, fontFamily: 'BebasNeue'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOpcao(String nome, String id) {
+    final selecionado = _opcaoSelecionada == id;
+    return InkWell(
+      splashColor: Theme.of(context).colorScheme.tertiary,
+      onTap: () {
+        setState(() {
+          _opcaoSelecionada = id;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              nome,
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onTertiary,
+              ),
+            ),
+            Radio<String>(
+              value: id,
+              groupValue: _opcaoSelecionada,
+              onChanged: (value) {
+                setState(() {
+                  _opcaoSelecionada = value;
+                });
+              },
+              activeColor: Theme.of(context).colorScheme.primary,
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBotaoContinuar() {
+    return Center(
+      child: InkWell(
+        onTap: _opcaoSelecionada != null ? _avancarPasso : null,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color:
+                _opcaoSelecionada != null
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
+          ),
+          child: Text(
+            passo < 1 ? 'Continuar' : 'Finalizar',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontSize: 22,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIndicador() {
+    return SizedBox(
+      height: 50,
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(2, (index) {
+            final isSelected = index <= passo;
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+            );
+          }),
         ),
       ),
     );

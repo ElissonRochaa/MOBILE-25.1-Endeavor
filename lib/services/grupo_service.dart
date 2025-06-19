@@ -46,6 +46,20 @@ Future<List<Grupo>> getGruposFromUsuario(String usuarioId, String token) async {
   }
 }
 
+Future<List<Grupo>> getGruposPorArea(String areaEstudoId) async {
+  print("AQUI");
+  print('$apiUrl/por-area/$areaEstudoId');
+  final response = await http.get(Uri.parse('$apiUrl/por-area/$areaEstudoId'));
+  print(response.statusCode);
+  print(response.body);
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Grupo.fromJson(json)).toList();
+  } else {
+    handleHttpError(response);
+  }
+}
+
 Future<void> atualizarGrupo({
   required String grupoId,
   required Grupo grupoData,
