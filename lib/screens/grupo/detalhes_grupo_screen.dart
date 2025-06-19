@@ -23,7 +23,8 @@ class DetalhesGrupoScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<DetalhesGrupoScreen> createState() => _DetalhesGrupoScreenState();
+  ConsumerState<DetalhesGrupoScreen> createState() =>
+      _DetalhesGrupoScreenState();
 }
 
 class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
@@ -134,7 +135,6 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
         }
 
         final grupo = grupoSnapshot.data!;
-
         final podeEntrarOuSair =
             !grupo.privado ||
             grupo.membrosIds.contains(usuarioId) ||
@@ -144,13 +144,41 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
           appBar: EndeavorTopBar(
             title: "Endeavor",
             hideLogo: true,
-            icone:
+            icone: Row(
+              children: [
+                grupo.criadorId == usuarioId ||
+                        (grupo.membros == 1 && grupo.membrosIds[0] == usuarioId)
+                    ? IconButton(
+                      onPressed: () async {
+                        final atualizado = await Navigator.pushNamed(
+                          context,
+                          'grupos/editar',
+                          arguments: grupo,
+                        );
+                        if (atualizado == true) {
+                          setState(() {
+                            _grupoFuture = grupo_service.getGrupoById(
+                              widget.grupoId,
+                              token,
+                            );
+                            _membrosFuture = grupo_service.getMembrosDoGrupo(
+                              widget.grupoId,
+                              token,
+                            );
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                    )
+                    : SizedBox.shrink(),
                 grupo.membrosIds.contains(usuarioId)
                     ? IconButton(
                       onPressed: _abrirCompartilhamento,
                       icon: const Icon(Icons.share, color: Colors.white),
                     )
-                    : null,
+                    : SizedBox.shrink(),
+              ],
+            ),
           ),
           bottomNavigationBar: EndeavorBottomBar(),
           body: Padding(
@@ -191,7 +219,16 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                   ),
                 ),
                 Text(grupo.descricao),
-                const SizedBox(height: 64),
+                const SizedBox(height: 24),
+                Text(
+                  "Áreas de estudo",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                Text(grupo.areasEstudo.map((area) => area.nome).join(", ")),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -329,7 +366,7 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                                               .adicionarMembroAoGrupo(
                                                 grupo.id,
                                                 usuarioId,
-                                                token
+                                                token,
                                               );
                                           grupo.membrosIds.add(usuarioId);
                                         }

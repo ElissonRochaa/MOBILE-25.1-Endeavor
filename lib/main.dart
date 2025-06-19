@@ -4,8 +4,11 @@ import 'package:app_links/app_links.dart';
 import 'package:endeavor/config/app_route.dart';
 import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:endeavor/providers/theme_provider.dart';
+
+
 import 'config/theme_app.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -13,7 +16,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void loadDotEnv() async {
   await dotenv.load(fileName: "assets/.env");
 }
-
 
 void main() {
   runZonedGuarded(
@@ -25,7 +27,7 @@ void main() {
         ErrorHandler.handleFlutterError(details.exception);
       };
 
-      runApp(ProviderScope(child: const MyApp()));
+      runApp(ProviderScope(child: MyApp()));
     },
     (error, stackTrace) {
       ErrorHandler.handleError(error);
@@ -33,14 +35,14 @@ void main() {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   late final AppLinks _appLinks;
 
   @override
@@ -99,19 +101,16 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  String? _extrairUri(Uri uri) {
-    if (uri.pathSegments.isNotEmpty) {
-      return uri.pathSegments[0];
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       title: 'Endeavor',
       navigatorKey: navigatorKey,
       theme: ThemeApp.theme,
+      darkTheme: ThemeApp.darkTheme,
+      themeMode: themeMode,
       initialRoute: "/",
       onGenerateRoute: AppRouter.generateRoute,
     );

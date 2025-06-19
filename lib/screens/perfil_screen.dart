@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class PerfilScreen extends ConsumerStatefulWidget {
   const PerfilScreen({super.key});
 
@@ -79,9 +78,9 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
     Map<String, int> tempoPorMateria = {};
 
     for (var sessao in sessoes) {
-      final materia = await getMateriaById(sessao.materiaId);
+      final materia = await getMateriaById(sessao.materiaId, token);
 
-      final nomeMateria = materia.nome ?? 'Sem matéria';
+      final nomeMateria = materia.nome;
 
       tempoPorMateria.update(
         nomeMateria,
@@ -123,9 +122,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   @override
   Widget build(BuildContext context) {
     if (_usuario == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -191,32 +188,6 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
-                    ),
-                    DropdownButton(
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      value: dropdownValue,
-                      items: const [
-                        DropdownMenuItem(
-                          value: "diario",
-                          child: Text("Diário"),
-                        ),
-                        DropdownMenuItem(
-                          value: "semanal",
-                          child: Text("Semanal"),
-                        ),
-                        DropdownMenuItem(
-                          value: "mensal",
-                          child: Text("Mensal"),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          dropdownValue = value!;
-                        });
-                      },
                     ),
                   ],
                 ),

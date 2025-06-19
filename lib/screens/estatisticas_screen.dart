@@ -44,6 +44,7 @@ class _EstatisticasScreenState extends ConsumerState<EstatisticasScreen> {
     super.initState();
     usuarioId = ref.read(authProvider).id!;
     token = ref.read(authProvider).token!;
+    print(token);
     carregarEstatisticas();
   }
 
@@ -78,7 +79,12 @@ class _EstatisticasScreenState extends ConsumerState<EstatisticasScreen> {
       final strike = await getDiasConsecutivosDeEstudo(usuarioId: usuarioId, token: token);
 
       setState(() {
+        print("Evolução recebida (${evolucaoPeriodo.length} itens):");
+        for (var e in evolucaoPeriodo) {
+          print("${e.data.toIso8601String()} - ${e.tempo}");
+        }
         evolucao = evolucaoPeriodo;
+        print(evolucao);
         diasConsecutivos = strike;
       });
     } catch (e) {
@@ -110,7 +116,6 @@ class _EstatisticasScreenState extends ConsumerState<EstatisticasScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            Text("Seu Strike", style: TextStyle(fontSize: 20)),
             Text("Seu Strike", style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),
             Container(

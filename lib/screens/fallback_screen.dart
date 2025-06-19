@@ -19,11 +19,7 @@ class FallbackScreen extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (route) => false,
-                  );
+                  Navigator.pop(context);
                 },
                 child: const Text('Voltar'),
               ),

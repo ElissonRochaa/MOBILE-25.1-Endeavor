@@ -63,7 +63,7 @@ class SimpleBarChart extends StatelessWidget {
           borderData: FlBorderData(show: false),
           barGroups: evolucao.asMap().entries.map((entry) {
             int idx = entry.key;
-            int tempo = entry.value.tempo;
+            double tempo = entry.value.tempo;
             return BarChartGroupData(
               x: idx,
               barRods: [

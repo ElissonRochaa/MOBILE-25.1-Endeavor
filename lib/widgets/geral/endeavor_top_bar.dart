@@ -1,13 +1,15 @@
 import 'package:endeavor/screens/home_screen.dart';
 import 'package:endeavor/screens/perfil_screen.dart';
+import 'package:endeavor/widgets/geral/tema_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../config/theme_app.dart';
 
 class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool hideLogo;
-  final IconButton? icone;
+  final Widget? icone;
 
   const EndeavorTopBar({
     super.key,
@@ -37,6 +39,9 @@ class EndeavorTopBar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
       actions: [
+        Consumer(
+          builder: (context, ref, _) => const TemaToggleButton(),
+        ),
         Container(
           margin: EdgeInsets.only(right: 10),
           child:

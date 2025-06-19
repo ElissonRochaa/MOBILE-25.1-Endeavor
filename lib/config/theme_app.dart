@@ -17,4 +17,22 @@ class ThemeApp {
       onSurface: Colors.black,
     ),
   );
+
+  static final darkTheme = ThemeData(
+    colorScheme: ColorScheme.dark(
+      brightness: Brightness.dark,
+      primary: Color(0xFF0077B6),
+      onPrimary: Colors.white,
+      secondary: Color(0xFF00B4D8),
+      onSecondary: Colors.black,
+      tertiary: Color(0xFF2F2D2D),
+      onTertiary: Colors.white,
+      tertiaryContainer: Color(0xFFCAF0F8),
+      error: Color(0xFFEF476F),
+      onError: Colors.white,
+      surface: Color(0xFF2F2D2D),
+      onSurface: Colors.white,
+    ),
+  );
+
 }

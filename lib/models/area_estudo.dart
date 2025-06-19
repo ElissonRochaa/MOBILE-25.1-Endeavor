@@ -1,13 +1,15 @@
 class AreaEstudo {
   String id;
   String nome;
+  bool padrao;
   List<String> grupoDeEstudosIds;
 
   AreaEstudo({
     required this.id,
-    required this.nome,
-    required this.grupoDeEstudosIds,
-  });
+    this.nome = "",
+    this.padrao = false,
+    List<String>? grupoDeEstudosIds,
+  }) : grupoDeEstudosIds = grupoDeEstudosIds ?? [];
 
   factory AreaEstudo.fromJson(Map<String, dynamic> json) {
     return AreaEstudo(

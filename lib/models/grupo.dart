@@ -1,10 +1,13 @@
+import 'package:endeavor/models/area_estudo.dart';
+
 class Grupo {
   final String id;
   String titulo;
   String descricao;
   int capacidade;
   bool privado;
-  List<String> areasEstudo;
+  String criadorId;
+  List<AreaEstudo> areasEstudo;
   List<String> membrosIds;
 
   Grupo({
@@ -15,6 +18,7 @@ class Grupo {
     required this.privado,
     required this.areasEstudo,
     required this.membrosIds,
+    required this.criadorId,
   });
 
   int get membros => membrosIds.length;
@@ -26,8 +30,11 @@ class Grupo {
       descricao: json['descricao'],
       capacidade: json['capacidade'],
       privado: json['privado'],
-      areasEstudo: [json['areaEstudo']],
+      areasEstudo: [
+        AreaEstudo.fromJson(json['areaEstudo'] as Map<String, dynamic>),
+      ],
       membrosIds: List<String>.from(json['usuariosIds']),
+      criadorId: json["usuarioCriadorId"],
     );
   }
 
@@ -40,6 +47,7 @@ class Grupo {
       'privado': privado,
       'areasEstudo': areasEstudo,
       'membrosIds': membrosIds,
+      "usuarioCriadorId": criadorId,
     };
   }
 }

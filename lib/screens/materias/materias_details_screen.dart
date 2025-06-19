@@ -17,7 +17,8 @@ class MateriasDetailsScreen extends ConsumerStatefulWidget {
   const MateriasDetailsScreen({super.key, required this.materiaId});
 
   @override
-  ConsumerState<MateriasDetailsScreen> createState() => _MateriasDetailsScreenState();
+  ConsumerState<MateriasDetailsScreen> createState() =>
+      _MateriasDetailsScreenState();
 }
 
 class _MateriasDetailsScreenState extends ConsumerState<MateriasDetailsScreen> {
@@ -29,7 +30,7 @@ class _MateriasDetailsScreenState extends ConsumerState<MateriasDetailsScreen> {
   void initState() {
     super.initState();
     _token = ref.read(authProvider).token!;
-    _materiaFuture = getMateriaById(widget.materiaId);
+    _materiaFuture = getMateriaById(widget.materiaId, _token);
     _metasFuture = getMetaByMateria(widget.materiaId, _token);
   }
 

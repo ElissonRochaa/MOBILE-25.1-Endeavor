@@ -2,6 +2,7 @@ import 'package:endeavor/screens/estatisticas_screen.dart';
 import 'package:endeavor/screens/fallback_screen.dart';
 import 'package:endeavor/screens/grupo/criar_grupo_screen.dart';
 import 'package:endeavor/screens/grupo/detalhes_grupo_screen.dart';
+import 'package:endeavor/screens/grupo/editar_grupo_screen.dart';
 import 'package:endeavor/screens/grupo/grupo_screen.dart';
 import 'package:endeavor/screens/home_screen.dart';
 import 'package:endeavor/screens/initial_screen.dart';
@@ -15,6 +16,8 @@ import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../models/grupo.dart';
+
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final name = settings.name ?? '/';
@@ -22,23 +25,31 @@ class AppRouter {
 
     if (uri.pathSegments.isNotEmpty) {
       final entity = uri.pathSegments[0];
+
       switch (entity) {
         case 'grupos':
           if (uri.pathSegments.length >= 2) {
             final secondSegment = uri.pathSegments[1];
 
-            if (secondSegment == "criar") {
+            if (secondSegment == 'criar') {
               return _authGuard(
                 builder: (_) => const CriarGrupoScreen(),
                 fallbackRoute: '/login',
               );
-            } else if (secondSegment != "convite") {
+            }
+
+            if (secondSegment == 'editar') {
+              final grupo = settings.arguments as Grupo?;
+              if (grupo == null) {
+                return _errorRoute('Grupo não fornecido para edição');
+              }
               return _authGuard(
-                builder: (_) => DetalhesGrupoScreen(grupoId: secondSegment),
+                builder: (_) => EditarGrupoScreen(grupo: grupo),
                 fallbackRoute: '/login',
               );
             }
-            if (secondSegment == "convite" && uri.pathSegments.length == 3) {
+
+            if (secondSegment == 'convite' && uri.pathSegments.length == 3) {
               return _authGuard(
                 builder:
                     (_) => DetalhesGrupoScreen(
@@ -48,6 +59,11 @@ class AppRouter {
                 fallbackRoute: '/login',
               );
             }
+
+            return _authGuard(
+              builder: (_) => DetalhesGrupoScreen(grupoId: secondSegment),
+              fallbackRoute: '/login',
+            );
           } else {
             return _authGuard(
               builder: (_) => const GrupoScreen(),
@@ -155,6 +171,16 @@ class AppRouter {
                 return const SizedBox.shrink();
               }
             },
+          ),
+    );
+  }
+
+  static MaterialPageRoute _errorRoute(String message) {
+    return MaterialPageRoute(
+      builder:
+          (_) => Scaffold(
+            appBar: AppBar(title: const Text('Erro')),
+            body: Center(child: Text(message)),
           ),
     );
   }

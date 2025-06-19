@@ -37,7 +37,12 @@ class _InputSenhaState extends State<InputSenha> {
                 _esconderSenha = !_esconderSenha;
               });
             },
-            icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xFF03045E),)
+            icon: Icon(
+              _esconderSenha
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              color: const Color(0xFF03045E),
+            ),
           ),
         ),
         style: const TextStyle(fontSize: 20),
