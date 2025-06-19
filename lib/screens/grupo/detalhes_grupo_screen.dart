@@ -146,8 +146,8 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
             hideLogo: true,
             icone: Row(
               children: [
-                grupo.membrosIds.isNotEmpty &&
-                        grupo.membrosIds.last == usuarioId
+                grupo.criadorId == usuarioId ||
+                        (grupo.membros == 1 && grupo.membrosIds[0] == usuarioId)
                     ? IconButton(
                       onPressed: () async {
                         final atualizado = await Navigator.pushNamed(

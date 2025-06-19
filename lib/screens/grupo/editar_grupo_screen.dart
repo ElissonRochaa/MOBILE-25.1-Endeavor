@@ -87,6 +87,7 @@ class _EditarGrupoScreenState extends ConsumerState<EditarGrupoScreen> {
         privado: isPrivado,
         membrosIds: widget.grupo.membrosIds,
         areasEstudo: [AreaEstudo(id: novaAreaId)],
+        criadorId: "",
       );
 
       await grupo_service.atualizarGrupo(
@@ -132,20 +133,27 @@ class _EditarGrupoScreenState extends ConsumerState<EditarGrupoScreen> {
                 TextFormField(
                   controller: _tituloController,
                   decoration: const InputDecoration(labelText: 'Título'),
-                  validator:
-                      (value) =>
-                          (value == null || value.isEmpty)
-                              ? 'Informe o título'
-                              : null,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.length < 4 ||
+                        value.trim().isEmpty) {
+                      return "O título do grupo deve conter, ao menos, 4 caracteres.";
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   controller: _descricaoController,
                   decoration: const InputDecoration(labelText: 'Descrição'),
-                  validator:
-                      (value) =>
-                          (value == null || value.isEmpty)
-                              ? 'Informe a descrição'
-                              : null,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().isEmpty) {
+                      return "A descrição não pode ser vazia.";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 Row(

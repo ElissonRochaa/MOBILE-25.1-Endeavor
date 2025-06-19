@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../geral/search_bar.dart';
 
-enum Ordenacao { nome, membros, privado }
+enum Ordenacao { nome, membros, privado, areaEstudo }
 
 class GrupoList extends StatefulWidget {
   final List<Grupo> lista;
@@ -35,9 +35,13 @@ class _GrupoListState extends State<GrupoList> {
         Ordenacao.membros => g2.membros.compareTo(g1.membros),
         Ordenacao.privado =>
           g1.privado == g2.privado ? 0 : (g1.privado ? 1 : -1),
-        _ => g1.titulo.compareTo(g2.titulo),
+        Ordenacao.areaEstudo => g1.areasEstudo.first.nome
+            .toLowerCase()
+            .compareTo(g2.areasEstudo.first.nome.toLowerCase()),
+        _ => g1.titulo.toLowerCase().compareTo(g2.titulo.toLowerCase()),
       },
     );
+
     return Column(
       children: [
         Padding(
@@ -72,7 +76,10 @@ class _GrupoListState extends State<GrupoList> {
                     ),
                   )
                   : ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
                     itemCount: gruposFiltrados.length,
                     itemBuilder: (context, index) {
                       return GrupoItem(grupoData: gruposFiltrados[index]);
@@ -141,6 +148,25 @@ class _GrupoListState extends State<GrupoList> {
             onTap: () {
               setState(() {
                 ordenarPor = Ordenacao.privado;
+                Navigator.pop(context);
+              });
+            },
+          ),
+          ListTile(
+            title: const Text("Ordenar por área de estudo"),
+            leading: Radio<Ordenacao>(
+              value: Ordenacao.areaEstudo,
+              groupValue: ordenarPor,
+              onChanged: (value) {
+                setState(() {
+                  ordenarPor = value!;
+                  Navigator.pop(context);
+                });
+              },
+            ),
+            onTap: () {
+              setState(() {
+                ordenarPor = Ordenacao.areaEstudo;
                 Navigator.pop(context);
               });
             },

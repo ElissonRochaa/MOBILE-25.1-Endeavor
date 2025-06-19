@@ -6,6 +6,7 @@ class Grupo {
   String descricao;
   int capacidade;
   bool privado;
+  String criadorId;
   List<AreaEstudo> areasEstudo;
   List<String> membrosIds;
 
@@ -17,6 +18,7 @@ class Grupo {
     required this.privado,
     required this.areasEstudo,
     required this.membrosIds,
+    required this.criadorId,
   });
 
   int get membros => membrosIds.length;
@@ -32,6 +34,7 @@ class Grupo {
         AreaEstudo.fromJson(json['areaEstudo'] as Map<String, dynamic>),
       ],
       membrosIds: List<String>.from(json['usuariosIds']),
+      criadorId: json["usuarioCriadorId"],
     );
   }
 
@@ -44,6 +47,7 @@ class Grupo {
       'privado': privado,
       'areasEstudo': areasEstudo,
       'membrosIds': membrosIds,
+      "usuarioCriadorId": criadorId,
     };
   }
 }
