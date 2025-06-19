@@ -82,7 +82,7 @@ class _SecondLoginScreenState extends ConsumerState<SecondLoginScreen> {
                       style: TextStyle(fontSize: 48, fontFamily: 'BebasNeue'),
                     ),
                     SizedBox(
-                      width: 300,
+                      width: 400,
                       child: InputSenha(
                         controller: _senhaController,
                         label: "Senha",
