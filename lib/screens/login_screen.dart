@@ -1,5 +1,6 @@
 import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
+import 'package:endeavor/services/usuario_service.dart';
 import 'package:endeavor/widgets/loginRegistro/linha_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,13 +9,20 @@ import 'package:endeavor/providers/login_provider.dart';
 import '../config/theme_app.dart';
 import '../widgets/loginRegistro/google_sign_in_button.dart';
 
-class LoginScreen extends ConsumerWidget{
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  LoginScreen({super.key});
+class LoginScreen extends ConsumerStatefulWidget{
+
+  const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -67,8 +75,20 @@ class LoginScreen extends ConsumerWidget{
                     ),
                     minimumSize: Size(332, 50),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate())  {
+
+                      bool existe = await usuarioJaCadastrado(_emailController.text);
+
+                      if (!existe) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Email não cadastrado."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
                       ref.read(loginProvider.notifier).setEmail(_emailController.text);
                       Navigator.push(
                         context,

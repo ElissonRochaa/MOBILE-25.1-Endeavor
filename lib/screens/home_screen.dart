@@ -1,13 +1,13 @@
 import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/services/materia_service.dart';
+import 'package:endeavor/widgets/areaEstudo/area_estudo_list.dart';
 import 'package:endeavor/widgets/geral/endeavor_bottom_bar.dart';
 import 'package:endeavor/widgets/geral/endeavor_top_bar.dart';
-import 'package:endeavor/widgets/home/areas_estudo.dart';
+import 'package:endeavor/widgets/geral/label.dart';
+import 'package:endeavor/widgets/geral/search_bar_home.dart';
 import 'package:endeavor/widgets/home/grupo_list.dart';
-import 'package:endeavor/widgets/home/label.dart';
 import 'package:endeavor/widgets/home/materia_list.dart';
-import 'package:endeavor/widgets/home/search_bar_home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,7 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     usuarioId = ref.read(authProvider).id!;
     token = ref.read(authProvider).token!;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,13 +46,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onSeeAll: () => Navigator.of(context).pushNamed('/materias'),
 
               onAdd: () async {
-                final novaMateria = await Navigator.of(context).pushNamed('/materias/criar');
+                final novaMateria = await Navigator.of(
+                  context,
+                ).pushNamed('/materias/criar');
                 if (novaMateria != null) {
-                  setState(() {}); 
+                  setState(() {});
                 }
               },
             ),
-            MateriaList(getFn: () => buscarMateriasPorUsuario(usuarioId, token),),
+            MateriaList(
+              getFn: () => buscarMateriasPorUsuario(usuarioId, token),
+            ),
             SizedBox(height: 40),
             Label(
               title: "Meus grupos",
@@ -69,16 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             GrupoList(getFn: () => getGruposFromUsuario(usuarioId, token)),
             SizedBox(height: 40),
-            Label(title: "Áreas de estudo", onAdd: () {}, onSeeAll: () {}),
-            Container(
-              padding: EdgeInsets.only(left: 20),
-              height: 140,
-              child: ListView.builder(
-                itemCount: 5,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (ctx, index) => AreasEstudo(nome: "Mobile"),
-              ),
-            ),
+            AreasEstudoList(token: token),
           ],
         ),
       ),

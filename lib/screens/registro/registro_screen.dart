@@ -1,6 +1,6 @@
 import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/screens/login_screen.dart';
-import 'package:endeavor/screens/registro/quiz_screen.dart';
+import 'package:endeavor/screens/quiz_screen.dart';
 import 'package:endeavor/services/auth_service.dart';
 import 'package:endeavor/widgets/loginRegistro/input_texto.dart';
 import 'package:endeavor/widgets/loginRegistro/senha_input.dart';
