@@ -5,4 +5,10 @@ class AuthResponse {
 
   AuthResponse({this.id, this.token});
 
+  factory AuthResponse.fromJson(Map<String, dynamic> json) {
+    return AuthResponse(
+      id: json['id'],
+      token: json['token'],
+    );
+  }
 }

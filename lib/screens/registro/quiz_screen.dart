@@ -1,7 +1,7 @@
 import 'package:endeavor/models/grupo.dart';
 import 'package:flutter/material.dart';
 import '../../services/grupo_service.dart' as grupo_service;
-import '../../services/area_estudo.dart' as area_service;
+import '../../services/area_estudo_service.dart' as area_service;
 
 import '../login_screen.dart';
 
