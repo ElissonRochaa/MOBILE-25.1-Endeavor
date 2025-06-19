@@ -39,7 +39,6 @@ class _QuizScreenState extends State<QuizScreen> {
   Future<void> _carregarGruposPorArea(String areaId) async {
     setState(() => carregando = true);
     try {
-      print(areaId);
       grupos = await getGruposPorArea(areaId);
     } catch (e) {
       debugPrint('Erro ao buscar grupos: $e');
