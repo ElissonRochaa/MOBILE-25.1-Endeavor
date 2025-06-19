@@ -189,32 +189,6 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    DropdownButton(
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      value: dropdownValue,
-                      items: const [
-                        DropdownMenuItem(
-                          value: "diario",
-                          child: Text("Diário"),
-                        ),
-                        DropdownMenuItem(
-                          value: "semanal",
-                          child: Text("Semanal"),
-                        ),
-                        DropdownMenuItem(
-                          value: "mensal",
-                          child: Text("Mensal"),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          dropdownValue = value!;
-                        });
-                      },
-                    ),
                   ],
                 ),
               ),

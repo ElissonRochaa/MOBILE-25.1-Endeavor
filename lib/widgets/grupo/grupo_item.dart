@@ -82,23 +82,20 @@ class GrupoItem extends StatelessWidget {
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onTertiary,
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    Text(
-                      '${grupoData.membros}/${grupoData.capacidade}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onTertiary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                          ),
+                        ),
+                        Text(
+                          '${grupoData.membros}/${grupoData.capacidade}',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onTertiary,
+                          ),
+                        ),
+                ],
+              ),
+            ],
           ),
         ),
+      ),
       ),
     );
   }

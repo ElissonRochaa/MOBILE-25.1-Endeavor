@@ -42,7 +42,7 @@ class PerfilBanner extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              '$tempoTotal estudados hoje',
+              'Tempo estudado hoje: $tempoTotal',
               style: GoogleFonts.nunito(fontSize: 16, color: Colors.white),
             ),
           ),

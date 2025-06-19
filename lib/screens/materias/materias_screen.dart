@@ -50,6 +50,7 @@ class _MateriasScreenState extends ConsumerState<MateriasScreen> {
         backgroundColor: Colors.green,
       ),
     );
+    _reloadMaterias();
   }
 
   @override
