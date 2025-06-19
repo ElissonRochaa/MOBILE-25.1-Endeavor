@@ -1,7 +1,7 @@
 import 'package:endeavor/models/area_estudo.dart';
 import 'package:endeavor/models/grupo.dart';
 import 'package:endeavor/providers/auth_provider.dart';
-import 'package:endeavor/services/area_estudo.dart';
+import 'package:endeavor/services/area_estudo_service.dart';
 import 'package:endeavor/services/grupo_service.dart' as grupo_service;
 import 'package:endeavor/widgets/error_handler.dart';
 import 'package:flutter/material.dart';
