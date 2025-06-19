@@ -63,15 +63,18 @@ Future<void> excluirUsuario(String id) async {
 
 Future<bool> usuarioJaCadastrado(String email) async {
   final response = await http.get(
-    Uri.parse('$apiUrl/usuarioJaCadastrado/$email')
+    Uri.parse('$apiUrl/usuarioJaCadastrado/$email'),
   );
 
   if (response.statusCode == 200) {
     return jsonDecode(response.body) as bool;
   } else {
-    handleHttpError(response);
+    print('Erro ao verificar usuário: ${response.statusCode}');
+    throw Exception('Erro ao verificar usuário'); 
+
   }
 }
+
 
 Future<List<Usuario>> buscarUsuariosPorNome(String nome) async {
   final response = await http.get(

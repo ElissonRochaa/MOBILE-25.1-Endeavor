@@ -21,18 +21,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late String usuarioId;
-  late String token;
+  String? usuarioId;
+  String? token;
 
   @override
   void initState() {
     super.initState();
-    usuarioId = ref.read(authProvider).id!;
-    token = ref.read(authProvider).token!;
   }
   
   @override
   Widget build(BuildContext context) {
+    usuarioId = ref.watch(authProvider).id!;
+    token = ref.watch(authProvider).token!;
+
     return Scaffold(
       appBar: EndeavorTopBar(title: "Endeavor"),
       bottomNavigationBar: EndeavorBottomBar(),
@@ -52,7 +53,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 }
               },
             ),
-            MateriaList(getFn: () => buscarMateriasPorUsuario(usuarioId, token),),
+            MateriaList(getFn: () => buscarMateriasPorUsuario(usuarioId!, token!),),
             SizedBox(height: 40),
             Label(
               title: "Meus grupos",
@@ -67,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               },
               onSeeAll: () => Navigator.of(context).pushNamed('/grupos'),
             ),
-            GrupoList(getFn: () => getGruposFromUsuario(usuarioId, token)),
+            GrupoList(getFn: () => getGruposFromUsuario(usuarioId!, token!)),
             SizedBox(height: 40),
             Label(title: "Áreas de estudo", onAdd: () {}, onSeeAll: () {}),
             Container(

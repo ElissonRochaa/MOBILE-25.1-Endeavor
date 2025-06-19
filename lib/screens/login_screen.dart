@@ -9,13 +9,20 @@ import 'package:endeavor/providers/login_provider.dart';
 import '../config/theme_app.dart';
 import '../widgets/loginRegistro/google_sign_in_button.dart';
 
-class LoginScreen extends ConsumerWidget{
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  LoginScreen({super.key});
+class LoginScreen extends ConsumerStatefulWidget{
+
+  const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -72,7 +79,7 @@ class LoginScreen extends ConsumerWidget{
                     if (_formKey.currentState!.validate())  {
 
                       bool existe = await usuarioJaCadastrado(_emailController.text);
-                      
+
                       if (!existe) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
