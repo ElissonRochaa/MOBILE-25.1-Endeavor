@@ -165,6 +165,25 @@ Future<List<Grupo>> getGruposByMembroNome(String nome, String token) async {
   }
 }
 
+Future<List<Grupo>> getGrupoByAreaEstudo(String areaEstudo) async {
+  print("aqui!");
+  print('$apiUrl/por-area/$areaEstudo');
+  final response = await http.get(
+    Uri.parse('$apiUrl/por-area/$areaEstudo'),
+    headers: {
+      'Content-Type': 'application/json',
+      },
+  );
+  print(response.statusCode);
+  print(response.body);
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Grupo.fromJson(json)).toList();
+  } else {
+    handleHttpError(response);
+  }
+}
+
 Future<void> adicionarMembroAoGrupo(
   String grupoId,
   String membroId,
