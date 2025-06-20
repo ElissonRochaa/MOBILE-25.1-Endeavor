@@ -107,7 +107,7 @@ Future<Meta> updateMeta({
 }
 
 Future<void> deleteMeta(String id, String token) async {
-  final response = await http.delete(Uri.parse('$apiUrl/$id'),
+  final response = await http.delete(Uri.parse('$apiUrl/excluir/$id'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

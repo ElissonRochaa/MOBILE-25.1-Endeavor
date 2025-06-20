@@ -33,6 +33,52 @@ class _MetaItemState extends ConsumerState<MetaItem> {
     await updateMeta(id: widget.meta.id, concluida: done, token: token);
   }
 
+  Future<void> _confirmarExcluirMeta() async {
+    final confirmacao = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir meta'),
+        content: const Text('Tem certeza que deseja excluir esta meta?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmacao == true) {
+      try {
+        await deleteMeta(widget.meta.id, token);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Meta excluída com sucesso')),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Erro'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -45,12 +91,25 @@ class _MetaItemState extends ConsumerState<MetaItem> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.meta.nome,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.meta.nome,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: _confirmarExcluirMeta,
+                  icon: Icon(
+                    Icons.delete,
+                    size: 28,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Row(

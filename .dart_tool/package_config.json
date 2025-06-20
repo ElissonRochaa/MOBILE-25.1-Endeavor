@@ -27,7 +27,7 @@
     },
     {
       "name": "args",
-      "rootUri": "file:///C:/Users/RONNY%20R/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.7.0",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.7.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -69,13 +69,13 @@
     },
     {
       "name": "checked_yaml",
-      "rootUri": "file:///C:/Users/RONNY%20R/AppData/Local/Pub/Cache/hosted/pub.dev/checked_yaml-2.0.3",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/checked_yaml-2.0.3",
       "packageUri": "lib/",
       "languageVersion": "2.19"
     },
     {
       "name": "cli_util",
-      "rootUri": "file:///C:/Users/RONNY%20R/AppData/Local/Pub/Cache/hosted/pub.dev/cli_util-0.4.2",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/cli_util-0.4.2",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -207,7 +207,7 @@
     },
     {
       "name": "flutter_launcher_icons",
-      "rootUri": "file:///C:/Users/RONNY%20R/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_launcher_icons-0.13.1",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_launcher_icons-0.13.1",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -296,10 +296,28 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "image",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/image-4.5.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "intl",
       "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.17.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "js",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.6.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "json_annotation",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/json_annotation-4.9.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "leak_tracker",
@@ -408,6 +426,12 @@
       "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_windows-2.3.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
+    },
+    {
+      "name": "petitparser",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/petitparser-6.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
     },
     {
       "name": "platform",
@@ -632,13 +656,25 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "xml",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/xml-6.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "yaml",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "endeavor",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-06-19T19:45:39.789799Z",
+  "generated": "2025-06-20T05:22:10.312688Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///D:/Programacao/desenvolvimento/ferramentas/flutter",

@@ -39,6 +39,7 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
   }
 
   Future<void> _checkAuthentication() async {
+
     isAuthenticated = await _authenticationCheck();
 
     if (!mounted) return;

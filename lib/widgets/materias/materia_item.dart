@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/materia.dart';
 import '../../screens/materias/materias_details_screen.dart';
+import '../../services/materia_service.dart' as materia_service;
 import '../../services/tempo_materia_service.dart' as tempo_materia_service;
 
 class MateriaItem extends ConsumerStatefulWidget {
@@ -35,23 +36,33 @@ class _MateriaItemState extends ConsumerState<MateriaItem> {
   Future<void> _initSessionData() async {
     final tempoMateria = widget.materia.tempoMateria;
     final tempoTotalAcumulado = await tempo_materia_service.buscarSessaoAtiva(
-      widget.materia.usuarioId,
-      widget.materia.id,
-      _token
+        widget.materia.usuarioId,
+        widget.materia.id,
+        _token
     );
 
     if (tempoMateria != null) {
-      _tempoMateriaId = tempoMateria.id;
-      _status = tempoMateria.status;
-      _totalSeconds = tempoTotalAcumulado?['tempoDecorrido'] ?? 0;
+      final novaStatus = tempoMateria.status;
+      final novoInicio = tempoMateria.inicio;
+      int novosSegundos = tempoTotalAcumulado?['tempoDecorrido'] ?? 0;
 
-      if (_status == StatusCronometro.emAndamento) {
-        _inicioSessao = tempoMateria.inicio;
-        _totalSeconds += DateTime.now().difference(_inicioSessao!).inSeconds;
-        _startTimer();
+      if (novaStatus == StatusCronometro.emAndamento && novoInicio != null) {
+        novosSegundos += DateTime.now().difference(novoInicio).inSeconds;
       }
+
+      setState(() {
+        _tempoMateriaId = tempoMateria.id;
+        _status = novaStatus;
+        _totalSeconds = novosSegundos;
+
+        if (_status == StatusCronometro.emAndamento) {
+          _inicioSessao = novoInicio;
+          _startTimer();
+        }
+      });
     }
   }
+
 
   void _startTimer() {
     _timer?.cancel();
@@ -108,6 +119,52 @@ class _MateriaItemState extends ConsumerState<MateriaItem> {
         '${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  Future<void> _confirmarExcluirMateria() async {
+    final confirmacao = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir matéria'),
+        content: const Text('Tem certeza que deseja excluir esta matéria?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmacao == true) {
+      try {
+        await materia_service.deleteMateria(widget.materia.id, _token);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Matéria excluída com sucesso')),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Erro'),
+            content: Text(e.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -149,6 +206,14 @@ class _MateriaItemState extends ConsumerState<MateriaItem> {
                       _status == StatusCronometro.emAndamento ? Icons.pause : Icons.play_arrow,
                       color: Theme.of(context).colorScheme.onTertiary,
                       size: 32,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _confirmarExcluirMateria,
+                    icon: Icon(
+                      Icons.delete,
+                      color: Theme.of(context).colorScheme.onTertiary,
+                      size: 28,
                     ),
                   ),
                 ],
