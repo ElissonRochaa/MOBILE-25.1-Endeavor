@@ -3,6 +3,7 @@ import 'package:endeavor/screens/redefinir_senha_screen.dart';
 import 'package:endeavor/services/usuario_service.dart';
 import 'package:flutter/material.dart';
 
+import '../services/redefinir_senha_service.dart';
 
 class RecuperarSenhaScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -30,48 +31,51 @@ class RecuperarSenhaScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Para recuperar sua senha, digite seu email abaixo que será enviado um link para redefinição.',
+                  'Para recuperar sua senha, digite seu email abaixo. Enviaremos um código de verificação.',
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20),
                 SizedBox(
-                    width: 300,
-                    child: TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        labelText: "Email",
-                        hintText: "Digite seu email",
-                        suffixIcon: Icon(
-                          Icons.note_alt,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: 32,
-                        ),
+                  width: 300,
+                  child: TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      hintText: "Digite seu email",
+                      suffixIcon: Icon(
+                        Icons.email,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 28,
                       ),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.length < 4 ||
-                            value.trim().isEmpty) {
-                          return "O email deve conter, ao menos, 4 caracteres.";
-                        }
-                        return null;
-                      },      
                     ),
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          value.length < 4 ||
+                          !value.contains("@")) {
+                        return "Digite um email válido.";
+                      }
+                      return null;
+                    },
                   ),
+                ),
+                SizedBox(height: 24),
                 ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: ThemeApp.theme.colorScheme.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      minimumSize: Size(332, 50),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ThemeApp.theme.colorScheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate())  {
-            
-                        bool existe = await usuarioJaCadastrado(_emailController.text);
-                        
+                    minimumSize: Size(332, 50),
+                  ),
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final email = _emailController.text.trim();
+
+                      try {
+                        final existe = await usuarioJaCadastrado(email);
+
                         if (!existe) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -81,24 +85,34 @@ class RecuperarSenhaScreen extends StatelessWidget {
                           );
                           return;
                         }
+
+                        await recuperarSenha(email);
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => RedefinirSenhaScreen(),
                           ),
                         );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Erro ao enviar código de verificação."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       }
-                      
+                    }
                   },
                   child: Text(
-                      'Continuar',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                    'Continuar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                     ),
                   ),
+                ),
               ],
             ),
           ),
