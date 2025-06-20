@@ -47,3 +47,20 @@ Future<String> registrar(
     handleHttpError(response);
   }
 }
+
+Future<bool> tokenValido(String token) async {
+  final response = await http.post(
+    Uri.parse('$_authUrl/token-valido'),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: json.encode({'token': token}),
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else if (response.statusCode == 403) {
+      return false;
+    } else {
+      handleHttpError(response);
+    }  
+}

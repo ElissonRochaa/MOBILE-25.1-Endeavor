@@ -3,6 +3,7 @@ import 'package:endeavor/models/materia.dart';
 import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/services/tempo_materia_service.dart';
@@ -210,12 +211,16 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                       ]),
                   InkWell(
                     onTap:
-                        () => Navigator.pushReplacement(
+                        () async { 
+                        await AuthStorageService().clearAuthData();
+                        ref.read(authProvider.notifier).clearAuth();
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => LoginScreen(),
                           ),
-                        ),
+                        );
+                        },
                     child: Container(
                       width: 330,
                       height: 50,
