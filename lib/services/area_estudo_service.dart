@@ -7,14 +7,8 @@ import 'package:http/http.dart' as http;
 
 final apiUrl = '${dotenv.env['API_URL']}/areas-estudo';
 
-Future<List<AreaEstudo>> getAreasEstudo(String token) async {
-  final response = await http.get(
-    Uri.parse(apiUrl),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
+Future<List<AreaEstudo>> getAreasEstudo(String? token) async {
+  final response = await http.get(Uri.parse(apiUrl));
   if (response.statusCode == 200) {
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => AreaEstudo.fromJson(json)).toList();
@@ -94,12 +88,11 @@ Future<void> deleteAreaEstudo(String id, String token) async {
   }
 }
 
-Future<List<AreaEstudo>> findAreaEstudoByNome(String nome, String token) async {
+Future<List<AreaEstudo>> findAreaEstudoByNome(String nome) async {
   final response = await http.get(
     Uri.parse('$apiUrl/search?nome=$nome'),
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
     },
   );
 

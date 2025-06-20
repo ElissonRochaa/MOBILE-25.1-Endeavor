@@ -120,6 +120,18 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
     return '$horas:$minutos:$segundosRestantes';
   }
 
+  void desconectar() async {
+    await AuthStorageService().clearAuthData();
+    ref.read(authProvider.notifier).clearAuth();
+
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_usuario == null) {
@@ -210,17 +222,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                         ),
                       ]),
                   InkWell(
-                    onTap:
-                        () async { 
-                        await AuthStorageService().clearAuthData();
-                        ref.read(authProvider.notifier).clearAuth();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                        );
-                        },
+                    onTap: () => desconectar(),
                     child: Container(
                       width: 330,
                       height: 50,

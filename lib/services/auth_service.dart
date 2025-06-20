@@ -64,3 +64,20 @@ Future<bool> tokenValido(String token) async {
       handleHttpError(response);
     }  
 }
+Future<AuthResponse> loginComGoogle(String idToken) async {
+  print("AAAAAAA: $idToken");
+  final response = await http.post(
+    Uri.parse('$_authUrl/google'),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({"idToken": idToken}),
+  );
+  print(response.statusCode);
+  print(response.body);
+
+  if (response.statusCode == 200) {
+    return AuthResponse.fromJson(jsonDecode(response.body));
+  } else {
+    return AuthResponse(id: null, token: null);
+  }
+}
+

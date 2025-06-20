@@ -11,9 +11,10 @@ import 'package:endeavor/screens/materias/criar_materia.dart';
 import 'package:endeavor/screens/materias/criar_meta.dart';
 import 'package:endeavor/screens/materias/materias_details_screen.dart';
 import 'package:endeavor/screens/materias/materias_screen.dart';
-import 'package:endeavor/screens/quiz_screen.dart';
+import 'package:endeavor/screens/registro/quiz_screen.dart';
 import 'package:endeavor/screens/registro/registro_screen.dart';
 import 'package:endeavor/screens/second_login_screen.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 import 'package:flutter/material.dart';
 
 import '../models/grupo.dart';
@@ -137,7 +138,7 @@ class AppRouter {
     return MaterialPageRoute(
       builder:
           (context) => FutureBuilder<bool>(
-            future: _mockAuthenticationCheck(),
+            future: _authenticationCheck(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -185,8 +186,8 @@ class AppRouter {
     );
   }
 
-  static Future<bool> _mockAuthenticationCheck() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return true;
+  static Future<bool> _authenticationCheck() async {
+    final auth = await AuthStorageService().isAuthenticated();
+    return auth;
   }
 }

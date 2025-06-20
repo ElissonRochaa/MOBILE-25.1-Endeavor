@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1043691935132",
+    "project_id": "endeavor-70c20",
+    "storage_bucket": "endeavor-70c20.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043691935132:android:b592dd9ca39f7cff3f6459",
+        "android_client_info": {
+          "package_name": "com.example.endeavor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1043691935132-ofhrp8eird9mibdff52oao53r7f7lb1d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.endeavor",
+            "certificate_hash": "474fcde853e13fcb0cf250bc09679dddfb8f9b5e"
+          }
+        },
+        {
+          "client_id": "1043691935132-fait3hv3u1jgt6nv69boq8ue6o0jh33k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDygKb-aQv8ggvmj-Sx0mzU4kLFlve9IVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1043691935132-fait3hv3u1jgt6nv69boq8ue6o0jh33k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1043691935132-lpolq60tirrjgr2brgos4pjmn60ousge.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.endeavor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

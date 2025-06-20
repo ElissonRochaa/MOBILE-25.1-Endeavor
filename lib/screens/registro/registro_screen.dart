@@ -1,18 +1,23 @@
+import 'package:endeavor/models/auth_response.dart';
 import 'package:endeavor/models/usuario.dart';
+import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/screens/quiz_screen.dart';
 import 'package:endeavor/services/auth_service.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 import 'package:endeavor/widgets/loginRegistro/input_texto.dart';
 import 'package:endeavor/widgets/loginRegistro/senha_input.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RegistroScreen extends StatefulWidget {
+class RegistroScreen extends ConsumerStatefulWidget {
   const RegistroScreen({super.key});
 
   @override
-  State<RegistroScreen> createState() => _RegistroScreenState();
+  ConsumerState<RegistroScreen> createState() => _RegistroScreenState();
 }
 
-class _RegistroScreenState extends State<RegistroScreen> {
+class _RegistroScreenState extends ConsumerState<RegistroScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -43,28 +48,49 @@ class _RegistroScreenState extends State<RegistroScreen> {
         escolaridade.name,
       );
 
-      if (!mounted) return;
+      final authResponse = await login(email, senha);
 
-      setState(() {
-        _isLoading = false;
-      });
+      if (authResponse.id != null && authResponse.token != null) {
+        ref
+            .read(authProvider.notifier)
+            .setAuth(
+              AuthResponse(id: authResponse.id, token: authResponse.token),
+            );
+        await AuthStorageService().saveAuthData(
+          authResponse.id!,
+          authResponse.token!,
+        );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(response)));
+        if (!mounted) return;
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(response)));
+
+        // Vai para a tela de Quiz
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => QuizScreen()),
+        );
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Login falhou. Tente fazer login manualmente."),
+          ),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

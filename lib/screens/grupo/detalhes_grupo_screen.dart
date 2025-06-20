@@ -30,84 +30,103 @@ class DetalhesGrupoScreen extends ConsumerStatefulWidget {
 class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
   late Future<Grupo?> _grupoFuture;
   late Future<List<MembroComTempo>> _membrosFuture;
-  late String usuarioId;
-  late String token;
+
+  String? usuarioId;
+  String? token;
 
   bool _navegarParaHome = false;
 
   @override
   void initState() {
     super.initState();
-    usuarioId = ref.read(authProvider).id!;
-    token = ref.read(authProvider).token!;
-    _grupoFuture = grupo_service.getGrupoById(widget.grupoId, token);
-    _membrosFuture = grupo_service.getMembrosDoGrupo(widget.grupoId, token);
+
+    final auth = ref.read(authProvider);
+    usuarioId = auth.id;
+    token = auth.token;
+
+    if (usuarioId == null || token == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
+      });
+      return;
+    }
+
+    _carregarDados();
+  }
+
+  void _carregarDados() {
+    _grupoFuture = grupo_service.getGrupoById(widget.grupoId, token!);
+    _membrosFuture = grupo_service.getMembrosDoGrupo(widget.grupoId, token!);
 
     _grupoFuture.then((grupo) {
       if (grupo != null &&
           widget.isConvite &&
           !grupo.membrosIds.contains(usuarioId)) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _mostrarDialogConvite(grupo);
-        });
+        _mostrarDialogConvite(grupo);
       }
     });
   }
 
   void _mostrarDialogConvite(Grupo grupo) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("Convite para grupo"),
-            content: Text(
-              "Você foi convidado para o grupo '${grupo.titulo}'. Deseja entrar?",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Não"),
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text("Convite para grupo"),
+              content: Text(
+                "Você foi convidado para o grupo '${grupo.titulo}'. Deseja entrar?",
               ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  try {
-                    await grupo_service.adicionarMembroAoGrupo(
-                      grupo.id,
-                      usuarioId,
-                      token,
-                    );
-                    if (!mounted) return;
-                    grupo.membrosIds.add(usuarioId);
-                    setState(() {
-                      _membrosFuture = grupo_service.getMembrosDoGrupo(
-                        widget.grupoId,
-                        token,
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("Não"),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    try {
+                      await grupo_service.adicionarMembroAoGrupo(
+                        grupo.id,
+                        usuarioId!,
+                        token!,
                       );
-                    });
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                child: const Text("Sim, entrar"),
-              ),
-            ],
-          ),
-    );
+                      if (!mounted) return;
+                      grupo.membrosIds.add(usuarioId!);
+                      setState(() {
+                        _membrosFuture = grupo_service.getMembrosDoGrupo(
+                          widget.grupoId,
+                          token!,
+                        );
+                      });
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                  child: const Text("Sim, entrar"),
+                ),
+              ],
+            ),
+      );
+    });
   }
 
   void _abrirCompartilhamento() async {
-    final link = "$apiUrl/abrir-grupo/${widget.grupoId}";
+    final link = "${dotenv.env['API_URL']}/abrir-grupo/${widget.grupoId}";
     final mensagem =
         "Olá! Junte-se a mim no meu grupo de estudos no Endeavor! $link";
 
-    await SharePlus.instance.share(
-      ShareParams(text: mensagem, subject: 'Convite para grupo de estudos'),
-    );
+    await Share.share(mensagem);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (usuarioId == null || token == null) {
+      return const Scaffold();
+    }
+
     if (_navegarParaHome) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
@@ -129,9 +148,33 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
             ),
           );
         } else if (!grupoSnapshot.hasData) {
-          return const Scaffold(
-            body: Center(child: Text("Grupo não encontrado.")),
-          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showDialog(
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: const Text("Grupo não encontrado"),
+                    content: const Text(
+                      "O grupo que você tentou acessar não existe mais ou foi apagado.",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/home',
+                            (route) => false,
+                          );
+                        },
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  ),
+            );
+          });
+
+          return const Scaffold();
         }
 
         final grupo = grupoSnapshot.data!;
@@ -139,6 +182,8 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
             !grupo.privado ||
             grupo.membrosIds.contains(usuarioId) ||
             widget.isConvite;
+
+        final estaNoGrupo = grupo.membrosIds.contains(usuarioId);
 
         return Scaffold(
           appBar: EndeavorTopBar(
@@ -157,26 +202,19 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                         );
                         if (atualizado == true) {
                           setState(() {
-                            _grupoFuture = grupo_service.getGrupoById(
-                              widget.grupoId,
-                              token,
-                            );
-                            _membrosFuture = grupo_service.getMembrosDoGrupo(
-                              widget.grupoId,
-                              token,
-                            );
+                            _carregarDados();
                           });
                         }
                       },
                       icon: const Icon(Icons.edit, color: Colors.white),
                     )
-                    : SizedBox.shrink(),
-                grupo.membrosIds.contains(usuarioId)
+                    : const SizedBox.shrink(),
+                estaNoGrupo
                     ? IconButton(
                       onPressed: _abrirCompartilhamento,
                       icon: const Icon(Icons.share, color: Colors.white),
                     )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
               ],
             ),
           ),
@@ -210,7 +248,9 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 12),
+
                 Text(
                   "Informações do grupo",
                   style: TextStyle(
@@ -220,6 +260,7 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                 ),
                 Text(grupo.descricao),
                 const SizedBox(height: 24),
+
                 Text(
                   "Áreas de estudo",
                   style: TextStyle(
@@ -229,6 +270,7 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                 ),
                 Text(grupo.areasEstudo.map((area) => area.nome).join(", ")),
                 const SizedBox(height: 40),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -272,6 +314,7 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                     ),
                   ],
                 ),
+
                 Container(
                   width: double.infinity,
                   height: 3,
@@ -282,7 +325,9 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 16),
+
                 Expanded(
                   child: FutureBuilder<List<MembroComTempo>>(
                     future: _membrosFuture,
@@ -306,12 +351,13 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                     },
                   ),
                 ),
+
                 if (podeEntrarOuSair)
                   Center(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            grupo.membrosIds.contains(usuarioId)
+                            estaNoGrupo
                                 ? Theme.of(context).colorScheme.error
                                 : Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(
@@ -320,81 +366,10 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
                         ),
                       ),
                       onPressed: () {
-                        final estaNoGrupo = grupo.membrosIds.contains(
-                          usuarioId,
-                        );
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: Text(
-                                  estaNoGrupo
-                                      ? "Sair do grupo"
-                                      : "Entrar no grupo",
-                                ),
-                                content: Text(
-                                  estaNoGrupo
-                                      ? "Tem certeza que deseja sair do grupo '${grupo.titulo}'?"
-                                      : "Tem certeza que deseja entrar no grupo '${grupo.titulo}'?",
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.of(context).pop(),
-                                    child: const Text("Cancelar"),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                      try {
-                                        if (estaNoGrupo) {
-                                          await grupo_service
-                                              .removerMembroDoGrupo(
-                                                grupo.id,
-                                                usuarioId,
-                                                token,
-                                              );
-                                          grupo.membrosIds.remove(usuarioId);
-
-                                          if (!mounted) return;
-                                          setState(() {
-                                            _navegarParaHome = true;
-                                          });
-                                          return;
-                                        } else {
-                                          await grupo_service
-                                              .adicionarMembroAoGrupo(
-                                                grupo.id,
-                                                usuarioId,
-                                                token,
-                                              );
-                                          grupo.membrosIds.add(usuarioId);
-                                        }
-
-                                        if (!mounted) return;
-                                        setState(() {
-                                          _membrosFuture = grupo_service
-                                              .getMembrosDoGrupo(
-                                                widget.grupoId,
-                                                token,
-                                              );
-                                        });
-                                      } catch (e) {
-                                        print(e);
-                                      }
-                                    },
-                                    child: Text(
-                                      estaNoGrupo ? "Sair" : "Entrar",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                        );
+                        _confirmarEntradaOuSaida(grupo, estaNoGrupo);
                       },
                       child: Text(
-                        grupo.membrosIds.contains(usuarioId)
-                            ? "Sair do grupo"
-                            : "Entrar no grupo",
+                        estaNoGrupo ? "Sair do grupo" : "Entrar no grupo",
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
@@ -407,6 +382,66 @@ class _DetalhesGrupoScreenState extends ConsumerState<DetalhesGrupoScreen> {
           ),
         );
       },
+    );
+  }
+
+  void _confirmarEntradaOuSaida(Grupo grupo, bool estaNoGrupo) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(estaNoGrupo ? "Sair do grupo" : "Entrar no grupo"),
+            content: Text(
+              estaNoGrupo
+                  ? "Tem certeza que deseja sair do grupo '${grupo.titulo}'?"
+                  : "Tem certeza que deseja entrar no grupo '${grupo.titulo}'?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  try {
+                    if (estaNoGrupo) {
+                      await grupo_service.removerMembroDoGrupo(
+                        grupo.id,
+                        usuarioId!,
+                        token!,
+                      );
+                      grupo.membrosIds.remove(usuarioId!);
+
+                      if (!mounted) return;
+                      setState(() {
+                        _navegarParaHome = true;
+                      });
+                      return;
+                    } else {
+                      await grupo_service.adicionarMembroAoGrupo(
+                        grupo.id,
+                        usuarioId!,
+                        token!,
+                      );
+                      grupo.membrosIds.add(usuarioId!);
+                    }
+
+                    if (!mounted) return;
+                    setState(() {
+                      _membrosFuture = grupo_service.getMembrosDoGrupo(
+                        widget.grupoId,
+                        token!,
+                      );
+                    });
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+                child: Text(estaNoGrupo ? "Sair" : "Entrar"),
+              ),
+            ],
+          ),
     );
   }
 }
