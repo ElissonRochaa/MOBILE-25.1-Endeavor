@@ -3,6 +3,7 @@ import 'package:endeavor/models/materia.dart';
 import 'package:endeavor/models/usuario.dart';
 import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/login_screen.dart';
+import 'package:endeavor/services/auth_storage_service.dart';
 import 'package:endeavor/services/grupo_service.dart';
 import 'package:endeavor/services/materia_service.dart';
 import 'package:endeavor/services/tempo_materia_service.dart';
@@ -119,6 +120,18 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
     return '$horas:$minutos:$segundosRestantes';
   }
 
+  void desconectar() async {
+    await AuthStorageService().clearAuthData();
+    ref.read(authProvider.notifier).clearAuth();
+
+    if (!mounted) return;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_usuario == null) {
@@ -208,13 +221,7 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                         ),
                       ]),
                   InkWell(
-                    onTap:
-                        () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ),
-                        ),
+                    onTap: () => desconectar(),
                     child: Container(
                       width: 330,
                       height: 50,

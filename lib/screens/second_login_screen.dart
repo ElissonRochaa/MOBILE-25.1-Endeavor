@@ -13,7 +13,7 @@ import 'home_screen.dart';
 import 'login_screen.dart';
 
 class SecondLoginScreen extends ConsumerStatefulWidget {
-  SecondLoginScreen({super.key});
+  const SecondLoginScreen({super.key});
 
   @override
   ConsumerState<SecondLoginScreen> createState() => _SecondLoginScreenState();

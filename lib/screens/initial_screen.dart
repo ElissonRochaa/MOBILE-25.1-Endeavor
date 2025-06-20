@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:endeavor/config/theme_app.dart';
 import 'package:endeavor/models/auth_response.dart';
 import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/screens/home_screen.dart';
@@ -44,14 +43,15 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
 
     if (!mounted) return;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
     setState(() {
       _loading = false;
     });
+  });
   }
 
   Future<bool> _authenticationCheck() async {
     bool value = await AuthStorageService().isAuthenticated();
-    value = false;
 
     if (value) {
       String? id = await AuthStorageService().getId();

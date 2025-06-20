@@ -4,7 +4,7 @@ class AuthStorageService{
   static const _token = 'token';
   static const _userId = 'userId';
 
-  Future<void> saveAuthData(String token, String userId) async {
+  Future<void> saveAuthData(String userId, String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_token, token);
     await prefs.setString(_userId, userId);

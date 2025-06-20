@@ -62,7 +62,40 @@ class ErrorHandler {
           message.contains("dependOnInheritedWidget")) {
         return;
       }
+
       _isDialogShowing = true;
+
+      if (message.contains("Null check operator used on a null value")) {
+        // ⚠️ Tratamento específico para erro de autenticação perdida
+        showDialog(
+          context: context,
+          builder:
+              (_) => AlertDialog(
+                title: const Text('Sessão expirada'),
+                content: const Text(
+                  'Não foi possível lhe autenticar. Por favor, entre novamente.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Navigator.of(
+                          context,
+                        ).pushNamedAndRemoveUntil('/login', (route) => false);
+                      });
+                    },
+                    child: const Text('Ir para Login'),
+                  ),
+                ],
+              ),
+        ).whenComplete(() {
+          _isDialogShowing = false;
+        });
+
+        return;
+      }
+
+      // 🔥 Tratamento genérico para outros erros
       showDialog(
         context: context,
         builder:
