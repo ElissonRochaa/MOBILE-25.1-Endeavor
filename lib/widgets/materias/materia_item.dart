@@ -74,7 +74,7 @@ class _MateriaItemState extends ConsumerState<MateriaItem> {
   }
 
   Future<void> _handlePlayPause() async {
-    try {
+
       if (_status == StatusCronometro.emAndamento) {
 
         await tempo_materia_service.pausarSessao(_tempoMateriaId!, _token);
@@ -95,11 +95,7 @@ class _MateriaItemState extends ConsumerState<MateriaItem> {
           print(_totalSeconds);
         });
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro: ${e.toString()}')),
-      );
-    }
+
   }
 
   String _formatTime(int seconds) {

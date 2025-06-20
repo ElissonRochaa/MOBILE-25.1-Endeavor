@@ -2,6 +2,12 @@
   "configVersion": 2,
   "packages": [
     {
+      "name": "_flutterfire_internals",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/_flutterfire_internals-1.3.35",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "animated_splash_screen",
       "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/animated_splash_screen-1.3.0",
       "packageUri": "lib/",
@@ -62,6 +68,24 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "cloud_firestore",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore-4.17.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "cloud_firestore_platform_interface",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_platform_interface-6.2.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "cloud_firestore_web",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/cloud_firestore_web-3.12.5",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "collection",
       "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",
@@ -104,10 +128,28 @@
       "languageVersion": "3.0"
     },
     {
-      "name": "firebase_core",
-      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core-3.13.1",
+      "name": "firebase_auth",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth-4.16.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "firebase_auth_platform_interface",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_platform_interface-7.3.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_auth_web",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_auth_web-5.8.13",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "firebase_core",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/firebase_core-2.32.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
     },
     {
       "name": "firebase_core_platform_interface",
@@ -234,6 +276,12 @@
       "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.17.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "js",
+      "rootUri": "file:///C:/Users/melissa/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.6.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "leak_tracker",
@@ -572,7 +620,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-06-19T19:45:39.789799Z",
+  "generated": "2025-06-20T03:17:04.301855Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///D:/Programacao/desenvolvimento/ferramentas/flutter",

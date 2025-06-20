@@ -49,19 +49,25 @@ Future<String> registrar(
 }
 
 Future<AuthResponse> loginComGoogle(String idToken) async {
-  print("AAAAAAA: $idToken");
-  final response = await http.post(
-    Uri.parse('$_authUrl/google'),
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({"idToken": idToken}),
-  );
-  print(response.statusCode);
-  print(response.body);
+  try {
+    print("AAAAAAA: $idToken");
+    final response = await http.post(
+      Uri.parse('$_authUrl/google'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"idToken": idToken}),
+    );
+    print('Status code: ${response.statusCode}');
+    print('Body: ${response.body}');
 
-  if (response.statusCode == 200) {
-    return AuthResponse.fromJson(jsonDecode(response.body));
-  } else {
-    return AuthResponse(id: null, token: null);
+    if (response.statusCode == 200) {
+      return AuthResponse.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Falha no login com Google: ${response.body}');
+    }
+  } catch (e) {
+    print('Erro ao fazer requisição para o backend: $e');
+    rethrow;
   }
 }
+
 

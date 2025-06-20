@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as ref;
 
 import '../../models/auth_response.dart';
 import '../../providers/auth_provider.dart';
 import '../../screens/home_screen.dart';
 import '../../services/auth_service.dart';
 import '../../services/auth_storage_service.dart';
+class GoogleSignInButton extends ConsumerStatefulWidget {
+  final VoidCallback? onLoginSuccess;
 
-class GoogleSignInButton extends ConsumerWidget {
-  const GoogleSignInButton({super.key});
+  const GoogleSignInButton({super.key, this.onLoginSuccess});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GoogleSignInButton> createState() => _GoogleSignInButtonState();
+}
+
+class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -22,14 +29,23 @@ class GoogleSignInButton extends ConsumerWidget {
         ),
         minimumSize: const Size(332, 50),
       ),
-      onPressed: () async {
+      onPressed: _isLoading ? null : () async {
+        setState(() => _isLoading = true);
         try {
-          final user = await GoogleSignIn().signIn();
+          final googleSignIn = GoogleSignIn(
+            scopes: ['email'],
+            serverClientId: '1043691935132-fait3hv3u1jgt6nv69boq8ue6o0jh33k.apps.googleusercontent.com',
+          );
+
+          final user = await googleSignIn.signIn();
 
           if (user == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Login cancelado")),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Login cancelado")),
+              );
+            }
+            setState(() => _isLoading = false);
             return;
           }
 
@@ -37,9 +53,12 @@ class GoogleSignInButton extends ConsumerWidget {
           final idToken = googleAuth.idToken;
 
           if (idToken == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Falha ao obter token do Google")),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Falha ao obter token do Google")),
+              );
+            }
+            setState(() => _isLoading = false);
             return;
           }
 
@@ -49,8 +68,10 @@ class GoogleSignInButton extends ConsumerWidget {
             ref.read(authProvider.notifier).setAuth(authResponse);
             await AuthStorageService().saveAuthData(authResponse.id!, authResponse.token!);
 
-            if (context.mounted) {
-              Navigator.pushReplacement(
+            if (widget.onLoginSuccess != null) {
+              widget.onLoginSuccess!();
+            } else if (context.mounted) {
+              await Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const HomeScreen()),
               );
@@ -64,12 +85,20 @@ class GoogleSignInButton extends ConsumerWidget {
           }
         } catch (e, stack) {
           debugPrint("Erro ao fazer login com Google: $stack");
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Erro inesperado no login com Google")),
-          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Erro inesperado no login com Google")),
+            );
+          }
+        } finally {
+          if (mounted) {
+            setState(() => _isLoading = false);
+          }
         }
       },
-      child: Row(
+      child: _isLoading
+          ? const CircularProgressIndicator(color: Colors.black)
+          : Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Image.asset(

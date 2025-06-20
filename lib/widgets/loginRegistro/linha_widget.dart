@@ -12,7 +12,7 @@ class LinhaWidget extends StatelessWidget {
       children: [
         Container(
           color: Colors.black,
-          width: 144,
+          width: 111,
           height: 1,
         ),
         Text(
@@ -21,7 +21,7 @@ class LinhaWidget extends StatelessWidget {
         ),
         Container(
           color: Colors.black,
-          width: 144,
+          width: 111,
           height: 1,
         ),
       ],

@@ -129,7 +129,6 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
       appBar: EndeavorTopBar(title: "Perfil"),
       bottomNavigationBar: const EndeavorBottomBar(),
       body: Container(
-        color: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: SingleChildScrollView(
           child: Column(

@@ -39,10 +39,7 @@ Future<String?> pausarSessao(String tempoMateriaId, String token) async {
       final data = jsonDecode(response.body);
       return data['id'] ?? tempoMateriaId;
     } else {
-      print(
-        'Erro ao pausar sessão. Status: ${response.statusCode}, Body: ${response.body}',
-      );
-      return null;
+      handleHttpError(response);
     }
   } catch (e) {
     print('Exception ao pausar sessão: $e');
@@ -63,8 +60,7 @@ Future<String?> continuarSessao(String tempoMateriaId, String token) async {
     final data = jsonDecode(response.body);
     return data['id'];
   } else {
-    print('Erro ao continuar sessão: ${response.body}');
-    throw Exception('Erro ao continuar sessão: ${response.body}');
+    handleHttpError(response);
   }
 }
 
@@ -80,8 +76,7 @@ Future<String?> finalizarSessao(String tempoMateriaId, String token) async {
     final data = jsonDecode(response.body);
     return data['id'];
   } else {
-    print('Erro ao finalizar sessão: ${response.body}');
-    throw Exception('Erro ao finalizar sessão');
+    handleHttpError(response);
   }
 }
 

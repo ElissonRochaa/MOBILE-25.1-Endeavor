@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1043691935132-mlnluh92s61efsd3djoekuks40cfrgs7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.endeavor",
+            "certificate_hash": "e3da50a284b3a16d67350f471773b1a0738a14c4"
+          }
+        },
+        {
           "client_id": "1043691935132-ofhrp8eird9mibdff52oao53r7f7lb1d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

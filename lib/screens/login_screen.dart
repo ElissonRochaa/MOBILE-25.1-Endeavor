@@ -8,6 +8,7 @@ import 'package:endeavor/providers/login_provider.dart';
 
 import '../config/theme_app.dart';
 import '../widgets/loginRegistro/google_sign_in_button.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget{
 
@@ -117,7 +118,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: LinhaWidget("ou"),
                 ),
-                GoogleSignInButton(),
+            //GoogleSignInButton(
+            //  onLoginSuccess: () {
+            //    Navigator.pushReplacement(
+             //     context,
+            //      MaterialPageRoute(builder: (_) => const HomeScreen()),
+            //    );
+              //},
+            //),
                 SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
