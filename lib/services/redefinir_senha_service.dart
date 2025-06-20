@@ -1,18 +1,19 @@
 import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-import '../utils/error_handler.dart';
-import '../models/email_dto.dart';
 import '../models/codigo_verificacao_request_dto.dart';
+import '../models/email_dto.dart';
+import '../utils/error_handler.dart';
 
-final apiUrl = '${dotenv.env['API_URL']}/usuarios';
+final apiUrl = '${dotenv.env['API_URL']}';
 
 Future<void> recuperarSenha(String email) async {
   final body = jsonEncode(EmailDTO(email: email).toJson());
 
   final response = await http.post(
-    Uri.parse('$apiUrl/recuperar-senha'),
+    Uri.parse('$apiUrl/usuarios/recuperar-senha'),
     headers: {'Content-Type': 'application/json'},
     body: body,
   );
@@ -23,10 +24,12 @@ Future<void> recuperarSenha(String email) async {
 }
 
 Future<bool> verificarCodigo(String email, String codigo) async {
-  final body = jsonEncode(CodigoVerificacaoRequestDTO(email: email, codigo: codigo).toJson());
+  final body = jsonEncode(
+    CodigoVerificacaoRequestDTO(email: email, codigo: codigo).toJson(),
+  );
 
   final response = await http.post(
-    Uri.parse('$apiUrl/verificar-codigo'),
+    Uri.parse('$apiUrl/usuarios/verificar-codigo'),
     headers: {'Content-Type': 'application/json'},
     body: body,
   );
@@ -34,6 +37,18 @@ Future<bool> verificarCodigo(String email, String codigo) async {
   if (response.statusCode == 200) {
     return jsonDecode(response.body) as bool;
   } else {
+    handleHttpError(response);
+  }
+}
+
+Future<void> alterarSenha(String email, String novaSenha) async {
+  final body = jsonEncode({'email': email, 'senha': novaSenha});
+  final response = await http.post(
+    Uri.parse('$apiUrl/auth/nova-senha'),
+    headers: {'Content-Type': 'application/json'},
+    body: body,
+  );
+  if (response.statusCode != 200) {
     handleHttpError(response);
   }
 }

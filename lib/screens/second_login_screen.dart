@@ -2,6 +2,7 @@ import 'package:endeavor/config/theme_app.dart';
 import 'package:endeavor/models/auth_response.dart';
 import 'package:endeavor/providers/auth_provider.dart';
 import 'package:endeavor/providers/login_provider.dart';
+import 'package:endeavor/screens/recuperar_senha_screen.dart';
 import 'package:endeavor/services/auth_service.dart';
 import 'package:endeavor/services/auth_storage_service.dart';
 import 'package:endeavor/widgets/loginRegistro/senha_input.dart';
@@ -98,6 +99,35 @@ class _SecondLoginScreenState extends ConsumerState<SecondLoginScreen> {
                         },
                       ),
                     ),
+
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RecuperarSenhaScreen(),
+                          ),
+                        );
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'Esqueceu sua senha? ',
+                          style: TextStyle(color: Colors.black, fontSize: 14),
+                          children: [
+                            TextSpan(
+                              text: 'Clique aqui',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                     SizedBox(height: 40),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(

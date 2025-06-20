@@ -14,9 +14,7 @@ class RecuperarSenhaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Recuperar Senha'),
-      ),
+      appBar: AppBar(title: Text('Recuperar Senha')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -87,17 +85,21 @@ class RecuperarSenhaScreen extends StatelessWidget {
                         }
 
                         await recuperarSenha(email);
+                        if (!context.mounted) return;
 
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => RedefinirSenhaScreen(),
+                            settings: RouteSettings(arguments: email),
                           ),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Erro ao enviar código de verificação."),
+                            content: Text(
+                              "Erro ao enviar código de verificação.",
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );

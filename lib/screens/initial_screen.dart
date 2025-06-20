@@ -44,10 +44,10 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
     if (!mounted) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    setState(() {
-      _loading = false;
+      setState(() {
+        _loading = false;
+      });
     });
-  });
   }
 
   Future<bool> _authenticationCheck() async {
@@ -56,7 +56,9 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
     if (value) {
       String? id = await AuthStorageService().getId();
       String? token = await AuthStorageService().getToken();
-      ref.watch(authProvider.notifier).setAuth(AuthResponse(id: id, token: token));
+      ref
+          .watch(authProvider.notifier)
+          .setAuth(AuthResponse(id: id, token: token));
     }
 
     return value;
@@ -65,10 +67,7 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -96,9 +95,7 @@ class _InitialScreenState extends ConsumerState<InitialScreen> {
             ],
           ),
         ),
-        nextScreen: isAuthenticated!
-            ? const HomeScreen()
-            : const LoginScreen(),
+        nextScreen: isAuthenticated! ? const HomeScreen() : const LoginScreen(),
         animationDuration: const Duration(milliseconds: 2200),
         splashIconSize: 400,
         pageTransitionType: PageTransitionType.rightToLeftWithFade,
